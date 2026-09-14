@@ -1,0 +1,172 @@
+"""
+Pull a GDELT-based "tension score" (article volume + average tone) per
+country, from GDELT's raw bulk export files rather than the DOC 2.0
+query API.
+
+Why not the DOC 2.0 API: it enforces "one request every 5 seconds," but
+in practice it can hard-block a shared/cloud IP for an extended period
+regardless of backoff (see Scripts/README.md for what we hit and what
+GDELT's own blog says about it). It's meant for occasional interactive
+lookups, not repeated/scripted polling.
+
+Data source instead: GDELT 2.0 Global Knowledge Graph (GKG) bulk files,
+published every 15 minutes, no key, no rate limit (plain files on GCS):
+  https://data.gdeltproject.org/gdeltv2/lastupdate.txt          -> latest 3 filenames
+  https://data.gdeltproject.org/gdeltv2/<timestamp>.gkg.csv.zip -> that 15-min batch
+
+Each row is one article; V2Locations lists (type#name#countrycode#...)
+per place mentioned (FIPS 10-4 country codes); V2Tone's first value is
+that article's average tone (-100..+100). We match articles whose
+V2Locations includes one of our target countries' FIPS code, and
+aggregate per country per 15-minute file: article count + mean tone.
+
+This trades DOC 2.0's ~3-month daily timeline for a short, high-resolution
+(15-min) recent window -- see LOOKBACK_FILES below. Run this on a
+schedule (hourly/daily cron, cloud scheduler, etc.) and append the output
+to build up real history over time; see Scripts/README.md for the general
+"how do I poll GDELT hourly" guidance this implies.
+
+Output: Data/GDELT/gdelt_tension_<date>.csv
+Columns: country, timestamp_utc, date, volume_article_count, avg_tone
+"""
+
+import csv
+import io
+import sys
+import zipfile
+from datetime import date, datetime, timedelta, timezone
+from pathlib import Path
+
+import requests
+
+from countries import COUNTRIES
+
+LASTUPDATE_URL = "https://data.gdeltproject.org/gdeltv2/lastupdate.txt"
+FILE_URL_TEMPLATE = "https://data.gdeltproject.org/gdeltv2/{ts}.gkg.csv.zip"
+LOOKBACK_FILES = 8  # 8 x 15min = last ~2 hours; raise for a longer window
+
+# GKG uses FIPS 10-4 country codes, which differ from ISO for several
+# of our countries (e.g. Turkey is TU in FIPS, TR in ISO).
+FIPS_BY_COUNTRY = {
+    "Turkey": "TU",
+    "Ukraine": "UP",
+    "Lebanon": "LE",
+    "Israel": "IS",
+    "Egypt": "EG",
+    "Sudan": "SU",
+    "Haiti": "HA",
+    "Thailand": "TH",
+}
+
+V2LOCATIONS_COL = 10
+V2TONE_COL = 15
+DATE_COL = 1
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+OUT_DIR = REPO_ROOT / "Data" / "GDELT"
+
+
+def latest_gkg_timestamp() -> str:
+    resp = requests.get(LASTUPDATE_URL, timeout=30)
+    resp.raise_for_status()
+    for line in resp.text.splitlines():
+        if line.strip().endswith(".gkg.csv.zip"):
+            url = line.split()[-1]
+            return url.rsplit("/", 1)[-1].split(".")[0]
+    raise RuntimeError("Could not find a .gkg.csv.zip entry in lastupdate.txt")
+
+
+def timestamps_going_back(latest_ts: str, n: int) -> list:
+    latest_dt = datetime.strptime(latest_ts, "%Y%m%d%H%M%S")
+    return [(latest_dt - timedelta(minutes=15 * i)).strftime("%Y%m%d%H%M%S") for i in range(n)]
+
+
+def fetch_and_aggregate(ts: str, fips_to_country: dict) -> dict:
+    """Returns {country_name: (article_count, tone_sum)} for one 15-min file."""
+    url = FILE_URL_TEMPLATE.format(ts=ts)
+    resp = requests.get(url, timeout=60)
+    if resp.status_code == 404:
+        print(f"  {ts}: not found (skipping)")
+        return {}
+    resp.raise_for_status()
+
+    counts = {}
+    with zipfile.ZipFile(io.BytesIO(resp.content)) as zf:
+        member = zf.namelist()[0]
+        with zf.open(member) as f:
+            for raw_line in f:
+                try:
+                    line = raw_line.decode("utf-8", errors="replace")
+                    fields = line.rstrip("\n").split("\t")
+                    locations = fields[V2LOCATIONS_COL]
+                    tone = float(fields[V2TONE_COL].split(",")[0])
+                except (IndexError, ValueError):
+                    continue
+
+                matched_countries = set()
+                for entry in locations.split(";"):
+                    parts = entry.split("#")
+                    if len(parts) < 3:
+                        continue
+                    fips = parts[2]
+                    country_name = fips_to_country.get(fips)
+                    if country_name:
+                        matched_countries.add(country_name)
+
+                for country_name in matched_countries:
+                    n, total = counts.get(country_name, (0, 0.0))
+                    counts[country_name] = (n + 1, total + tone)
+
+    print(f"  {ts}: processed, {sum(c for c, _ in counts.values())} matching articles")
+    return counts
+
+
+def main() -> None:
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    fips_to_country = {v: k for k, v in FIPS_BY_COUNTRY.items()}
+
+    print("Looking up latest GDELT GKG bulk file...")
+    latest_ts = latest_gkg_timestamp()
+    ts_list = timestamps_going_back(latest_ts, LOOKBACK_FILES)
+    print(f"Pulling last {len(ts_list)} files (~{15 * len(ts_list)} min window), newest first: {ts_list[0]}")
+
+    rows = []
+    for i, ts in enumerate(ts_list):
+        print(f"[{i + 1}/{len(ts_list)}] {ts}")
+        try:
+            counts = fetch_and_aggregate(ts, fips_to_country)
+        except requests.exceptions.RequestException as exc:
+            print(f"  ! request failed: {exc}")
+            continue
+
+        ts_dt = datetime.strptime(ts, "%Y%m%d%H%M%S").replace(tzinfo=timezone.utc)
+        for country in COUNTRIES:
+            name = country["name"]
+            n, total = counts.get(name, (0, 0.0))
+            rows.append(
+                {
+                    "country": name,
+                    "timestamp_utc": ts_dt.isoformat(),
+                    "date": ts_dt.date().isoformat(),
+                    "volume_article_count": n,
+                    "avg_tone": round(total / n, 4) if n else "",
+                }
+            )
+
+    if not rows:
+        print("No GDELT data retrieved.", file=sys.stderr)
+        sys.exit(1)
+
+    out_path = OUT_DIR / f"gdelt_tension_{date.today().isoformat()}.csv"
+    with out_path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(
+            f, fieldnames=["country", "timestamp_utc", "date", "volume_article_count", "avg_tone"]
+        )
+        writer.writeheader()
+        writer.writerows(rows)
+
+    print(f"\nSaved {len(rows)} rows to {out_path}")
+
+
+if __name__ == "__main__":
+    main()
