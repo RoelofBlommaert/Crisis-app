@@ -264,14 +264,23 @@ assumed:**
   Ukraine). `fetch_acled_hdx.py` always aggregates to one national
   total per (country, year, month, category) regardless of layout.
 
-**Severity bands are log-scaled, not linear**, because real monthly
-political-violence fatality counts across our 8 countries span 0 to
-4000+ -- checked against live data before picking bands (0 / 1-24 /
-25-99 / 100+), not guessed: a linear 1/10/50 split would have grouped
-Egypt's 10 fatalities with Lebanon's 25 while treating both as
-meaningfully different from Sudan's 876 or Ukraine's 4000+, which isn't
-right. See `merge_data.py`'s "ACLED integration" docstring section for
-the full scoring formula.
+**Scoring is baseline-vs-escalation, not a flat fatality band.** A first
+version banded that month's fatalities directly (0/1-24/25-99/100+ ->
+0/1/2/3, *25 each). Checked against live data before shipping the
+replacement: Ukraine (4008), Sudan (876), and Haiti (103) all landed in
+the same top tier and clipped conflict_signal at 100 -- indistinguishable,
+despite differing by 40x, and despite Sudan/Ukraine actually running
+*below* their own 12-month average that month (chronic, not a fresh
+spike), while Egypt's real 3.3x jump above its own tiny baseline was
+invisible next to them. Replaced with two explicit numbers: a
+log-scaled severity score (0-75, against a fixed 5000-fatalities/month
+reference -- not derived from our own 8-country sample, so it doesn't
+shift if countries are added) plus an escalation bonus (0-15) that only
+activates when the current month exceeds the country's own trailing
+12-month average. Both are exposed in the output and shown in the UI
+(baseline fatalities/month, ratio, trend label), not just the combined
+score. See `merge_data.py`'s "Baseline vs. escalation" docstring section
+for the exact formula and the full before/after numbers.
 
 **The most recent available month is always excluded from scoring** --
 checked across all 8 countries before deciding this, not assumed from

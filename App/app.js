@@ -183,12 +183,18 @@ function renderDetail(country) {
     </div>
     <p class="gauge-disclaimer">
       Illustrative 0&ndash;100 heuristic, scored one day at a time &mdash; <strong>not</strong> a statistical
-      forecast or probability of war/disaster. Conflict signal is driven primarily by real ACLED fatality
-      data (see below), corroborated by GDELT media coverage; disaster signal works the same way with GDACS.
-      Bars above show each recent day, oldest to newest.
+      forecast or probability of war/disaster. Conflict signal is driven primarily by real ACLED severity
+      and escalation (see below), corroborated by GDELT media coverage; disaster signal works the same way
+      with GDACS. Bars above show each recent day, oldest to newest.
     </p>
 
-    <h4>What's happening this week</h4>
+    <div class="side-section acled-box">
+      <strong>Baseline &amp; escalation (ACLED) <span class="acled-tag">GROUND TRUTH</span></strong>
+      ${renderAcledSummary(country.acled)}
+      <p class="attribution">Source: <a href="https://acleddata.com" target="_blank" rel="noopener">ACLED</a> (Armed Conflict Location &amp; Event Data Project), via HDX aggregated country files.</p>
+    </div>
+
+    <h4>Media attention this week (corroborating, not the driver)</h4>
     <div class="explain-grid">
       ${renderThemeExplain("Conflict themes", country.top_conflict_themes)}
       ${renderThemeExplain("Disaster themes", country.top_disaster_themes)}
@@ -196,12 +202,8 @@ function renderDetail(country) {
 
     <div class="detail-grid">
       <div>
-        <div class="side-section acled-box">
-          <strong>Confirmed conflict data (ACLED) <span class="acled-tag">GROUND TRUTH</span></strong>
-          ${renderAcledSummary(country.acled)}
-          <div class="chart-box"><canvas id="acled-chart"></canvas></div>
-          <p class="attribution">Source: <a href="https://acleddata.com" target="_blank" rel="noopener">ACLED</a> (Armed Conflict Location &amp; Event Data Project), via HDX aggregated country files.</p>
-        </div>
+        <h4>Events &amp; fatalities over time (ACLED, 24 months)</h4>
+        <div class="chart-box"><canvas id="acled-chart"></canvas></div>
         <h4>Media signal, last 7-8 days</h4>
         <div class="chart-box"><canvas id="tension-chart"></canvas></div>
         <h4>Conflict vs. disaster theme share</h4>
@@ -209,7 +211,7 @@ function renderDetail(country) {
       </div>
       <div>
         <div class="side-section events-list">
-          <strong>Confirmed events (GDACS)</strong>
+          <strong>Confirmed disaster events (GDACS)</strong>
           ${renderEvents(country.events)}
         </div>
         <div class="side-section comms-box">
@@ -218,8 +220,10 @@ function renderDetail(country) {
           <div class="chart-box chart-box-small"><canvas id="comms-chart"></canvas></div>
         </div>
         <div class="side-section travel-box">
-          <strong>Dutch travel context (CBS)</strong>
+          <strong>Dutch citizen exposure (CBS)</strong>
           ${renderTravel(country.travel_baseline)}
+          <p class="synthetic-note">Shown separately, not multiplied into the score above &mdash; a coordinator
+            combines "how bad/escalating" with "how many Dutch travelers are actually there" themselves.</p>
         </div>
       </div>
     </div>
@@ -231,21 +235,44 @@ function renderDetail(country) {
   renderCommsChart(country);
 }
 
+const TREND_BADGE = {
+  Escalating: "Red",
+  Stable: "Orange",
+  "Below baseline": "Green",
+  Unknown: "unknown",
+};
+
+const TREND_ARROW = {
+  Escalating: "↑",
+  Stable: "→",
+  "Below baseline": "↓",
+  Unknown: "",
+};
+
 function renderAcledSummary(acled) {
   if (!acled || !acled.severity || !acled.severity.scoring_period) {
     return '<p class="no-events">No ACLED data available for this country.</p>';
   }
   const sev = acled.severity;
-  const band = ["Green", "Green", "Orange", "Red"][sev.alertscore] || "Green";
+  const trendBadge = TREND_BADGE[sev.trend] || "unknown";
+  const civ = sev.civilian_targeting || { events: 0, fatalities: 0 };
+  const demo = sev.demonstrations || { events: 0 };
+
   return `
     <p class="acled-summary">
-      <span class="badge ${band}">${sev.scoring_fatalities} fatalities</span>
-      ${sev.scoring_events} political-violence events in ${sev.scoring_period}
-      (last complete month &mdash; drives the conflict signal above).
+      <strong>${sev.scoring_period}</strong> (last complete month): <strong>${sev.scoring_fatalities} fatalities</strong>
+      from ${sev.scoring_events} political-violence events. This country's own 12-month average is
+      ~${sev.baseline_fatalities}/month &mdash; this month runs at <strong>${sev.escalation_ratio}&times;</strong>
+      that baseline. <span class="badge ${trendBadge}" title="Trend vs. this country's own baseline, not an absolute severity rating">${TREND_ARROW[sev.trend] || ""} ${sev.trend}</span>
+    </p>
+    <p class="acled-summary">
+      Also that month: ${civ.events} civilian-targeting events (${civ.fatalities ?? 0} fatalities),
+      ${demo.events} demonstrations.
     </p>
     <p class="synthetic-note">${sev.latest_period} data exists but is excluded as provisional: ACLED's
       most recent month is consistently far below trend across almost every country here, a reporting/
-      verification lag rather than real de-escalation.</p>
+      verification lag rather than real de-escalation &mdash; see the sudden drop at the right edge of
+      the chart below.</p>
   `;
 }
 

@@ -239,11 +239,10 @@ several World Bank political-violence/war/terrorism codes) or
 disaster-related (the NATURAL_DISASTER_* theme family), and scoring
 **one calendar day at a time** (not one flat weekly number). A later
 round added real ACLED data as the dominant input for conflict_signal
-(ground truth, not a media proxy) -- the two signals are now
-structurally symmetric:
-  - conflict_signal: ACLED's fatality-based severity band (0-3) for the
-    most recent *complete* month + that day's (GDELT) conflict-theme
-    article share + tone severity + a volume-spike bonus
+(ground truth, not a media proxy):
+  - conflict_signal: ACLED's baseline-vs-escalation severity (see below)
+    for the most recent *complete* month + a small GDELT corroboration
+    term (conflict-theme article share + tone)
   - disaster_signal: the alert level of any GDACS event whose own
     fromdate/todate range actually covers that day (weighted highest) +
     that day's disaster-theme article share
@@ -251,9 +250,38 @@ Whichever is higher drives that day's Green/Orange/Red level, and the
 app labels which one ("conflict-driven" / "disaster-driven"). A 7-8 day
 history strip under each gauge shows every day's score, and the "current"
 badge is simply the most recent day's entry. Because ACLED updates
-monthly and GDELT updates hourly, the confirmed-severity floor holds
+monthly and GDELT updates hourly, the confirmed-severity component holds
 steady across all 7-8 days in the window while GDELT's term still moves
 the score day to day -- a deliberate, documented resolution mismatch.
+
+Baseline vs. escalation (why conflict_signal isn't just "this month's
+fatality count"). A first ACLED-based version banded conflict_signal
+directly off that month's fatalities (0/1-24/25-99/100+ fatalities ->
+0/1/2/3, *25 each). Checked against live data before shipping the
+replacement: Ukraine (4008 fatalities that month), Sudan (876), and
+Haiti (103) all landed in the same top tier and clipped conflict_signal
+at 100 -- indistinguishable, despite differing by an order of magnitude,
+and despite Sudan and Ukraine actually running *below* their own recent
+average that month (a stable, chronic war, not a fresh spike). Egypt, at
+only 10 fatalities, was invisible next to them despite being 3.3x its
+own (near-zero) baseline -- a real emerging signal a flat count buried
+completely. That's backwards for a "risk of imminent crisis" lens:
+absolute severity alone conflates "this has always been terrible here"
+with "something new is happening here."
+
+Fixed by splitting into two explicit, separately-shown numbers computed
+from the same ACLED fatality series: a log-scaled severity score (so
+Ukraine/Sudan/Haiti/Lebanon/Egypt differentiate by real scale instead of
+saturating together) plus an escalation bonus that only activates when
+the current month runs above that country's own trailing 12-month
+average (a below-baseline month gets zero bonus, never a penalty). The
+escalation bonus is what actually flags "something newly happening" --
+each country's detail view shows both numbers explicitly (baseline
+fatalities/month, this month's ratio to that baseline, and a
+Escalating/Stable/Below-baseline trend label) rather than only the
+combined score, per STRATEGY.md's ask to show the data, not just
+compress it away. See `Scripts/merge_data.py`'s "Baseline vs. escalation"
+docstring section for the exact formula.
 
 Scoring day-by-day (rather than "is there any matching event at all") is
 itself a fix for a second bug: GDACS keeps recently-modified events

@@ -81,24 +81,33 @@
       rather than as one flat weekly number, built from:
     </p>
     <ul>
-      <li><strong>Conflict signal:</strong> primarily that month's real ACLED political-violence fatality count (banded 0&ndash;3, same weight as GDACS below), plus that day's (damped) share of GDELT articles carrying a conflict theme tag and tone severity as corroboration. Without any confirmed ACLED fatalities, GDELT alone cannot push this above ~60 &mdash; media attention shouldn't call something "High" on its own.</li>
+      <li><strong>Conflict signal:</strong> a <em>baseline severity</em> score (real ACLED fatalities that month, log-scaled against a fixed reference of 5,000 fatalities/month &mdash; roughly the world's most severe active conflicts) <strong>plus</strong> an <em>escalation bonus</em> only when that month runs above the country's own trailing 12-month average &mdash; a below-baseline month gets zero bonus, never a penalty. GDELT's conflict-theme share and tone add a small corroborating nudge on top. Without any confirmed ACLED fatalities, GDELT alone cannot push this above ~10.</li>
       <li><strong>Disaster signal:</strong> any GDACS alert level for an event actually active <em>on that day</em> (by the event's own date range, weighted highest), plus that day's (damped) share of articles carrying a natural-disaster theme tag.</li>
     </ul>
     <p>
+      This replaced an earlier version that banded conflict_signal directly
+      off that month's fatality count: Ukraine (4008 fatalities), Sudan
+      (876), and Haiti (103) all landed in the same top tier and clipped at
+      100 &mdash; indistinguishable, even though two of them were actually
+      running <em>below</em> their own recent average that month (a stable,
+      chronic war, not a fresh spike), while Egypt's real 3.3x jump above
+      its own (much smaller) baseline was invisible next to them. Baseline
+      and escalation are now shown as separate numbers (see each country's
+      "Baseline &amp; escalation" box) rather than collapsed into one score
+      that loses which country is actually changing right now.
+    </p>
+    <p>
       Scoring day-by-day (rather than "is there any matching event at all")
-      fixes a real bug: GDACS keeps recently-modified events listed for a
-      while after they're actually over, so a months-old cyclone or
-      earthquake would otherwise keep inflating "today's" score forever.
-      Those older events still show up in the country's event list, just
-      labelled <strong>historical</strong> instead of active. The "What's
-      happening this week" section under the gauges shows the actual theme
-      breakdown driving the number (with each theme's share of that week's
-      total articles) rather than just the compressed score. Note also that
-      GDELT tags an article with every country it <em>mentions</em>, so a
-      bordering or mediating country (e.g. Egypt or Turkey in Gaza-related
-      coverage) can pick up a real conflict-theme share without being a
-      combatant itself &mdash; a known limitation, not something fixable
-      without deeper text analysis.
+      fixes a separate, earlier bug: GDACS keeps recently-modified events
+      listed for a while after they're actually over, so a months-old
+      cyclone or earthquake would otherwise keep inflating "today's" score
+      forever. Those older events still show up in the country's event
+      list, just labelled <strong>historical</strong> instead of active.
+      Note also that GDELT tags an article with every country it
+      <em>mentions</em>, so a bordering or mediating country (e.g. Egypt or
+      Turkey in Gaza-related coverage) can pick up a real conflict-theme
+      share without being a combatant itself &mdash; a known limitation,
+      not something fixable without deeper text analysis.
     </p>
 
     <h3>What's deliberately not here yet</h3>

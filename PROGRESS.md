@@ -319,6 +319,72 @@ Work done:
   calculation, provisional-month drop-off visible and explained in the
   chart itself.
 
+## 2026-09-14 (continued 6) — replaced flat ACLED fatality score with baseline vs. escalation
+
+User asked why scores jumped so much, and separately pushed back on the
+result: "many countries are at about 100 for conflict" with no
+differentiation, and asked for scores that reflect risk of *imminent*
+crisis rather than raw violence scale. They also asked for ACLED to be
+the main driver, for a unified "what's happening" view (event counts,
+types, article volume/tone), and for Dutch-citizen exposure to connect
+to that picture.
+
+Root cause of the saturation, confirmed against live data before
+redesigning: the previous banding (0/1-24/25-99/100+ fatalities ->
+0/1/2/3, *25 each) put Ukraine (4008 fatalities), Sudan (876), and Haiti
+(103) all in the same top tier, clipping conflict_signal at 100 for all
+three -- and worse, two of them (Sudan, Ukraine: ratio 0.75-0.77) were
+actually running *below* their own 12-month average that month, i.e. a
+stable chronic war, not a fresh spike, while Egypt's real 3.3x jump
+above its own near-zero baseline was completely invisible next to them.
+Absolute severity alone conflates "always been terrible here" with
+"something new is happening here" -- backwards for an imminent-risk lens.
+
+Redesigned `merge_data.py`'s conflict_signal into two explicit,
+separately-shown components instead of one flat band:
+- **severity** (0-75): log-scaled off that month's real ACLED fatalities
+  against a fixed external reference (5000 fatalities/month, roughly
+  the scale of the world's most severe active conflicts -- deliberately
+  not derived from our own 8-country sample, so it won't shift if
+  countries are added/removed). Differentiates Ukraine(73)/Sudan(60)/
+  Haiti(41)/Lebanon(29)/Egypt(21) by real scale instead of saturating.
+- **escalation_bonus** (0-15): only activates when the current month
+  exceeds that country's own trailing-12-month average -- a below-
+  baseline month gets zero bonus, never a penalty. This is what
+  actually flags "something newly happening" (Egypt: ratio 3.33x ->
+  full +15 bonus, correctly surfacing an emerging signal despite tiny
+  absolute numbers).
+GDELT's role shrank to a small corroborating nudge (was up to 45 points,
+now up to ~10) since ACLED is now explicitly "the main driver."
+
+New distribution (verified against real numbers, not assumed): Ukraine
+83, Sudan 69 (2 Red); Haiti 43, Egypt 43, Lebanon 38 (3 Orange); Thailand
+17, Israel 11, Turkey 11 (3 Green) -- well-differentiated, no more
+identical scores at the ceiling.
+
+Frontend changes to match:
+- Reordered the detail panel so the ACLED "Baseline & escalation" box
+  comes immediately after the gauges (the dominant driver, explained
+  first), with GDELT's theme breakdown relabelled "Media attention this
+  week (corroborating, not the driver)" and moved below it.
+- The ACLED box now states both numbers explicitly in one sentence
+  ("this month runs at 3.33x that baseline") plus a directional trend
+  badge (↑ Escalating / → Stable / ↓ Below baseline) with its own arrow
+  glyphs so it can't be mistaken for the absolute-severity badge, and
+  folds in that month's civilian-targeting and demonstration counts
+  (previously fetched but not shown) -- the unified "how many things,
+  what type" view the user asked for.
+- CBS renamed "Dutch citizen exposure" with a sentence explicitly
+  connecting it to the risk picture ("a coordinator combines... "),
+  without fabricating a fake composite risk×exposure number -- shown
+  separately by design, consistent with this project's "explain the
+  data, don't just compress it" approach throughout.
+- Updated the About panel and Documentation with the full before/after
+  reasoning (not just the new formula) so a reader can see why it
+  changed, not only what it is now.
+- Re-tested in-browser: no console errors, Egypt's escalation renders
+  distinctly from Ukraine/Sudan's chronic-but-stable severity.
+
 ### Next up
 - [ ] Build the "hybride sturing" manual-override control (coordinator
       confirms/corrects a suggested classification) -- deliberately

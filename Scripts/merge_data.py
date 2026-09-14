@@ -39,10 +39,9 @@ forever. For each calendar day present in the 7-day GDELT history:
   confidence = min(1, day_volume / MIN_CONFIDENT_VOLUME)   # dampens thin days
 
   conflict_signal = clamp(
-      acled_alertscore * 25                        # up to 75, real ACLED fatalities (see below)
-    + day_conflict_theme_share * 30 * confidence    # up to 30, GDELT corroboration
-    + max(0, -day_avg_tone) * 4                     # up to ~20, tone severity that day
-    + max(0, day_volume / week_avg_volume - 1) * 10,  # up to 10, spike vs the week's own average
+      acled_component                               # up to 90, real ACLED severity + escalation (see below)
+    + day_conflict_theme_share * 8 * confidence      # up to 8, GDELT corroboration
+    + max(0, -day_avg_tone) * 1.5,                   # up to ~2, tone severity that day
     0, 100)
 
   disaster_signal = clamp(
@@ -53,36 +52,71 @@ forever. For each calendar day present in the 7-day GDELT history:
 alert_level bands: Red >= 65, Orange >= 35, else Green.
 
 **ACLED integration (ground-truth conflict severity, not a media proxy).**
-`acled_alertscore` is now conflict_signal's dominant term, exactly
-mirroring how `active_gdacs_alertscore` already dominates disaster_signal
--- both signals now have the same shape: a confirmed-source severity
-score (weight 25/tier, max 75) plus a secondary GDELT corroboration term.
-Without a real confirmed political-violence source, we deliberately cap
-conflict_signal at ~60 (below the Red threshold) on GDELT alone, same as
-disaster_signal already does -- pure media-mention noise shouldn't be
-able to call something "High" on its own.
+`acled_component` is conflict_signal's dominant term (up to 90 of 100
+points), mirroring how `active_gdacs_alertscore` dominates disaster_signal,
+but is now a **continuous, baseline-relative** measure rather than a
+4-tier band -- see "Baseline vs. escalation" below for why that changed.
+Without real confirmed political violence, GDELT alone caps conflict_signal
+at ~10, same principle as disaster_signal: pure media-mention noise
+shouldn't be able to call something "High" on its own.
 
-`acled_alertscore` comes from `Scripts/fetch_acled_hdx.py`'s monthly
-political-violence fatality count for that country's most recent
-*complete* month (see `acled_severity()` below for why we skip the
-latest available month -- ACLED/HDX's own numbers for the newest month
-are consistently far lower than the trend, in lockstep across nearly
-every tracked country, which is reporting/verification lag, not a real
-across-the-board de-escalation). Bands are wide/log-scaled, not linear,
-because real fatality counts in our tracked countries span 0 to 4000+ in
-a single month -- a linear 1/10/50 cutoff would have put Egypt's 10
-fatalities in the same tier as Lebanon's 25 while treating both as
-meaningfully different from Sudan's 876 or Ukraine's 4000+, which isn't
-right:
-  0 fatalities        -> 0
-  1-24 fatalities      -> 1
-  25-99 fatalities     -> 2
-  100+ fatalities       -> 3
-This one monthly value is applied to every day in the current 7-8 day
-GDELT window (ACLED updates monthly, GDELT daily) -- a deliberate,
-documented resolution mismatch, not a bug: the confirmed-severity floor
-holds steady within a month while GDELT's day-to-day term still moves
-the score around it.
+**Baseline vs. escalation (why this isn't just "this month's fatality
+count").** An earlier version banded conflict_signal directly off that
+month's ACLED fatalities (0 / 1-24 / 25-99 / 100+ -> 0/1/2/3, *25 each).
+Checked against live data before shipping this replacement: Ukraine
+(4008 fatalities that month), Sudan (876), and Haiti (103) all landed in
+the same top tier and clipped conflict_signal at 100 -- indistinguishable,
+despite being different by an order of magnitude, and despite two of
+them (Sudan, Ukraine) actually running *below* their own recent average
+that month (ratio 0.75-0.77 vs. their own trailing-12-month baseline) --
+a stable, chronic war, not a fresh spike. Meanwhile Egypt, at only 10
+fatalities, was invisible next to them despite being 3.3x its own
+(near-zero) baseline -- a real, if small-scale, emerging signal that a
+flat absolute count buried completely. For a "risk of imminent crisis"
+lens this is backwards: absolute severity alone conflates "this has
+always been terrible here" with "something new is happening here," and
+loses the country that's actually changing.
+
+Fixed by splitting into two explicit components, both derived from the
+same monthly ACLED fatality series:
+  baseline_fatalities = average fatalities/month over the 12 months
+    before the scoring month (the country's own recent normal)
+  escalation_ratio = scoring_fatalities / max(baseline_fatalities, 3)
+    (floor of 3 avoids ratio blowups when a country's baseline is
+    near zero)
+  severity = clamp(75 * log10(scoring_fatalities + 1) / log10(5001), 0, 75)
+    -- log-scaled against a fixed reference of 5000 fatalities/month
+    (roughly the scale of the world's most severe active conflicts in
+    recent years -- a fixed external anchor, deliberately NOT derived
+    from our own 8-country sample, so it doesn't shift if countries are
+    added/removed)
+  escalation_bonus = clamp((escalation_ratio - 1) * 10, 0, 15)
+    -- only rewards being ABOVE one's own baseline; below-baseline
+    countries get zero bonus, not a penalty
+  acled_component = severity + escalation_bonus   (0-90)
+`severity` differentiates chronic-severity countries properly instead of
+saturating (verified: Ukraine ~73, Sudan ~60, Haiti ~41, Lebanon ~29,
+Egypt ~21 -- ordered by real scale, not clipped together). The
+`escalation_bonus` is what actually flags "something newly happening" --
+it's what pushes Egypt (severity 21 + bonus 15 = 36) into the same
+territory as far-larger-but-stable conflicts, which is the "imminent"
+signal this app is meant to surface, per the user's explicit ask that
+scores reflect risk of imminent crisis rather than pure violence scale.
+`baseline_fatalities`, `escalation_ratio`, and a qualitative trend label
+("Escalating" / "Stable" / "Below baseline") are exposed in the output
+alongside the score, not hidden inside it -- the point is to show the
+data, not just compress it away (per STRATEGY.md).
+
+Both components come from `Scripts/fetch_acled_hdx.py`'s monthly
+political-violence series, using the most recent *complete* month (see
+`acled_severity()` for why the latest available month is skipped --
+ACLED/HDX's newest month is consistently far below trend across nearly
+every tracked country, reporting/verification lag, not a real
+across-the-board de-escalation). This one monthly value is applied to
+every day in the current 7-8 day GDELT window (ACLED updates monthly,
+GDELT daily) -- a deliberate, documented resolution mismatch: the
+confirmed-severity floor holds steady within a month while GDELT's
+day-to-day term still moves the score around it.
 
 **Recalibration history:** the original 70/100-weighted, undampened
 version put almost every tracked country at Orange-or-above nearly every
@@ -117,6 +151,7 @@ from __future__ import annotations
 
 import csv
 import json
+import math
 import re
 from collections import defaultdict
 from datetime import datetime, timezone
@@ -324,39 +359,78 @@ def load_acled_monthly() -> dict:
     return records
 
 
+REFERENCE_MAX_FATALITIES = 5000  # fixed external anchor (severe active-conflict scale), not derived from our 8-country sample
+BASELINE_MONTHS = 12
+
+
+def _trend_label(ratio: float) -> str:
+    if ratio >= 1.5:
+        return "Escalating"
+    if ratio <= 0.67:
+        return "Below baseline"
+    return "Stable"
+
+
+def _category_scoring_month(records: list, category: str, scoring_period: str) -> dict:
+    for r in records:
+        if r["category"] == category and f"{r['year']}-{r['month']}" == scoring_period:
+            return {"events": r["events"], "fatalities": r["fatalities"]}
+    return {"events": 0, "fatalities": None if category == "demonstrations" else 0}
+
+
 def acled_severity(records: list) -> dict:
-    """Picks the most recent *complete* month's political-violence
-    fatality count and bands it into 0-3 (see module docstring). Skips
-    the single latest available month -- see "ACLED integration" above
-    for why (reporting lag, not real de-escalation)."""
+    """Baseline-vs-escalation conflict severity from real ACLED
+    political-violence fatalities -- see module docstring "Baseline vs.
+    escalation" for why this replaced a flat fatality-count band, and
+    why the latest available month is excluded (reporting lag, not real
+    de-escalation)."""
     pv = [r for r in records if r["category"] == "political_violence"]
     if not pv:
         return {
-            "alertscore": 0,
+            "acled_component": 0.0,
+            "severity": 0.0,
+            "escalation_bonus": 0.0,
+            "escalation_ratio": 0.0,
+            "trend": "Unknown",
+            "baseline_fatalities": 0.0,
             "scoring_period": None,
             "scoring_fatalities": 0,
             "scoring_events": 0,
             "latest_period": None,
             "latest_is_provisional": False,
+            "civilian_targeting": {"events": 0, "fatalities": 0},
+            "demonstrations": {"events": 0, "fatalities": None},
         }
+
     scoring = pv[-2] if len(pv) >= 2 else pv[-1]
     latest = pv[-1]
-    fatalities = scoring["fatalities"] or 0
-    if fatalities >= 100:
-        alertscore = 3
-    elif fatalities >= 25:
-        alertscore = 2
-    elif fatalities >= 1:
-        alertscore = 1
-    else:
-        alertscore = 0
+    scoring_fatalities = scoring["fatalities"] or 0
+
+    scoring_index = pv.index(scoring)
+    baseline_window = pv[max(0, scoring_index - BASELINE_MONTHS):scoring_index]
+    baseline_fatalities = (
+        sum((r["fatalities"] or 0) for r in baseline_window) / len(baseline_window) if baseline_window else 0.0
+    )
+
+    escalation_ratio = scoring_fatalities / max(baseline_fatalities, 3)
+    severity = _clamp(75 * math.log10(scoring_fatalities + 1) / math.log10(REFERENCE_MAX_FATALITIES + 1), 0, 75)
+    escalation_bonus = _clamp((escalation_ratio - 1) * 10, 0, 15)
+
+    scoring_period = f"{scoring['year']}-{scoring['month']}"
     return {
-        "alertscore": alertscore,
-        "scoring_period": f"{scoring['year']}-{scoring['month']}",
-        "scoring_fatalities": fatalities,
+        "acled_component": severity + escalation_bonus,
+        "severity": round(severity, 1),
+        "escalation_bonus": round(escalation_bonus, 1),
+        "escalation_ratio": round(escalation_ratio, 2),
+        "trend": _trend_label(escalation_ratio),
+        "baseline_fatalities": round(baseline_fatalities, 1),
+        "scoring_period": scoring_period,
+        "scoring_fatalities": scoring_fatalities,
         "scoring_events": scoring["events"],
         "latest_period": f"{latest['year']}-{latest['month']}",
         "latest_is_provisional": latest is not scoring,
+        "civilian_targeting": _category_scoring_month(records, "civilian_targeting", scoring_period),
+        "demonstrations": _category_scoring_month(records, "demonstrations", scoring_period),
     }
 
 
@@ -409,17 +483,16 @@ def _alert_band(score: float) -> str:
     return "Green"
 
 
-def score_country(events: list, tension_series: list, acled_alertscore: int = 0) -> dict:
+def score_country(events: list, tension_series: list, acled_component: float = 0.0) -> dict:
     """Returns {conflict_signal, disaster_signal, alert_level, driver,
     daily_scores}. Illustrative heuristic, not a statistical forecast --
     see the module docstring "Scoring" section for the formula and why
     each day is scored against events actually active that day rather
-    than one flat weekly number. `acled_alertscore` (0-3, from real ACLED
-    fatality data) is the same value for every day in the window --
-    ACLED updates monthly, GDELT daily; see "ACLED integration" above."""
+    than one flat weekly number. `acled_component` (0-90, real ACLED
+    severity + escalation, see "Baseline vs. escalation" above) is the
+    same value for every day in the window -- ACLED updates monthly,
+    GDELT daily."""
     series = sorted(tension_series, key=lambda p: p["timestamp_utc"])
-    week_stats = _window_stats(series)
-    week_avg_volume = week_stats["avg_volume"] or 1.0
 
     by_day = defaultdict(list)
     for p in series:
@@ -431,15 +504,13 @@ def score_country(events: list, tension_series: list, acled_alertscore: int = 0)
         day = datetime.fromisoformat(day_str).date()
         day_stats = _window_stats(day_points)
         day_tone = day_stats["avg_tone"] if day_stats["avg_tone"] is not None else 0.0
-        volume_ratio = day_stats["avg_volume"] / week_avg_volume
         confidence = min(1.0, day_stats["total_volume"] / MIN_CONFIDENT_VOLUME)
 
         conflict_signal = round(
             _clamp(
-                acled_alertscore * 25
-                + day_stats["conflict_share"] * 30 * confidence
-                + max(0.0, -day_tone) * 4
-                + max(0.0, volume_ratio - 1) * 10,
+                acled_component
+                + day_stats["conflict_share"] * 8 * confidence
+                + max(0.0, -day_tone) * 1.5,
                 0,
                 100,
             )
@@ -505,7 +576,7 @@ def main() -> None:
         events = gdacs.get(name, [])
         acled_records = acled.get(name, [])
         severity = acled_severity(acled_records)
-        scores = score_country(events, tension_series, severity["alertscore"])
+        scores = score_country(events, tension_series, severity["acled_component"])
 
         latest_day = scores["daily_scores"][-1]["date"] if scores["daily_scores"] else None
         latest_day_parsed = datetime.fromisoformat(latest_day).date() if latest_day else None
