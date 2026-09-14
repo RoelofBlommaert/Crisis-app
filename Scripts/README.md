@@ -17,6 +17,7 @@ Python 3.9+.
 
 | Script | Source | Needs a key? | Output |
 |---|---|---|---|
+| `fetch_acled_hdx.py` | ACLED, via HDX aggregated country files | No | `Data/ACLED/acled_monthly_<date>.csv` |
 | `fetch_gdelt_tension.py` | GDELT 2.0 GKG bulk files | No | `Data/GDELT/gdelt_tension_<date>.csv` (or `gdelt_tension_history_<date>.csv` with `--backfill`) |
 | `fetch_gdacs_events.py` | GDACS event list | No | `Data/Reliefweb and GDACS/gdacs_events_<date>.{json,csv}` |
 | `fetch_reliefweb_events.py` | ReliefWeb API v2 | **Yes, see below** | `Data/Reliefweb and GDACS/reliefweb_disasters_<date>.csv` |
@@ -34,12 +35,14 @@ when you want to (re)seed the trend history:
 ```
 python fetch_gdelt_tension.py --backfill
 python generate_synthetic_comms.py
+python fetch_acled_hdx.py
 python merge_data.py
 ```
 
 `generate_synthetic_comms.py` must run after the GDELT backfill (it reads
 `gdelt_tension_history_*.csv` to loosely scale its fictional numbers) and
-before `merge_data.py`.
+before `merge_data.py`. `fetch_acled_hdx.py` has no such dependency and
+can run any time before `merge_data.py`.
 
 ## Country list
 
@@ -55,8 +58,10 @@ which countries are tracked.
   `apidoc.reliefweb.int/parameters#appname`. Until you have one, set
   `RELIEFWEB_APPNAME` as an env var; without it, the script writes a
   status note instead of failing the rest of the pipeline. Since GDACS
-  already covers natural disasters with no key needed, ReliefWeb mainly
-  adds conflict/displacement reporting GDACS doesn't have.
+  already covers natural disasters with no key needed and ACLED (see
+  below) now covers confirmed conflict events with no key needed either,
+  ReliefWeb mainly adds displacement/humanitarian-response reporting
+  that neither of those two provides.
 - **CBS travel data is only country-specific for ~15 "most visited"
   destinations** (mostly Western Europe, plus US/Turkey). For the other
   crisis countries in our list, CBS only reports continent/region totals
@@ -236,3 +241,56 @@ country+date, not random per run) and loosely scaled off that day's real
 GDELT article volume plus a fixed per-country baseline, so the demo isn't
 arbitrary -- but they must never be mistaken for real data. The app
 labels this layer as fictional everywhere it appears.
+
+## ACLED conflict data, without registering an account
+
+ACLED (Armed Conflict Location & Event Data Project) is the standard
+real-time armed-conflict event database -- precise event-level data with
+actor/fatality/location detail. Its own API requires registering a
+myACLED account and generating a key (see acleddata.com/register); we
+avoided that (this project's "no new registrations" constraint) by using
+ACLED's own **pre-aggregated country files published through the
+Humanitarian Data Exchange** (`data.humdata.org/organization/acled`),
+confirmed via HDX's public CKAN API (`/api/3/action/package_show`) to
+need no login, cover all 8 tracked countries, and update weekly.
+
+**Two different file layouts, found by inspecting the actual files, not
+assumed:**
+- Turkey, Lebanon, Israel, Egypt, Thailand: one national row per month.
+- Ukraine, Sudan, Haiti (current Humanitarian Response Plan countries):
+  one row **per Admin1/Admin2 sub-region per month** -- naively treating
+  each row as a national total inflated these three countries' row
+  counts by 100-500x on the first attempt (e.g. "14595 months" for
+  Ukraine). `fetch_acled_hdx.py` always aggregates to one national
+  total per (country, year, month, category) regardless of layout.
+
+**Severity bands are log-scaled, not linear**, because real monthly
+political-violence fatality counts across our 8 countries span 0 to
+4000+ -- checked against live data before picking bands (0 / 1-24 /
+25-99 / 100+), not guessed: a linear 1/10/50 split would have grouped
+Egypt's 10 fatalities with Lebanon's 25 while treating both as
+meaningfully different from Sudan's 876 or Ukraine's 4000+, which isn't
+right. See `merge_data.py`'s "ACLED integration" docstring section for
+the full scoring formula.
+
+**The most recent available month is always excluded from scoring** --
+checked across all 8 countries before deciding this, not assumed from
+one case: the newest month is consistently far below the surrounding
+trend for nearly every country simultaneously (Sudan 876 -> 70
+fatalities, Ukraine 4008 -> 1010, Haiti 103 -> 8, month over month),
+which is reporting/verification lag, not a real synchronized
+de-escalation across unrelated conflicts. The previous complete month is
+used for scoring instead; the provisional month is still fetched and
+shown in the chart (visible as a sudden drop at the right edge) with an
+explanatory note, not hidden.
+
+**Attribution is a hard requirement, not a courtesy**: ACLED's Terms of
+Use (acleddata.com/terms-of-use) require ACLED to be "clearly and
+prominently acknowledged" wherever their data or a derivative is shown,
+and prohibit redistributing their raw/original data directly to other
+users. This app only ever shows aggregated monthly totals and
+visualizations (never a raw per-row dump) and credits ACLED with a link
+under every ACLED chart and in the About panel.
+
+Needs `openpyxl` (added to `requirements.txt`) to read the `.xlsx` files
+HDX serves.

@@ -6,6 +6,7 @@ Reads (latest file per pattern, by filename date):
   Data/GDELT/gdelt_tension_history_*.csv   (falls back to gdelt_tension_*.csv)
   Data/Reliefweb and GDACS/gdacs_events_matched_*.csv
   Data/Travel and flights/cbs_travel_*.csv
+  Data/ACLED/acled_monthly_*.csv
 
 Per tracked country (Scripts/countries.py), produces one record with:
   - tension_series: the GDELT hourly volume/tone/conflict/disaster timeline
@@ -38,9 +39,10 @@ forever. For each calendar day present in the 7-day GDELT history:
   confidence = min(1, day_volume / MIN_CONFIDENT_VOLUME)   # dampens thin days
 
   conflict_signal = clamp(
-      day_conflict_theme_share * 50 * confidence   # up to 50, was 70 w/ no dampening
-    + max(0, -day_avg_tone) * 6                    # up to ~30, tone severity that day
-    + max(0, day_volume / week_avg_volume - 1) * 15,  # up to 20, spike vs the week's own average
+      acled_alertscore * 25                        # up to 75, real ACLED fatalities (see below)
+    + day_conflict_theme_share * 30 * confidence    # up to 30, GDELT corroboration
+    + max(0, -day_avg_tone) * 4                     # up to ~20, tone severity that day
+    + max(0, day_volume / week_avg_volume - 1) * 10,  # up to 10, spike vs the week's own average
     0, 100)
 
   disaster_signal = clamp(
@@ -48,8 +50,39 @@ forever. For each calendar day present in the 7-day GDELT history:
     + day_disaster_theme_share * 40 * confidence,  # up to 40, was *100 w/ no dampening
     0, 100)
 
-alert_level bands: Red >= 65, Orange >= 35, else Green (raised from
-60/30 -- see below).
+alert_level bands: Red >= 65, Orange >= 35, else Green.
+
+**ACLED integration (ground-truth conflict severity, not a media proxy).**
+`acled_alertscore` is now conflict_signal's dominant term, exactly
+mirroring how `active_gdacs_alertscore` already dominates disaster_signal
+-- both signals now have the same shape: a confirmed-source severity
+score (weight 25/tier, max 75) plus a secondary GDELT corroboration term.
+Without a real confirmed political-violence source, we deliberately cap
+conflict_signal at ~60 (below the Red threshold) on GDELT alone, same as
+disaster_signal already does -- pure media-mention noise shouldn't be
+able to call something "High" on its own.
+
+`acled_alertscore` comes from `Scripts/fetch_acled_hdx.py`'s monthly
+political-violence fatality count for that country's most recent
+*complete* month (see `acled_severity()` below for why we skip the
+latest available month -- ACLED/HDX's own numbers for the newest month
+are consistently far lower than the trend, in lockstep across nearly
+every tracked country, which is reporting/verification lag, not a real
+across-the-board de-escalation). Bands are wide/log-scaled, not linear,
+because real fatality counts in our tracked countries span 0 to 4000+ in
+a single month -- a linear 1/10/50 cutoff would have put Egypt's 10
+fatalities in the same tier as Lebanon's 25 while treating both as
+meaningfully different from Sudan's 876 or Ukraine's 4000+, which isn't
+right:
+  0 fatalities        -> 0
+  1-24 fatalities      -> 1
+  25-99 fatalities     -> 2
+  100+ fatalities       -> 3
+This one monthly value is applied to every day in the current 7-8 day
+GDELT window (ACLED updates monthly, GDELT daily) -- a deliberate,
+documented resolution mismatch, not a bug: the confirmed-severity floor
+holds steady within a month while GDELT's day-to-day term still moves
+the score around it.
 
 **Recalibration history:** the original 70/100-weighted, undampened
 version put almost every tracked country at Orange-or-above nearly every
@@ -258,6 +291,75 @@ def load_synthetic_comms() -> dict:
     return comms
 
 
+def _months_ago(n: int) -> tuple:
+    """(year, month_num) cutoff n months before today, for trimming the
+    ACLED series to a recent window in the output."""
+    now = datetime.now(timezone.utc)
+    total = now.year * 12 + (now.month - 1) - n
+    return (total // 12, total % 12 + 1)
+
+
+def load_acled_monthly() -> dict:
+    d = DATA_DIR / "ACLED"
+    path = latest_file(d, "acled_monthly_*.csv")
+    records = defaultdict(list)
+    if not path:
+        print("  ! no ACLED/HDX file found (run fetch_acled_hdx.py)")
+        return records
+    with path.open(encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            records[row["country"]].append(
+                {
+                    "year": int(row["year"]),
+                    "month": row["month"],
+                    "month_num": int(row["month_num"]),
+                    "category": row["category"],
+                    "events": int(row["events"]),
+                    "fatalities": int(row["fatalities"]) if row["fatalities"] != "" else None,
+                }
+            )
+    for name in records:
+        records[name].sort(key=lambda r: (r["year"], r["month_num"]))
+    print(f"  loaded ACLED/HDX data from {path.name} ({sum(len(v) for v in records.values())} rows)")
+    return records
+
+
+def acled_severity(records: list) -> dict:
+    """Picks the most recent *complete* month's political-violence
+    fatality count and bands it into 0-3 (see module docstring). Skips
+    the single latest available month -- see "ACLED integration" above
+    for why (reporting lag, not real de-escalation)."""
+    pv = [r for r in records if r["category"] == "political_violence"]
+    if not pv:
+        return {
+            "alertscore": 0,
+            "scoring_period": None,
+            "scoring_fatalities": 0,
+            "scoring_events": 0,
+            "latest_period": None,
+            "latest_is_provisional": False,
+        }
+    scoring = pv[-2] if len(pv) >= 2 else pv[-1]
+    latest = pv[-1]
+    fatalities = scoring["fatalities"] or 0
+    if fatalities >= 100:
+        alertscore = 3
+    elif fatalities >= 25:
+        alertscore = 2
+    elif fatalities >= 1:
+        alertscore = 1
+    else:
+        alertscore = 0
+    return {
+        "alertscore": alertscore,
+        "scoring_period": f"{scoring['year']}-{scoring['month']}",
+        "scoring_fatalities": fatalities,
+        "scoring_events": scoring["events"],
+        "latest_period": f"{latest['year']}-{latest['month']}",
+        "latest_is_provisional": latest is not scoring,
+    }
+
+
 ALERT_ORDER = {"Green": 1, "Orange": 2, "Red": 3}
 MIN_CONFIDENT_VOLUME = 15
 
@@ -307,12 +409,14 @@ def _alert_band(score: float) -> str:
     return "Green"
 
 
-def score_country(events: list, tension_series: list) -> dict:
+def score_country(events: list, tension_series: list, acled_alertscore: int = 0) -> dict:
     """Returns {conflict_signal, disaster_signal, alert_level, driver,
     daily_scores}. Illustrative heuristic, not a statistical forecast --
     see the module docstring "Scoring" section for the formula and why
     each day is scored against events actually active that day rather
-    than one flat weekly number."""
+    than one flat weekly number. `acled_alertscore` (0-3, from real ACLED
+    fatality data) is the same value for every day in the window --
+    ACLED updates monthly, GDELT daily; see "ACLED integration" above."""
     series = sorted(tension_series, key=lambda p: p["timestamp_utc"])
     week_stats = _window_stats(series)
     week_avg_volume = week_stats["avg_volume"] or 1.0
@@ -332,9 +436,10 @@ def score_country(events: list, tension_series: list) -> dict:
 
         conflict_signal = round(
             _clamp(
-                day_stats["conflict_share"] * 50 * confidence
-                + max(0.0, -day_tone) * 6
-                + max(0.0, volume_ratio - 1) * 15,
+                acled_alertscore * 25
+                + day_stats["conflict_share"] * 30 * confidence
+                + max(0.0, -day_tone) * 4
+                + max(0.0, volume_ratio - 1) * 10,
                 0,
                 100,
             )
@@ -391,13 +496,16 @@ def main() -> None:
     cbs = load_cbs_travel()
     theme_breakdown = load_theme_breakdown()
     synthetic_comms = load_synthetic_comms()
+    acled = load_acled_monthly()
 
     countries_out = []
     for c in COUNTRIES:
         name = c["name"]
         tension_series = gdelt.get(name, [])
         events = gdacs.get(name, [])
-        scores = score_country(events, tension_series)
+        acled_records = acled.get(name, [])
+        severity = acled_severity(acled_records)
+        scores = score_country(events, tension_series, severity["alertscore"])
 
         latest_day = scores["daily_scores"][-1]["date"] if scores["daily_scores"] else None
         latest_day_parsed = datetime.fromisoformat(latest_day).date() if latest_day else None
@@ -423,6 +531,11 @@ def main() -> None:
                     name, {"granularity": "none", "area_label": "", "series": []}
                 ),
                 "comms_volume": synthetic_comms.get(name, []),
+                "acled": {
+                    "severity": severity,
+                    # last 24 months per category, for the real multi-year chart
+                    "monthly": [r for r in acled_records if (r["year"], r["month_num"]) >= _months_ago(24)],
+                },
             }
         )
 
@@ -451,6 +564,13 @@ def main() -> None:
         "comms_volume": {
             "kind": "synthetic",
             "note": "Fictional data generated for this demo -- not connected to any real NWW/consular system.",
+        },
+        "acled": {
+            "kind": "real",
+            "attribution": "Data from ACLED (acleddata.com), via HDX aggregated country files -- no login required. "
+            "ACLED must be clearly credited wherever this data or a derivative is shown.",
+            "note": "Monthly resolution only; the single most recent available month is excluded from scoring "
+            "as provisional (reporting/verification lag consistently understates it) -- see Scripts/README.md.",
         },
     }
 

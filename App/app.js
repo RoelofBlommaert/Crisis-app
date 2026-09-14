@@ -37,6 +37,7 @@ let map;
 let tensionChart;
 let themeChart;
 let commsChart;
+let acledChart;
 let markers = {};
 let dataset;
 
@@ -139,6 +140,7 @@ function renderDataSources() {
   if (!ds) return;
   const el = document.getElementById("data-sources-list");
   el.innerHTML = `
+    <li><strong>ACLED</strong> (real) — <span class="acled-tag">GROUND TRUTH</span> ${ds.acled.note}</li>
     <li><strong>GDELT</strong> (real) — ${fmtDateTime(ds.gdelt.earliest_timestamp_utc)} to ${fmtDateTime(ds.gdelt.latest_timestamp_utc)}</li>
     <li><strong>GDACS</strong> (real) — fetched ${ds.gdacs.fetched_on || "unknown"}</li>
     <li><strong>CBS travel</strong> (real) — fetched ${ds.cbs_travel.fetched_on || "unknown"}, latest year ${ds.cbs_travel.latest_year || "n/a"}</li>
@@ -181,7 +183,9 @@ function renderDetail(country) {
     </div>
     <p class="gauge-disclaimer">
       Illustrative 0&ndash;100 heuristic, scored one day at a time &mdash; <strong>not</strong> a statistical
-      forecast or probability of war/disaster. Bars above show each recent day, oldest to newest.
+      forecast or probability of war/disaster. Conflict signal is driven primarily by real ACLED fatality
+      data (see below), corroborated by GDELT media coverage; disaster signal works the same way with GDACS.
+      Bars above show each recent day, oldest to newest.
     </p>
 
     <h4>What's happening this week</h4>
@@ -192,6 +196,12 @@ function renderDetail(country) {
 
     <div class="detail-grid">
       <div>
+        <div class="side-section acled-box">
+          <strong>Confirmed conflict data (ACLED) <span class="acled-tag">GROUND TRUTH</span></strong>
+          ${renderAcledSummary(country.acled)}
+          <div class="chart-box"><canvas id="acled-chart"></canvas></div>
+          <p class="attribution">Source: <a href="https://acleddata.com" target="_blank" rel="noopener">ACLED</a> (Armed Conflict Location &amp; Event Data Project), via HDX aggregated country files.</p>
+        </div>
         <h4>Media signal, last 7-8 days</h4>
         <div class="chart-box"><canvas id="tension-chart"></canvas></div>
         <h4>Conflict vs. disaster theme share</h4>
@@ -215,9 +225,28 @@ function renderDetail(country) {
     </div>
   `;
 
+  renderAcledChart(country);
   renderTensionChart(country);
   renderThemeChart(country);
   renderCommsChart(country);
+}
+
+function renderAcledSummary(acled) {
+  if (!acled || !acled.severity || !acled.severity.scoring_period) {
+    return '<p class="no-events">No ACLED data available for this country.</p>';
+  }
+  const sev = acled.severity;
+  const band = ["Green", "Green", "Orange", "Red"][sev.alertscore] || "Green";
+  return `
+    <p class="acled-summary">
+      <span class="badge ${band}">${sev.scoring_fatalities} fatalities</span>
+      ${sev.scoring_events} political-violence events in ${sev.scoring_period}
+      (last complete month &mdash; drives the conflict signal above).
+    </p>
+    <p class="synthetic-note">${sev.latest_period} data exists but is excluded as provisional: ACLED's
+      most recent month is consistently far below trend across almost every country here, a reporting/
+      verification lag rather than real de-escalation.</p>
+  `;
 }
 
 function renderGauge(label, icon, value, dailyScores, field) {
@@ -408,6 +437,56 @@ function renderThemeChart(country) {
       scales: {
         y: { min: 0, max: 100, title: { display: true, text: "% of articles", color: textColor }, ticks: { color: textColor } },
         x: { display: false },
+      },
+    },
+  });
+}
+
+function renderAcledChart(country) {
+  const ctx = document.getElementById("acled-chart");
+  if (!ctx) return;
+  if (acledChart) acledChart.destroy();
+
+  const monthly = (country.acled && country.acled.monthly) || [];
+  const pv = monthly.filter((r) => r.category === "political_violence").sort((a, b) => a.year - b.year || a.month_num - b.month_num);
+  const labels = pv.map((r) => `${r.month.slice(0, 3)} ${r.year}`);
+  const textColor = chartTextColor();
+
+  acledChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [
+        {
+          type: "bar",
+          label: "Fatalities",
+          data: pv.map((r) => r.fatalities),
+          backgroundColor: "rgba(220,38,38,0.55)",
+          yAxisID: "y",
+          borderRadius: 3,
+        },
+        {
+          type: "line",
+          label: "Events",
+          data: pv.map((r) => r.events),
+          borderColor: "#4f46e5",
+          backgroundColor: "transparent",
+          yAxisID: "y1",
+          tension: 0.3,
+          pointRadius: 0,
+          borderWidth: 2,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: "index", intersect: false },
+      plugins: { legend: { labels: { color: textColor, font: { size: 11 } } } },
+      scales: {
+        y: { type: "linear", position: "left", title: { display: true, text: "Fatalities", color: textColor }, ticks: { color: textColor } },
+        y1: { type: "linear", position: "right", title: { display: true, text: "Events", color: textColor }, ticks: { color: textColor }, grid: { drawOnChartArea: false } },
+        x: { ticks: { color: textColor, maxRotation: 60, minRotation: 60, autoSkip: true, maxTicksLimit: 12 }, grid: { display: false } },
       },
     },
   });

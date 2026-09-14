@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-14T13:27:51.566501+00:00",
+  "generated_at": "2026-09-14T14:06:16.515201+00:00",
   "note": "One-time static snapshot, not a live-refreshing feed. conflict_signal/disaster_signal are an illustrative 0-100 heuristic, not a statistical forecast or probability -- see Documentation/ and Scripts/merge_data.py.",
   "data_sources": {
     "gdelt": {
@@ -19,6 +19,11 @@
     "comms_volume": {
       "kind": "synthetic",
       "note": "Fictional data generated for this demo -- not connected to any real NWW/consular system."
+    },
+    "acled": {
+      "kind": "real",
+      "attribution": "Data from ACLED (acleddata.com), via HDX aggregated country files -- no login required. ACLED must be clearly credited wherever this data or a derivative is shown.",
+      "note": "Monthly resolution only; the single most recent available month is excluded from scoring as provisional (reporting/verification lag consistently understates it) -- see Scripts/README.md."
     }
   },
   "countries": [
@@ -30,65 +35,65 @@
         39.0,
         35.0
       ],
-      "conflict_signal": 25,
+      "conflict_signal": 40,
       "disaster_signal": 5,
-      "alert_level": "Green",
+      "alert_level": "Orange",
       "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 37,
+          "conflict_signal": 48,
           "disaster_signal": 12,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 41,
+          "conflict_signal": 51,
           "disaster_signal": 3,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-09",
-          "conflict_signal": 29,
+          "conflict_signal": 43,
           "disaster_signal": 3,
-          "alert_level": "Green",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-10",
-          "conflict_signal": 31,
+          "conflict_signal": 44,
           "disaster_signal": 3,
-          "alert_level": "Green",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-11",
-          "conflict_signal": 43,
+          "conflict_signal": 52,
           "disaster_signal": 2,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-12",
-          "conflict_signal": 38,
+          "conflict_signal": 48,
           "disaster_signal": 2,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-13",
-          "conflict_signal": 44,
+          "conflict_signal": 52,
           "disaster_signal": 1,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-14",
-          "conflict_signal": 25,
+          "conflict_signal": 40,
           "disaster_signal": 5,
-          "alert_level": "Green",
+          "alert_level": "Orange",
           "driver": "conflict"
         }
       ],
@@ -1430,7 +1435,619 @@
           "date": "2026-09-14",
           "synthetic_incoming_signals": 43
         }
-      ]
+      ],
+      "acled": {
+        "severity": {
+          "alertscore": 1,
+          "scoring_period": "2026-August",
+          "scoring_fatalities": 1,
+          "scoring_events": 9,
+          "latest_period": "2026-September",
+          "latest_is_provisional": true
+        },
+        "monthly": [
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 7,
+            "fatalities": 3
+          },
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 372,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 16,
+            "fatalities": 7
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "civilian_targeting",
+            "events": 11,
+            "fatalities": 1
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "demonstrations",
+            "events": 518,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "political_violence",
+            "events": 27,
+            "fatalities": 7
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "civilian_targeting",
+            "events": 7,
+            "fatalities": 0
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "demonstrations",
+            "events": 375,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "political_violence",
+            "events": 9,
+            "fatalities": 0
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "civilian_targeting",
+            "events": 1,
+            "fatalities": 0
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "demonstrations",
+            "events": 393,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "political_violence",
+            "events": 8,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "civilian_targeting",
+            "events": 0,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "demonstrations",
+            "events": 442,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "political_violence",
+            "events": 4,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "civilian_targeting",
+            "events": 3,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "demonstrations",
+            "events": 418,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "political_violence",
+            "events": 5,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "civilian_targeting",
+            "events": 4,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "demonstrations",
+            "events": 646,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "political_violence",
+            "events": 4,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "civilian_targeting",
+            "events": 3,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "demonstrations",
+            "events": 351,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "political_violence",
+            "events": 4,
+            "fatalities": 1
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "civilian_targeting",
+            "events": 2,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "demonstrations",
+            "events": 435,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "political_violence",
+            "events": 5,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "civilian_targeting",
+            "events": 1,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "demonstrations",
+            "events": 456,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "political_violence",
+            "events": 2,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "civilian_targeting",
+            "events": 5,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "demonstrations",
+            "events": 449,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "political_violence",
+            "events": 5,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "civilian_targeting",
+            "events": 1,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "demonstrations",
+            "events": 405,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "political_violence",
+            "events": 3,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 2,
+            "fatalities": 1
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 441,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 4,
+            "fatalities": 3
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "civilian_targeting",
+            "events": 5,
+            "fatalities": 2
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "demonstrations",
+            "events": 575,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "political_violence",
+            "events": 8,
+            "fatalities": 2
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "civilian_targeting",
+            "events": 2,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "demonstrations",
+            "events": 427,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "political_violence",
+            "events": 2,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "civilian_targeting",
+            "events": 1,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "demonstrations",
+            "events": 541,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "political_violence",
+            "events": 2,
+            "fatalities": 9
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "civilian_targeting",
+            "events": 3,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "demonstrations",
+            "events": 693,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "political_violence",
+            "events": 5,
+            "fatalities": 1
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "civilian_targeting",
+            "events": 1,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "demonstrations",
+            "events": 482,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "political_violence",
+            "events": 1,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "civilian_targeting",
+            "events": 0,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "demonstrations",
+            "events": 514,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "political_violence",
+            "events": 0,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "civilian_targeting",
+            "events": 2,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "demonstrations",
+            "events": 512,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "political_violence",
+            "events": 3,
+            "fatalities": 1
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "civilian_targeting",
+            "events": 1,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "demonstrations",
+            "events": 394,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "political_violence",
+            "events": 2,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "civilian_targeting",
+            "events": 0,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "demonstrations",
+            "events": 265,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "political_violence",
+            "events": 1,
+            "fatalities": 1
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "civilian_targeting",
+            "events": 3,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "demonstrations",
+            "events": 286,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "political_violence",
+            "events": 5,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "civilian_targeting",
+            "events": 8,
+            "fatalities": 1
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "demonstrations",
+            "events": 234,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "political_violence",
+            "events": 9,
+            "fatalities": 1
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 1,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 77,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 3,
+            "fatalities": 1
+          }
+        ]
+      }
     },
     {
       "name": "Ukraine",
@@ -1440,65 +2057,65 @@
         49.0,
         31.5
       ],
-      "conflict_signal": 59,
+      "conflict_signal": 100,
       "disaster_signal": 4,
-      "alert_level": "Orange",
+      "alert_level": "Red",
       "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 59,
+          "conflict_signal": 100,
           "disaster_signal": 58,
-          "alert_level": "Orange",
+          "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 51,
+          "conflict_signal": 100,
           "disaster_signal": 53,
-          "alert_level": "Orange",
-          "driver": "disaster"
+          "alert_level": "Red",
+          "driver": "conflict"
         },
         {
           "date": "2026-09-09",
-          "conflict_signal": 52,
+          "conflict_signal": 100,
           "disaster_signal": 53,
-          "alert_level": "Orange",
-          "driver": "disaster"
+          "alert_level": "Red",
+          "driver": "conflict"
         },
         {
           "date": "2026-09-10",
-          "conflict_signal": 55,
+          "conflict_signal": 100,
           "disaster_signal": 56,
-          "alert_level": "Orange",
-          "driver": "disaster"
+          "alert_level": "Red",
+          "driver": "conflict"
         },
         {
           "date": "2026-09-11",
-          "conflict_signal": 60,
+          "conflict_signal": 100,
           "disaster_signal": 53,
-          "alert_level": "Orange",
+          "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-12",
-          "conflict_signal": 58,
+          "conflict_signal": 100,
           "disaster_signal": 52,
-          "alert_level": "Orange",
+          "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-13",
-          "conflict_signal": 58,
+          "conflict_signal": 100,
           "disaster_signal": 1,
-          "alert_level": "Orange",
+          "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-14",
-          "conflict_signal": 59,
+          "conflict_signal": 100,
           "disaster_signal": 4,
-          "alert_level": "Orange",
+          "alert_level": "Red",
           "driver": "conflict"
         }
       ],
@@ -2840,7 +3457,619 @@
           "date": "2026-09-14",
           "synthetic_incoming_signals": 101
         }
-      ]
+      ],
+      "acled": {
+        "severity": {
+          "alertscore": 3,
+          "scoring_period": "2026-August",
+          "scoring_fatalities": 4008,
+          "scoring_events": 8199,
+          "latest_period": "2026-September",
+          "latest_is_provisional": true
+        },
+        "monthly": [
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 458,
+            "fatalities": 223
+          },
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 18,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 5019,
+            "fatalities": 5239
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "civilian_targeting",
+            "events": 410,
+            "fatalities": 257
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "demonstrations",
+            "events": 20,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "political_violence",
+            "events": 5168,
+            "fatalities": 6520
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "civilian_targeting",
+            "events": 323,
+            "fatalities": 217
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "demonstrations",
+            "events": 15,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "political_violence",
+            "events": 4604,
+            "fatalities": 8374
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "civilian_targeting",
+            "events": 244,
+            "fatalities": 100
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "demonstrations",
+            "events": 18,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "political_violence",
+            "events": 4579,
+            "fatalities": 8400
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "civilian_targeting",
+            "events": 320,
+            "fatalities": 143
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "demonstrations",
+            "events": 21,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "political_violence",
+            "events": 5271,
+            "fatalities": 6772
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "civilian_targeting",
+            "events": 352,
+            "fatalities": 123
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "demonstrations",
+            "events": 11,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "political_violence",
+            "events": 4965,
+            "fatalities": 6383
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "civilian_targeting",
+            "events": 421,
+            "fatalities": 174
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "demonstrations",
+            "events": 33,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "political_violence",
+            "events": 5945,
+            "fatalities": 7343
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "civilian_targeting",
+            "events": 422,
+            "fatalities": 240
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "demonstrations",
+            "events": 17,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "political_violence",
+            "events": 6328,
+            "fatalities": 7461
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "civilian_targeting",
+            "events": 447,
+            "fatalities": 167
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "demonstrations",
+            "events": 26,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "political_violence",
+            "events": 6816,
+            "fatalities": 6995
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "civilian_targeting",
+            "events": 464,
+            "fatalities": 247
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "demonstrations",
+            "events": 24,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "political_violence",
+            "events": 6739,
+            "fatalities": 6616
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "civilian_targeting",
+            "events": 571,
+            "fatalities": 305
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "demonstrations",
+            "events": 102,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "political_violence",
+            "events": 6704,
+            "fatalities": 5026
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "civilian_targeting",
+            "events": 532,
+            "fatalities": 263
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "demonstrations",
+            "events": 40,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "political_violence",
+            "events": 6436,
+            "fatalities": 5441
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 537,
+            "fatalities": 273
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 21,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 6469,
+            "fatalities": 4791
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "civilian_targeting",
+            "events": 469,
+            "fatalities": 227
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "demonstrations",
+            "events": 21,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "political_violence",
+            "events": 6459,
+            "fatalities": 5086
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "civilian_targeting",
+            "events": 463,
+            "fatalities": 256
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "demonstrations",
+            "events": 28,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "political_violence",
+            "events": 6358,
+            "fatalities": 6364
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "civilian_targeting",
+            "events": 457,
+            "fatalities": 177
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "demonstrations",
+            "events": 29,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "political_violence",
+            "events": 6468,
+            "fatalities": 8602
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "civilian_targeting",
+            "events": 408,
+            "fatalities": 206
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "demonstrations",
+            "events": 25,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "political_violence",
+            "events": 6580,
+            "fatalities": 6930
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "civilian_targeting",
+            "events": 465,
+            "fatalities": 199
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "demonstrations",
+            "events": 23,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "political_violence",
+            "events": 6425,
+            "fatalities": 4547
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "civilian_targeting",
+            "events": 597,
+            "fatalities": 265
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "demonstrations",
+            "events": 30,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "political_violence",
+            "events": 7508,
+            "fatalities": 5438
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "civilian_targeting",
+            "events": 601,
+            "fatalities": 256
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "demonstrations",
+            "events": 18,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "political_violence",
+            "events": 7071,
+            "fatalities": 4781
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "civilian_targeting",
+            "events": 724,
+            "fatalities": 286
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "demonstrations",
+            "events": 48,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "political_violence",
+            "events": 7291,
+            "fatalities": 4300
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "civilian_targeting",
+            "events": 832,
+            "fatalities": 358
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "demonstrations",
+            "events": 16,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "political_violence",
+            "events": 7819,
+            "fatalities": 3948
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "civilian_targeting",
+            "events": 970,
+            "fatalities": 543
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "demonstrations",
+            "events": 185,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "political_violence",
+            "events": 8434,
+            "fatalities": 4060
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "civilian_targeting",
+            "events": 938,
+            "fatalities": 462
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "demonstrations",
+            "events": 49,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "political_violence",
+            "events": 8199,
+            "fatalities": 4008
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 195,
+            "fatalities": 57
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 1,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 1747,
+            "fatalities": 1010
+          }
+        ]
+      }
     },
     {
       "name": "Lebanon",
@@ -2850,65 +4079,65 @@
         33.85,
         35.85
       ],
-      "conflict_signal": 53,
+      "conflict_signal": 82,
       "disaster_signal": 5,
-      "alert_level": "Orange",
+      "alert_level": "Red",
       "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 74,
+          "conflict_signal": 97,
           "disaster_signal": 0,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 67,
+          "conflict_signal": 92,
           "disaster_signal": 4,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-09",
-          "conflict_signal": 60,
+          "conflict_signal": 87,
           "disaster_signal": 6,
-          "alert_level": "Orange",
+          "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-10",
-          "conflict_signal": 60,
+          "conflict_signal": 87,
           "disaster_signal": 10,
-          "alert_level": "Orange",
+          "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-11",
-          "conflict_signal": 73,
+          "conflict_signal": 96,
           "disaster_signal": 6,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-12",
-          "conflict_signal": 65,
+          "conflict_signal": 90,
           "disaster_signal": 3,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-13",
-          "conflict_signal": 39,
+          "conflict_signal": 74,
           "disaster_signal": 5,
-          "alert_level": "Orange",
+          "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-14",
-          "conflict_signal": 53,
+          "conflict_signal": 82,
           "disaster_signal": 5,
-          "alert_level": "Orange",
+          "alert_level": "Red",
           "driver": "conflict"
         }
       ],
@@ -4239,7 +5468,619 @@
           "date": "2026-09-14",
           "synthetic_incoming_signals": 20
         }
-      ]
+      ],
+      "acled": {
+        "severity": {
+          "alertscore": 2,
+          "scoring_period": "2026-August",
+          "scoring_fatalities": 25,
+          "scoring_events": 597,
+          "latest_period": "2026-September",
+          "latest_is_provisional": true
+        },
+        "monthly": [
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 97,
+            "fatalities": 754
+          },
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 21,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 1797,
+            "fatalities": 1253
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "civilian_targeting",
+            "events": 250,
+            "fatalities": 536
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "demonstrations",
+            "events": 2,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "political_violence",
+            "events": 3048,
+            "fatalities": 1131
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "civilian_targeting",
+            "events": 325,
+            "fatalities": 752
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "demonstrations",
+            "events": 0,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "political_violence",
+            "events": 2489,
+            "fatalities": 1087
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "civilian_targeting",
+            "events": 27,
+            "fatalities": 18
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "demonstrations",
+            "events": 11,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "political_violence",
+            "events": 200,
+            "fatalities": 38
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "civilian_targeting",
+            "events": 64,
+            "fatalities": 35
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "demonstrations",
+            "events": 12,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "political_violence",
+            "events": 197,
+            "fatalities": 46
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "civilian_targeting",
+            "events": 23,
+            "fatalities": 6
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "demonstrations",
+            "events": 26,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "political_violence",
+            "events": 129,
+            "fatalities": 27
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "civilian_targeting",
+            "events": 27,
+            "fatalities": 5
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "demonstrations",
+            "events": 20,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "political_violence",
+            "events": 235,
+            "fatalities": 47
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "civilian_targeting",
+            "events": 21,
+            "fatalities": 7
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "demonstrations",
+            "events": 56,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "political_violence",
+            "events": 117,
+            "fatalities": 30
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "civilian_targeting",
+            "events": 38,
+            "fatalities": 6
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "demonstrations",
+            "events": 20,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "political_violence",
+            "events": 189,
+            "fatalities": 23
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "civilian_targeting",
+            "events": 25,
+            "fatalities": 4
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "demonstrations",
+            "events": 31,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "political_violence",
+            "events": 153,
+            "fatalities": 27
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "civilian_targeting",
+            "events": 14,
+            "fatalities": 4
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "demonstrations",
+            "events": 46,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "political_violence",
+            "events": 175,
+            "fatalities": 49
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "civilian_targeting",
+            "events": 23,
+            "fatalities": 5
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "demonstrations",
+            "events": 57,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "political_violence",
+            "events": 161,
+            "fatalities": 38
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 12,
+            "fatalities": 3
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 33,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 166,
+            "fatalities": 35
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "civilian_targeting",
+            "events": 27,
+            "fatalities": 7
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "demonstrations",
+            "events": 39,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "political_violence",
+            "events": 156,
+            "fatalities": 34
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "civilian_targeting",
+            "events": 20,
+            "fatalities": 1
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "demonstrations",
+            "events": 26,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "political_violence",
+            "events": 186,
+            "fatalities": 43
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "civilian_targeting",
+            "events": 7,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "demonstrations",
+            "events": 26,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "political_violence",
+            "events": 190,
+            "fatalities": 13
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "civilian_targeting",
+            "events": 23,
+            "fatalities": 6
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "demonstrations",
+            "events": 46,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "political_violence",
+            "events": 234,
+            "fatalities": 22
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "civilian_targeting",
+            "events": 7,
+            "fatalities": 2
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "demonstrations",
+            "events": 46,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "political_violence",
+            "events": 193,
+            "fatalities": 33
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "civilian_targeting",
+            "events": 341,
+            "fatalities": 764
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "demonstrations",
+            "events": 11,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "political_violence",
+            "events": 2390,
+            "fatalities": 944
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "civilian_targeting",
+            "events": 312,
+            "fatalities": 635
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "demonstrations",
+            "events": 21,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "political_violence",
+            "events": 1774,
+            "fatalities": 789
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "civilian_targeting",
+            "events": 298,
+            "fatalities": 549
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "demonstrations",
+            "events": 14,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "political_violence",
+            "events": 2091,
+            "fatalities": 623
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "civilian_targeting",
+            "events": 230,
+            "fatalities": 382
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "demonstrations",
+            "events": 14,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "political_violence",
+            "events": 1432,
+            "fatalities": 523
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "civilian_targeting",
+            "events": 26,
+            "fatalities": 14
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "demonstrations",
+            "events": 15,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "political_violence",
+            "events": 356,
+            "fatalities": 42
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "civilian_targeting",
+            "events": 21,
+            "fatalities": 8
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "demonstrations",
+            "events": 23,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "political_violence",
+            "events": 597,
+            "fatalities": 25
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 16,
+            "fatalities": 21
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 5,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 195,
+            "fatalities": 32
+          }
+        ]
+      }
     },
     {
       "name": "Israel",
@@ -4249,63 +6090,63 @@
         31.5,
         34.8
       ],
-      "conflict_signal": 60,
+      "conflict_signal": 37,
       "disaster_signal": 5,
       "alert_level": "Orange",
       "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 52,
+          "conflict_signal": 32,
           "disaster_signal": 5,
-          "alert_level": "Orange",
+          "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 66,
+          "conflict_signal": 41,
           "disaster_signal": 3,
-          "alert_level": "Red",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-09",
-          "conflict_signal": 62,
+          "conflict_signal": 39,
           "disaster_signal": 3,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-10",
-          "conflict_signal": 58,
+          "conflict_signal": 36,
           "disaster_signal": 2,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-11",
-          "conflict_signal": 59,
+          "conflict_signal": 37,
           "disaster_signal": 3,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-12",
-          "conflict_signal": 54,
+          "conflict_signal": 33,
           "disaster_signal": 4,
-          "alert_level": "Orange",
+          "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-13",
-          "conflict_signal": 52,
+          "conflict_signal": 32,
           "disaster_signal": 2,
-          "alert_level": "Orange",
+          "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-14",
-          "conflict_signal": 60,
+          "conflict_signal": 37,
           "disaster_signal": 5,
           "alert_level": "Orange",
           "driver": "conflict"
@@ -5638,7 +7479,619 @@
           "date": "2026-09-14",
           "synthetic_incoming_signals": 78
         }
-      ]
+      ],
+      "acled": {
+        "severity": {
+          "alertscore": 0,
+          "scoring_period": "2026-August",
+          "scoring_fatalities": 0,
+          "scoring_events": 4,
+          "latest_period": "2026-September",
+          "latest_is_provisional": true
+        },
+        "monthly": [
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 18,
+            "fatalities": 0
+          },
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 226,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 365,
+            "fatalities": 4
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "civilian_targeting",
+            "events": 46,
+            "fatalities": 29
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "demonstrations",
+            "events": 50,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "political_violence",
+            "events": 623,
+            "fatalities": 38
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "civilian_targeting",
+            "events": 26,
+            "fatalities": 5
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "demonstrations",
+            "events": 108,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "political_violence",
+            "events": 422,
+            "fatalities": 6
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "civilian_targeting",
+            "events": 4,
+            "fatalities": 1
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "demonstrations",
+            "events": 100,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "political_violence",
+            "events": 17,
+            "fatalities": 1
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "civilian_targeting",
+            "events": 2,
+            "fatalities": 3
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "demonstrations",
+            "events": 128,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "political_violence",
+            "events": 10,
+            "fatalities": 3
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "civilian_targeting",
+            "events": 2,
+            "fatalities": 2
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "demonstrations",
+            "events": 81,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "political_violence",
+            "events": 3,
+            "fatalities": 2
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "civilian_targeting",
+            "events": 4,
+            "fatalities": 7
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "demonstrations",
+            "events": 127,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "political_violence",
+            "events": 9,
+            "fatalities": 7
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "civilian_targeting",
+            "events": 1,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "demonstrations",
+            "events": 70,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "political_violence",
+            "events": 5,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "civilian_targeting",
+            "events": 3,
+            "fatalities": 1
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "demonstrations",
+            "events": 157,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "political_violence",
+            "events": 8,
+            "fatalities": 1
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "civilian_targeting",
+            "events": 33,
+            "fatalities": 32
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "demonstrations",
+            "events": 119,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "political_violence",
+            "events": 96,
+            "fatalities": 32
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "civilian_targeting",
+            "events": 2,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "demonstrations",
+            "events": 183,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "political_violence",
+            "events": 5,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "civilian_targeting",
+            "events": 0,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "demonstrations",
+            "events": 327,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "political_violence",
+            "events": 5,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 3,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 188,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 7,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "civilian_targeting",
+            "events": 2,
+            "fatalities": 1
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "demonstrations",
+            "events": 120,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "political_violence",
+            "events": 5,
+            "fatalities": 2
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "civilian_targeting",
+            "events": 7,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "demonstrations",
+            "events": 101,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "political_violence",
+            "events": 8,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "civilian_targeting",
+            "events": 6,
+            "fatalities": 2
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "demonstrations",
+            "events": 91,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "political_violence",
+            "events": 8,
+            "fatalities": 3
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "civilian_targeting",
+            "events": 3,
+            "fatalities": 1
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "demonstrations",
+            "events": 148,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "political_violence",
+            "events": 6,
+            "fatalities": 2
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "civilian_targeting",
+            "events": 9,
+            "fatalities": 2
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "demonstrations",
+            "events": 108,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "political_violence",
+            "events": 21,
+            "fatalities": 2
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "civilian_targeting",
+            "events": 88,
+            "fatalities": 18
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "demonstrations",
+            "events": 20,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "political_violence",
+            "events": 669,
+            "fatalities": 18
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "civilian_targeting",
+            "events": 28,
+            "fatalities": 6
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "demonstrations",
+            "events": 89,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "political_violence",
+            "events": 409,
+            "fatalities": 6
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "civilian_targeting",
+            "events": 6,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "demonstrations",
+            "events": 94,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "political_violence",
+            "events": 77,
+            "fatalities": 3
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "civilian_targeting",
+            "events": 3,
+            "fatalities": 1
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "demonstrations",
+            "events": 141,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "political_violence",
+            "events": 30,
+            "fatalities": 3
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "civilian_targeting",
+            "events": 5,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "demonstrations",
+            "events": 133,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "political_violence",
+            "events": 9,
+            "fatalities": 1
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "civilian_targeting",
+            "events": 2,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "demonstrations",
+            "events": 107,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "political_violence",
+            "events": 4,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 0,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 24,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 1,
+            "fatalities": 1
+          }
+        ]
+      }
     },
     {
       "name": "Egypt",
@@ -5648,63 +8101,63 @@
         26.8,
         30.8
       ],
-      "conflict_signal": 38,
+      "conflict_signal": 48,
       "disaster_signal": 5,
       "alert_level": "Orange",
       "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 20,
+          "conflict_signal": 37,
           "disaster_signal": 3,
-          "alert_level": "Green",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 44,
+          "conflict_signal": 53,
           "disaster_signal": 10,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-09",
-          "conflict_signal": 30,
+          "conflict_signal": 44,
           "disaster_signal": 4,
-          "alert_level": "Green",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-10",
-          "conflict_signal": 22,
+          "conflict_signal": 38,
           "disaster_signal": 4,
-          "alert_level": "Green",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-11",
-          "conflict_signal": 39,
+          "conflict_signal": 49,
           "disaster_signal": 5,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-12",
-          "conflict_signal": 39,
+          "conflict_signal": 49,
           "disaster_signal": 4,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-13",
-          "conflict_signal": 34,
+          "conflict_signal": 45,
           "disaster_signal": 1,
-          "alert_level": "Green",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-14",
-          "conflict_signal": 38,
+          "conflict_signal": 48,
           "disaster_signal": 5,
           "alert_level": "Orange",
           "driver": "conflict"
@@ -7037,7 +9490,619 @@
           "date": "2026-09-14",
           "synthetic_incoming_signals": 51
         }
-      ]
+      ],
+      "acled": {
+        "severity": {
+          "alertscore": 1,
+          "scoring_period": "2026-August",
+          "scoring_fatalities": 10,
+          "scoring_events": 5,
+          "latest_period": "2026-September",
+          "latest_is_provisional": true
+        },
+        "monthly": [
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 3,
+            "fatalities": 0
+          },
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 11,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 3,
+            "fatalities": 0
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "civilian_targeting",
+            "events": 1,
+            "fatalities": 1
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "demonstrations",
+            "events": 14,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "political_violence",
+            "events": 1,
+            "fatalities": 1
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "civilian_targeting",
+            "events": 1,
+            "fatalities": 0
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "demonstrations",
+            "events": 6,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "political_violence",
+            "events": 1,
+            "fatalities": 0
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "civilian_targeting",
+            "events": 4,
+            "fatalities": 4
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "demonstrations",
+            "events": 4,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "political_violence",
+            "events": 4,
+            "fatalities": 4
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "civilian_targeting",
+            "events": 0,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "demonstrations",
+            "events": 12,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "political_violence",
+            "events": 0,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "civilian_targeting",
+            "events": 1,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "demonstrations",
+            "events": 7,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "political_violence",
+            "events": 4,
+            "fatalities": 8
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "civilian_targeting",
+            "events": 5,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "demonstrations",
+            "events": 46,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "political_violence",
+            "events": 9,
+            "fatalities": 4
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "civilian_targeting",
+            "events": 2,
+            "fatalities": 3
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "demonstrations",
+            "events": 33,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "political_violence",
+            "events": 3,
+            "fatalities": 3
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "civilian_targeting",
+            "events": 3,
+            "fatalities": 5
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "demonstrations",
+            "events": 20,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "political_violence",
+            "events": 6,
+            "fatalities": 5
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "civilian_targeting",
+            "events": 0,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "demonstrations",
+            "events": 31,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "political_violence",
+            "events": 0,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "civilian_targeting",
+            "events": 1,
+            "fatalities": 1
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "demonstrations",
+            "events": 11,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "political_violence",
+            "events": 3,
+            "fatalities": 4
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "civilian_targeting",
+            "events": 7,
+            "fatalities": 6
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "demonstrations",
+            "events": 4,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "political_violence",
+            "events": 7,
+            "fatalities": 6
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 4,
+            "fatalities": 13
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 8,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 4,
+            "fatalities": 13
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "civilian_targeting",
+            "events": 4,
+            "fatalities": 3
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "demonstrations",
+            "events": 11,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "political_violence",
+            "events": 7,
+            "fatalities": 8
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "civilian_targeting",
+            "events": 1,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "demonstrations",
+            "events": 35,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "political_violence",
+            "events": 1,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "civilian_targeting",
+            "events": 2,
+            "fatalities": 2
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "demonstrations",
+            "events": 10,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "political_violence",
+            "events": 4,
+            "fatalities": 2
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "civilian_targeting",
+            "events": 5,
+            "fatalities": 2
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "demonstrations",
+            "events": 28,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "political_violence",
+            "events": 6,
+            "fatalities": 2
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "civilian_targeting",
+            "events": 4,
+            "fatalities": 2
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "demonstrations",
+            "events": 16,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "political_violence",
+            "events": 5,
+            "fatalities": 2
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "civilian_targeting",
+            "events": 1,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "demonstrations",
+            "events": 10,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "political_violence",
+            "events": 1,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "civilian_targeting",
+            "events": 0,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "demonstrations",
+            "events": 10,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "political_violence",
+            "events": 0,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "civilian_targeting",
+            "events": 3,
+            "fatalities": 2
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "demonstrations",
+            "events": 4,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "political_violence",
+            "events": 5,
+            "fatalities": 2
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "civilian_targeting",
+            "events": 3,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "demonstrations",
+            "events": 7,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "political_violence",
+            "events": 3,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "civilian_targeting",
+            "events": 3,
+            "fatalities": 1
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "demonstrations",
+            "events": 14,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "political_violence",
+            "events": 3,
+            "fatalities": 1
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "civilian_targeting",
+            "events": 4,
+            "fatalities": 10
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "demonstrations",
+            "events": 9,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "political_violence",
+            "events": 5,
+            "fatalities": 10
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 1,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 0,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 2,
+            "fatalities": 0
+          }
+        ]
+      }
     },
     {
       "name": "Sudan",
@@ -7047,65 +10112,65 @@
         15.5,
         30.5
       ],
-      "conflict_signal": 54,
+      "conflict_signal": 100,
       "disaster_signal": 8,
-      "alert_level": "Orange",
+      "alert_level": "Red",
       "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 59,
+          "conflict_signal": 100,
           "disaster_signal": 6,
-          "alert_level": "Orange",
+          "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 65,
+          "conflict_signal": 100,
           "disaster_signal": 13,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-09",
-          "conflict_signal": 58,
+          "conflict_signal": 100,
           "disaster_signal": 16,
-          "alert_level": "Orange",
+          "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-10",
-          "conflict_signal": 43,
+          "conflict_signal": 100,
           "disaster_signal": 20,
-          "alert_level": "Orange",
+          "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-11",
-          "conflict_signal": 69,
+          "conflict_signal": 100,
           "disaster_signal": 7,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-12",
-          "conflict_signal": 54,
+          "conflict_signal": 100,
           "disaster_signal": 6,
-          "alert_level": "Orange",
+          "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-13",
-          "conflict_signal": 63,
+          "conflict_signal": 100,
           "disaster_signal": 2,
-          "alert_level": "Orange",
+          "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-14",
-          "conflict_signal": 54,
+          "conflict_signal": 100,
           "disaster_signal": 8,
-          "alert_level": "Orange",
+          "alert_level": "Red",
           "driver": "conflict"
         }
       ],
@@ -8436,7 +11501,619 @@
           "date": "2026-09-14",
           "synthetic_incoming_signals": 14
         }
-      ]
+      ],
+      "acled": {
+        "severity": {
+          "alertscore": 3,
+          "scoring_period": "2026-August",
+          "scoring_fatalities": 876,
+          "scoring_events": 259,
+          "latest_period": "2026-September",
+          "latest_is_provisional": true
+        },
+        "monthly": [
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 191,
+            "fatalities": 436
+          },
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 6,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 581,
+            "fatalities": 1299
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "civilian_targeting",
+            "events": 345,
+            "fatalities": 1278
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "demonstrations",
+            "events": 4,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "political_violence",
+            "events": 710,
+            "fatalities": 2529
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "civilian_targeting",
+            "events": 277,
+            "fatalities": 909
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "demonstrations",
+            "events": 2,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "political_violence",
+            "events": 503,
+            "fatalities": 1557
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "civilian_targeting",
+            "events": 240,
+            "fatalities": 826
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "demonstrations",
+            "events": 10,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "political_violence",
+            "events": 520,
+            "fatalities": 1863
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "civilian_targeting",
+            "events": 274,
+            "fatalities": 752
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "demonstrations",
+            "events": 8,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "political_violence",
+            "events": 542,
+            "fatalities": 2019
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "civilian_targeting",
+            "events": 228,
+            "fatalities": 805
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "demonstrations",
+            "events": 17,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "political_violence",
+            "events": 531,
+            "fatalities": 1737
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "civilian_targeting",
+            "events": 199,
+            "fatalities": 573
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "demonstrations",
+            "events": 1,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "political_violence",
+            "events": 437,
+            "fatalities": 1543
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "civilian_targeting",
+            "events": 130,
+            "fatalities": 721
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "demonstrations",
+            "events": 11,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "political_violence",
+            "events": 314,
+            "fatalities": 2077
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "civilian_targeting",
+            "events": 142,
+            "fatalities": 480
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "demonstrations",
+            "events": 3,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "political_violence",
+            "events": 370,
+            "fatalities": 1250
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "civilian_targeting",
+            "events": 132,
+            "fatalities": 308
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "demonstrations",
+            "events": 13,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "political_violence",
+            "events": 294,
+            "fatalities": 1407
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "civilian_targeting",
+            "events": 93,
+            "fatalities": 233
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "demonstrations",
+            "events": 10,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "political_violence",
+            "events": 220,
+            "fatalities": 998
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "civilian_targeting",
+            "events": 109,
+            "fatalities": 300
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "demonstrations",
+            "events": 10,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "political_violence",
+            "events": 240,
+            "fatalities": 944
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 65,
+            "fatalities": 142
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 6,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 216,
+            "fatalities": 968
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "civilian_targeting",
+            "events": 106,
+            "fatalities": 2317
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "demonstrations",
+            "events": 29,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "political_violence",
+            "events": 270,
+            "fatalities": 3700
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "civilian_targeting",
+            "events": 77,
+            "fatalities": 121
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "demonstrations",
+            "events": 15,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "political_violence",
+            "events": 246,
+            "fatalities": 802
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "civilian_targeting",
+            "events": 104,
+            "fatalities": 497
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "demonstrations",
+            "events": 57,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "political_violence",
+            "events": 258,
+            "fatalities": 1339
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "civilian_targeting",
+            "events": 117,
+            "fatalities": 436
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "demonstrations",
+            "events": 15,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "political_violence",
+            "events": 299,
+            "fatalities": 1123
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "civilian_targeting",
+            "events": 84,
+            "fatalities": 205
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "demonstrations",
+            "events": 8,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "political_violence",
+            "events": 217,
+            "fatalities": 893
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "civilian_targeting",
+            "events": 101,
+            "fatalities": 447
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "demonstrations",
+            "events": 15,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "political_violence",
+            "events": 245,
+            "fatalities": 1238
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "civilian_targeting",
+            "events": 85,
+            "fatalities": 152
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "demonstrations",
+            "events": 13,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "political_violence",
+            "events": 212,
+            "fatalities": 622
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "civilian_targeting",
+            "events": 91,
+            "fatalities": 278
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "demonstrations",
+            "events": 10,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "political_violence",
+            "events": 253,
+            "fatalities": 808
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "civilian_targeting",
+            "events": 81,
+            "fatalities": 219
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "demonstrations",
+            "events": 10,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "political_violence",
+            "events": 208,
+            "fatalities": 515
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "civilian_targeting",
+            "events": 151,
+            "fatalities": 269
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "demonstrations",
+            "events": 8,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "political_violence",
+            "events": 350,
+            "fatalities": 769
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "civilian_targeting",
+            "events": 92,
+            "fatalities": 202
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "demonstrations",
+            "events": 9,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "political_violence",
+            "events": 259,
+            "fatalities": 876
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 11,
+            "fatalities": 29
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 2,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 25,
+            "fatalities": 70
+          }
+        ]
+      }
     },
     {
       "name": "Haiti",
@@ -8446,65 +12123,65 @@
         18.95,
         -72.3
       ],
-      "conflict_signal": 13,
+      "conflict_signal": 83,
       "disaster_signal": 11,
-      "alert_level": "Green",
+      "alert_level": "Red",
       "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 33,
+          "conflict_signal": 95,
           "disaster_signal": 11,
-          "alert_level": "Green",
+          "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 21,
+          "conflict_signal": 88,
           "disaster_signal": 6,
-          "alert_level": "Green",
+          "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-09",
-          "conflict_signal": 69,
+          "conflict_signal": 100,
           "disaster_signal": 7,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-10",
-          "conflict_signal": 63,
+          "conflict_signal": 100,
           "disaster_signal": 28,
-          "alert_level": "Orange",
+          "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-11",
-          "conflict_signal": 55,
+          "conflict_signal": 100,
           "disaster_signal": 17,
-          "alert_level": "Orange",
+          "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-12",
-          "conflict_signal": 34,
+          "conflict_signal": 96,
           "disaster_signal": 4,
-          "alert_level": "Green",
+          "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-13",
-          "conflict_signal": 15,
+          "conflict_signal": 85,
           "disaster_signal": 3,
-          "alert_level": "Green",
+          "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-14",
-          "conflict_signal": 13,
+          "conflict_signal": 83,
           "disaster_signal": 11,
-          "alert_level": "Green",
+          "alert_level": "Red",
           "driver": "conflict"
         }
       ],
@@ -9846,7 +13523,619 @@
           "date": "2026-09-14",
           "synthetic_incoming_signals": 8
         }
-      ]
+      ],
+      "acled": {
+        "severity": {
+          "alertscore": 3,
+          "scoring_period": "2026-August",
+          "scoring_fatalities": 103,
+          "scoring_events": 62,
+          "latest_period": "2026-September",
+          "latest_is_provisional": true
+        },
+        "monthly": [
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 34,
+            "fatalities": 42
+          },
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 18,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 89,
+            "fatalities": 151
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "civilian_targeting",
+            "events": 59,
+            "fatalities": 208
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "demonstrations",
+            "events": 24,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "political_violence",
+            "events": 116,
+            "fatalities": 355
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "civilian_targeting",
+            "events": 108,
+            "fatalities": 183
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "demonstrations",
+            "events": 6,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "political_violence",
+            "events": 187,
+            "fatalities": 435
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "civilian_targeting",
+            "events": 79,
+            "fatalities": 579
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "demonstrations",
+            "events": 6,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "political_violence",
+            "events": 189,
+            "fatalities": 884
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "civilian_targeting",
+            "events": 104,
+            "fatalities": 287
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "demonstrations",
+            "events": 36,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "political_violence",
+            "events": 217,
+            "fatalities": 633
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "civilian_targeting",
+            "events": 131,
+            "fatalities": 188
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "demonstrations",
+            "events": 35,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "political_violence",
+            "events": 249,
+            "fatalities": 592
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "civilian_targeting",
+            "events": 129,
+            "fatalities": 326
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "demonstrations",
+            "events": 26,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "political_violence",
+            "events": 238,
+            "fatalities": 671
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "civilian_targeting",
+            "events": 59,
+            "fatalities": 151
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "demonstrations",
+            "events": 21,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "political_violence",
+            "events": 129,
+            "fatalities": 454
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "civilian_targeting",
+            "events": 56,
+            "fatalities": 133
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "demonstrations",
+            "events": 14,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "political_violence",
+            "events": 124,
+            "fatalities": 432
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "civilian_targeting",
+            "events": 51,
+            "fatalities": 79
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "demonstrations",
+            "events": 30,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "political_violence",
+            "events": 128,
+            "fatalities": 444
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "civilian_targeting",
+            "events": 59,
+            "fatalities": 79
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "demonstrations",
+            "events": 22,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "political_violence",
+            "events": 134,
+            "fatalities": 268
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "civilian_targeting",
+            "events": 38,
+            "fatalities": 52
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "demonstrations",
+            "events": 18,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "political_violence",
+            "events": 110,
+            "fatalities": 232
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 30,
+            "fatalities": 91
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 31,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 78,
+            "fatalities": 217
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "civilian_targeting",
+            "events": 62,
+            "fatalities": 70
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "demonstrations",
+            "events": 32,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "political_violence",
+            "events": 133,
+            "fatalities": 235
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "civilian_targeting",
+            "events": 69,
+            "fatalities": 84
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "demonstrations",
+            "events": 20,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "political_violence",
+            "events": 156,
+            "fatalities": 321
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "civilian_targeting",
+            "events": 53,
+            "fatalities": 151
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "demonstrations",
+            "events": 18,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "political_violence",
+            "events": 103,
+            "fatalities": 325
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "civilian_targeting",
+            "events": 54,
+            "fatalities": 80
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "demonstrations",
+            "events": 22,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "political_violence",
+            "events": 124,
+            "fatalities": 344
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "civilian_targeting",
+            "events": 44,
+            "fatalities": 37
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "demonstrations",
+            "events": 9,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "political_violence",
+            "events": 94,
+            "fatalities": 242
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "civilian_targeting",
+            "events": 60,
+            "fatalities": 145
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "demonstrations",
+            "events": 23,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "political_violence",
+            "events": 121,
+            "fatalities": 369
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "civilian_targeting",
+            "events": 50,
+            "fatalities": 57
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "demonstrations",
+            "events": 64,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "political_violence",
+            "events": 114,
+            "fatalities": 245
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "civilian_targeting",
+            "events": 55,
+            "fatalities": 95
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "demonstrations",
+            "events": 25,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "political_violence",
+            "events": 133,
+            "fatalities": 392
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "civilian_targeting",
+            "events": 39,
+            "fatalities": 40
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "demonstrations",
+            "events": 20,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "political_violence",
+            "events": 112,
+            "fatalities": 271
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "civilian_targeting",
+            "events": 44,
+            "fatalities": 64
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "demonstrations",
+            "events": 20,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "political_violence",
+            "events": 100,
+            "fatalities": 227
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "civilian_targeting",
+            "events": 29,
+            "fatalities": 64
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "demonstrations",
+            "events": 23,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "political_violence",
+            "events": 62,
+            "fatalities": 103
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 3,
+            "fatalities": 1
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 6,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 7,
+            "fatalities": 8
+          }
+        ]
+      }
     },
     {
       "name": "Thailand",
@@ -9856,63 +14145,63 @@
         15.0,
         101.0
       ],
-      "conflict_signal": 14,
+      "conflict_signal": 34,
       "disaster_signal": 1,
       "alert_level": "Green",
       "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 18,
+          "conflict_signal": 36,
           "disaster_signal": 3,
-          "alert_level": "Green",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 18,
+          "conflict_signal": 36,
           "disaster_signal": 6,
-          "alert_level": "Green",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-09",
-          "conflict_signal": 12,
+          "conflict_signal": 32,
           "disaster_signal": 3,
           "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-10",
-          "conflict_signal": 24,
+          "conflict_signal": 40,
           "disaster_signal": 1,
-          "alert_level": "Green",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-11",
-          "conflict_signal": 20,
+          "conflict_signal": 37,
           "disaster_signal": 2,
-          "alert_level": "Green",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-12",
-          "conflict_signal": 18,
+          "conflict_signal": 36,
           "disaster_signal": 4,
-          "alert_level": "Green",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-13",
-          "conflict_signal": 17,
+          "conflict_signal": 35,
           "disaster_signal": 2,
-          "alert_level": "Green",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-14",
-          "conflict_signal": 14,
+          "conflict_signal": 34,
           "disaster_signal": 1,
           "alert_level": "Green",
           "driver": "conflict"
@@ -11286,7 +15575,619 @@
           "date": "2026-09-14",
           "synthetic_incoming_signals": 45
         }
-      ]
+      ],
+      "acled": {
+        "severity": {
+          "alertscore": 1,
+          "scoring_period": "2026-August",
+          "scoring_fatalities": 5,
+          "scoring_events": 22,
+          "latest_period": "2026-September",
+          "latest_is_provisional": true
+        },
+        "monthly": [
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 0,
+            "fatalities": 0
+          },
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 8,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 5,
+            "fatalities": 0
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "civilian_targeting",
+            "events": 1,
+            "fatalities": 1
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "demonstrations",
+            "events": 15,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "October",
+            "month_num": 10,
+            "category": "political_violence",
+            "events": 13,
+            "fatalities": 2
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "civilian_targeting",
+            "events": 4,
+            "fatalities": 2
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "demonstrations",
+            "events": 4,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "November",
+            "month_num": 11,
+            "category": "political_violence",
+            "events": 10,
+            "fatalities": 3
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "civilian_targeting",
+            "events": 3,
+            "fatalities": 3
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "demonstrations",
+            "events": 8,
+            "fatalities": null
+          },
+          {
+            "year": 2024,
+            "month": "December",
+            "month_num": 12,
+            "category": "political_violence",
+            "events": 11,
+            "fatalities": 6
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "civilian_targeting",
+            "events": 1,
+            "fatalities": 1
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "demonstrations",
+            "events": 4,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "January",
+            "month_num": 1,
+            "category": "political_violence",
+            "events": 9,
+            "fatalities": 7
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "civilian_targeting",
+            "events": 1,
+            "fatalities": 0
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "demonstrations",
+            "events": 10,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "February",
+            "month_num": 2,
+            "category": "political_violence",
+            "events": 13,
+            "fatalities": 3
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "civilian_targeting",
+            "events": 5,
+            "fatalities": 2
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "demonstrations",
+            "events": 12,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "March",
+            "month_num": 3,
+            "category": "political_violence",
+            "events": 16,
+            "fatalities": 7
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "civilian_targeting",
+            "events": 6,
+            "fatalities": 4
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "demonstrations",
+            "events": 10,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "April",
+            "month_num": 4,
+            "category": "political_violence",
+            "events": 10,
+            "fatalities": 7
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "civilian_targeting",
+            "events": 4,
+            "fatalities": 5
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "demonstrations",
+            "events": 11,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "May",
+            "month_num": 5,
+            "category": "political_violence",
+            "events": 13,
+            "fatalities": 11
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "civilian_targeting",
+            "events": 2,
+            "fatalities": 1
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "demonstrations",
+            "events": 9,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "June",
+            "month_num": 6,
+            "category": "political_violence",
+            "events": 11,
+            "fatalities": 5
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "civilian_targeting",
+            "events": 8,
+            "fatalities": 14
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "demonstrations",
+            "events": 6,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "July",
+            "month_num": 7,
+            "category": "political_violence",
+            "events": 40,
+            "fatalities": 41
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "civilian_targeting",
+            "events": 2,
+            "fatalities": 1
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "demonstrations",
+            "events": 9,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "August",
+            "month_num": 8,
+            "category": "political_violence",
+            "events": 12,
+            "fatalities": 1
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 4,
+            "fatalities": 2
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 10,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 11,
+            "fatalities": 4
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "civilian_targeting",
+            "events": 6,
+            "fatalities": 3
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "demonstrations",
+            "events": 9,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "October",
+            "month_num": 10,
+            "category": "political_violence",
+            "events": 14,
+            "fatalities": 6
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "civilian_targeting",
+            "events": 3,
+            "fatalities": 1
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "demonstrations",
+            "events": 5,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "November",
+            "month_num": 11,
+            "category": "political_violence",
+            "events": 6,
+            "fatalities": 2
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "civilian_targeting",
+            "events": 6,
+            "fatalities": 2
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "demonstrations",
+            "events": 3,
+            "fatalities": null
+          },
+          {
+            "year": 2025,
+            "month": "December",
+            "month_num": 12,
+            "category": "political_violence",
+            "events": 135,
+            "fatalities": 29
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "civilian_targeting",
+            "events": 0,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "demonstrations",
+            "events": 4,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "January",
+            "month_num": 1,
+            "category": "political_violence",
+            "events": 15,
+            "fatalities": 1
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "civilian_targeting",
+            "events": 6,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "demonstrations",
+            "events": 21,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "February",
+            "month_num": 2,
+            "category": "political_violence",
+            "events": 18,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "civilian_targeting",
+            "events": 5,
+            "fatalities": 2
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "demonstrations",
+            "events": 12,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "March",
+            "month_num": 3,
+            "category": "political_violence",
+            "events": 19,
+            "fatalities": 7
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "civilian_targeting",
+            "events": 5,
+            "fatalities": 4
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "demonstrations",
+            "events": 7,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "April",
+            "month_num": 4,
+            "category": "political_violence",
+            "events": 11,
+            "fatalities": 5
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "civilian_targeting",
+            "events": 5,
+            "fatalities": 3
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "demonstrations",
+            "events": 13,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "May",
+            "month_num": 5,
+            "category": "political_violence",
+            "events": 10,
+            "fatalities": 6
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "civilian_targeting",
+            "events": 4,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "demonstrations",
+            "events": 13,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "June",
+            "month_num": 6,
+            "category": "political_violence",
+            "events": 17,
+            "fatalities": 3
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "civilian_targeting",
+            "events": 4,
+            "fatalities": 2
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "demonstrations",
+            "events": 9,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "July",
+            "month_num": 7,
+            "category": "political_violence",
+            "events": 10,
+            "fatalities": 7
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "civilian_targeting",
+            "events": 3,
+            "fatalities": 1
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "demonstrations",
+            "events": 10,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "August",
+            "month_num": 8,
+            "category": "political_violence",
+            "events": 22,
+            "fatalities": 5
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "civilian_targeting",
+            "events": 0,
+            "fatalities": 0
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "demonstrations",
+            "events": 2,
+            "fatalities": null
+          },
+          {
+            "year": 2026,
+            "month": "September",
+            "month_num": 9,
+            "category": "political_violence",
+            "events": 0,
+            "fatalities": 0
+          }
+        ]
+      }
     }
   ]
 }

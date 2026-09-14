@@ -18,8 +18,8 @@
           <h1>Crisis &amp; Connectivity Monitor</h1>
           <p class="subtitle">
             A proof of concept for classifying what's happening in a country right now, from data
-            that already exists (GDELT, GDACS, CBS) plus an illustrative comms-volume layer &mdash;
-            built for a crisis coordinator, not a finished operational tool.
+            that already exists &mdash; ACLED, GDELT, GDACS, CBS &mdash; plus an illustrative
+            comms-volume layer, built for a crisis coordinator, not a finished operational tool.
             <a href="#about" id="about-link">About &amp; method</a>
           </p>
         </div>
@@ -46,16 +46,31 @@
     <h2>About this app</h2>
     <p>
       This is a proof of concept, not a finished tool: it shows what public
-      data (GDELT, GDACS, CBS) is available and how it could combine into a
-      per-country risk indication for a crisis coordinator &mdash; it is
-      <strong>not</strong> an automatic, validated classifier, and it does
-      <strong>not</strong> forecast or predict crises. See
+      data (ACLED, GDELT, GDACS, CBS) is available and how it could combine
+      into a per-country risk indication for a crisis coordinator &mdash;
+      it is <strong>not</strong> an automatic, validated classifier, and it
+      does <strong>not</strong> forecast or predict crises. See
       <code>Documentation/Relevance and function.txt</code> for the full
       writeup and <code>Scripts/README.md</code> for data-source details.
     </p>
 
     <h3>Data sources &amp; freshness</h3>
     <ul id="data-sources-list"></ul>
+
+    <h3>ACLED: real conflict data, no account needed</h3>
+    <p>
+      Conflict data comes from <a href="https://acleddata.com" target="_blank" rel="noopener">ACLED</a>
+      (Armed Conflict Location &amp; Event Data Project) &mdash; real monthly political-violence event
+      and fatality counts per country, not a media-mention proxy. ACLED's own API requires registering
+      an account; this app instead uses ACLED's own pre-aggregated country files published through the
+      Humanitarian Data Exchange (data.humdata.org), which are freely downloadable with no login. The
+      tradeoff is resolution: monthly, not daily or event-level. The single most recent available month
+      is always excluded from scoring as provisional &mdash; ACLED's newest month is consistently far
+      below the surrounding trend for nearly every country tracked here, a reporting/verification lag,
+      not real de-escalation (visible as a sudden drop at the right edge of each ACLED chart). Per
+      ACLED's Terms of Use, their data must be clearly attributed wherever shown &mdash; see the
+      attribution line under each country's ACLED chart.
+    </p>
 
     <h3>Conflict &amp; disaster signals</h3>
     <p>
@@ -66,7 +81,7 @@
       rather than as one flat weekly number, built from:
     </p>
     <ul>
-      <li><strong>Conflict signal:</strong> that day's share of articles carrying a conflict/war/protest/terrorism theme tag (via GDELT's GKG theme tagging), damped on low-volume days, plus that day's tone severity and a volume-spike bonus.</li>
+      <li><strong>Conflict signal:</strong> primarily that month's real ACLED political-violence fatality count (banded 0&ndash;3, same weight as GDACS below), plus that day's (damped) share of GDELT articles carrying a conflict theme tag and tone severity as corroboration. Without any confirmed ACLED fatalities, GDELT alone cannot push this above ~60 &mdash; media attention shouldn't call something "High" on its own.</li>
       <li><strong>Disaster signal:</strong> any GDACS alert level for an event actually active <em>on that day</em> (by the event's own date range, weighted highest), plus that day's (damped) share of articles carrying a natural-disaster theme tag.</li>
     </ul>
     <p>

@@ -436,6 +436,33 @@ main {
   margin: 4px 0 10px;
 }
 
+.acled-box {
+  border: 1px solid var(--accent);
+}
+
+.acled-tag {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: var(--accent);
+  padding: 2px 7px;
+  border-radius: 5px;
+  vertical-align: middle;
+}
+
+.acled-summary {
+  font-size: 0.88rem;
+  margin: 0 0 6px;
+}
+
+.attribution {
+  font-size: 0.74rem;
+  color: var(--muted);
+  margin: 8px 0 0;
+}
+
 .travel-context {
   font-size: 0.92rem;
   font-weight: 600;

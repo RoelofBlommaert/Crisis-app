@@ -78,9 +78,11 @@ Concept
 -------
 The app shows, per tracked country:
 1. A conflict signal and a disaster signal (0-100, illustrative, scored
-   per day) derived from open news data, each paired with a real
-   breakdown of *which* themes are driving it that week -- not just
-   the compressed number
+   per day). Conflict signal is driven primarily by real ACLED
+   political-violence fatality data (ground truth, not a media proxy),
+   corroborated by GDELT; disaster signal works the same way with
+   GDACS + GDELT. Each is paired with a real breakdown of *which*
+   themes/events are driving it -- not just the compressed number
 2. Confirmed crisis/disaster events from GDACS, split into "active
    this week" vs. "historical" by the event's own date range
 3. Rough context on how many Dutch travelers visit the country (CBS),
@@ -98,7 +100,38 @@ finished automatic classifier or a crisis forecast.
 
 Data sources used
 ------------------
-1. GDELT (Global Database of Events, Language, and Tone)
+1. ACLED (Armed Conflict Location & Event Data Project) -- via HDX
+   - Real, ground-truth monthly political-violence event and fatality
+     counts per country, since ~2016 (Middle East/Turkey/Ukraine/Haiti)
+     or ~1997 (Africa/Egypt/Sudan) depending on region
+   - ACLED's own API/export tool requires registering a myACLED account
+     and generating a key. We avoid that by using ACLED's own
+     pre-aggregated country files published through the Humanitarian
+     Data Exchange (data.humdata.org/organization/acled) -- freely
+     downloadable, no login, updated weekly. Confirmed by querying
+     HDX's public CKAN API directly, not assumed.
+   - Tradeoff for avoiding registration: monthly resolution, not daily
+     or event-level (which ACLED's own API/export tool would give with
+     an account).
+   - The single most recent available month is always excluded from
+     scoring: ACLED/HDX's newest month is consistently far below the
+     surrounding trend for nearly every tracked country simultaneously
+     (Sudan 876 -> 70 fatalities, Ukraine 4008 -> 1010, month over
+     month) -- a reporting/verification lag, not a real synchronized
+     de-escalation across unrelated conflicts. The previous complete
+     month is used instead.
+   - ACLED's Terms of Use require clear attribution wherever their data
+     (or a derivative) is shown -- the app credits ACLED with a link
+     under every ACLED chart and in this document. Their ToU also
+     prohibit redistributing their raw/original data directly to other
+     users; this app only ever shows aggregated monthly totals and
+     visualizations, never a raw per-row dump.
+   - Used as the primary, ground-truth input to the conflict signal,
+     structurally mirroring how GDACS already drives the disaster
+     signal (a confirmed-source severity score as the dominant weight,
+     GDELT as secondary corroboration).
+
+2. GDELT (Global Database of Events, Language, and Tone)
    - Public, free, no API key required
    - Provides article volume and average "tone" (sentiment) of global
      news coverage, filterable by keyword, country, and date range
@@ -111,7 +144,7 @@ Data sources used
      each run captures a short recent snapshot, and a real trend has to
      be built by running the pull on a schedule and appending over time.
 
-2. ReliefWeb / GDACS (disaster and crisis alert databases)
+3. ReliefWeb / GDACS (disaster and crisis alert databases)
    - Public REST APIs, structured JSON output
    - Provide confirmed, officially-reported crisis/disaster events
      (type, country, severity, date)
@@ -121,11 +154,12 @@ Data sources used
      1 Nov 2025) and is currently pending, so only GDACS is live. GDACS
      covers natural disasters only (earthquakes, floods, storms,
      droughts, volcanic activity) — it has no conflict/political-crisis
-     coverage, so conflict-driven countries on our list (Ukraine,
-     Lebanon, Israel, Sudan) currently have no confirmed-event layer at
-     all, only GDELT's media signal.
+     coverage. This gap for conflict-driven countries (Ukraine, Lebanon,
+     Israel, Sudan) is now filled by ACLED (source #1 above) instead --
+     they still have no confirmed *disaster* event layer, which is
+     correct given they're conflict-driven, not disaster-driven.
 
-3. Eurostat / CBS (Statistics Netherlands) tourism statistics
+4. Eurostat / CBS (Statistics Netherlands) tourism statistics
    - Public, downloadable datasets (CSV/JSON)
    - Provide seasonal baselines for Dutch outbound travel by
      destination
@@ -136,7 +170,7 @@ Data sources used
      is only available at continent/region level. Those rows are rough
      regional context, not a per-country baseline.
 
-4. OpenSky Network (optional, live-only)
+5. OpenSky Network (optional, live-only)
    - Public API, free anonymous access
    - IMPORTANT LIMITATION: anonymous access only returns a live
      snapshot of current aircraft positions — no historical trend
@@ -146,7 +180,7 @@ Data sources used
    - Used only for an optional "right now" live map layer, not as
      part of the core trend/insight logic
 
-5. Incoming communication volume -- SYNTHETIC / FICTIONAL, not a real source
+6. Incoming communication volume -- SYNTHETIC / FICTIONAL, not a real source
    - STRATEGY.md names combining the tension signal with incoming
      communication volume (e.g. consular calls) as core to the primary
      user's actual workflow, and explicitly allows synthetic/fictional
@@ -162,19 +196,19 @@ Data sources used
 How the pieces fit together
 ----------------------------
 Step 1 — Data collection
-  Pull GDELT tone/volume data, ReliefWeb/GDACS event data, and
-  Eurostat/CBS travel baselines for a small set of selected
-  countries, over a shared date range. Because GDELT is now pulled
-  as 15-minute snapshots rather than a ready-made timeline, this step
+  Pull ACLED conflict data (via HDX, monthly), GDELT tone/volume data,
+  ReliefWeb/GDACS event data, and Eurostat/CBS travel baselines for a
+  small set of selected countries. Because GDELT is now pulled as
+  15-minute snapshots rather than a ready-made timeline, this step
   needs to run repeatedly (e.g. a scheduled job) with results appended
   over time to build up an actual trend, rather than as a single
   one-off pull.
 
 Step 2 — Merge
-  Combine GDELT, GDACS, CBS, and the synthetic comms-volume layer into
-  one dataset per country (`Scripts/merge_data.py`), scored per day so
-  each day has: conflict/disaster signal, which events were actually
-  active that specific day (not just "matched at some point"), the
+  Combine ACLED, GDELT, GDACS, CBS, and the synthetic comms-volume
+  layer into one dataset per country (`Scripts/merge_data.py`), scored
+  per day so each day has: conflict/disaster signal, which events were
+  actually active that specific day (not just "matched at some point"), the
   real theme breakdown behind the signal, and the (clearly-labelled
   real vs. synthetic) context layers.
 
@@ -203,17 +237,23 @@ against a live GKG file, not assumed from documentation) as
 conflict-related (ARMEDCONFLICT, PROTEST, TERROR, UNREST_BELLIGERENT,
 several World Bank political-violence/war/terrorism codes) or
 disaster-related (the NATURAL_DISASTER_* theme family), and scoring
-**one calendar day at a time** (not one flat weekly number):
-  - conflict_signal: that day's conflict-theme article share +
-    that day's tone severity + a volume-spike bonus vs. the week's own
-    average
+**one calendar day at a time** (not one flat weekly number). A later
+round added real ACLED data as the dominant input for conflict_signal
+(ground truth, not a media proxy) -- the two signals are now
+structurally symmetric:
+  - conflict_signal: ACLED's fatality-based severity band (0-3) for the
+    most recent *complete* month + that day's (GDELT) conflict-theme
+    article share + tone severity + a volume-spike bonus
   - disaster_signal: the alert level of any GDACS event whose own
     fromdate/todate range actually covers that day (weighted highest) +
     that day's disaster-theme article share
 Whichever is higher drives that day's Green/Orange/Red level, and the
 app labels which one ("conflict-driven" / "disaster-driven"). A 7-8 day
 history strip under each gauge shows every day's score, and the "current"
-badge is simply the most recent day's entry.
+badge is simply the most recent day's entry. Because ACLED updates
+monthly and GDELT updates hourly, the confirmed-severity floor holds
+steady across all 7-8 days in the window while GDELT's term still moves
+the score day to day -- a deliberate, documented resolution mismatch.
 
 Scoring day-by-day (rather than "is there any matching event at all") is
 itself a fix for a second bug: GDACS keeps recently-modified events
@@ -248,9 +288,19 @@ Known limitations of this prototype
   ever be added to this app in its current form.
 - Not intended for operational decision-making; built purely to
   demonstrate technical feasibility within a 2-day course format.
-- Confirmed-event coverage is currently disaster-only (GDACS); the
-  4 conflict-driven countries on our list have no confirmed-event
-  layer until a ReliefWeb appname is approved.
+- GDACS's confirmed-event coverage is disaster-only; the 4
+  conflict-driven countries on our list still have no confirmed
+  *disaster* layer, and none is expected (they're conflict-driven, not
+  disaster-driven). This gap for conflict-specific confirmed events is
+  now filled by ACLED instead of waiting on a ReliefWeb appname.
+- ACLED/HDX data is monthly, not daily or event-level -- a real
+  resolution tradeoff for avoiding registration. The confirmed-severity
+  component of conflict_signal only changes once a month; day-to-day
+  movement in the gauge comes from GDELT alone. The single most recent
+  available month is always excluded as provisional (see "ACLED
+  integration" above) -- a documented judgment call based on observing
+  a synchronized drop across nearly every tracked country, not proof of
+  lag for any one specific country's specific month.
 - Travel-baseline data is region-level (not per-country) for 7 of
   our 8 tracked countries, due to CBS's limited country breakdown.
 - GDELT trend depth is only as long as the accumulated history of

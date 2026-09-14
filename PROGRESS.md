@@ -259,16 +259,78 @@ Work done:
   now spans Green/Orange/Red sensibly, historical events collapse
   correctly, synthetic layer clearly labelled throughout.
 
+## 2026-09-14 (continued 5) — added ACLED as the primary conflict data source
+
+User asked what data was actually used and specifically whether ACLED
+(Armed Conflict Location & Event Data Project) was in the mix. It wasn't
+-- confirmed by grep. User's follow-up: add it, since it's real
+ground-truth conflict data (event-level fatalities/actors) vs. GDELT's
+media-mention proxy, and called it possibly "the most important" source.
+
+This reverses the earlier "no new registrations" decision in spirit, so
+researched ACLED's actual access model before proposing anything:
+ACLED's own API needs a registered myACLED account + generated key. But
+ACLED itself publishes pre-aggregated country files through the
+Humanitarian Data Exchange (data.humdata.org) with **no registration**
+-- confirmed by querying HDX's public CKAN API directly (not assumed),
+covering all 8 tracked countries, updated weekly. Tradeoff: monthly
+resolution (event+fatality counts), not daily/event-level like ACLED's
+own API would give with an account.
+
+Work done:
+- New `Scripts/fetch_acled_hdx.py`: pulls political-violence,
+  civilian-targeting, and demonstration-event monthly counts per
+  country from HDX. Found and fixed a real bug on the first run: three
+  countries (Ukraine, Sudan, Haiti -- current Humanitarian Response
+  Plan countries) use a different HDX file layout with one row per
+  Admin1/Admin2 sub-region per month, not one national row -- this
+  inflated their row counts by 100-500x before the fix aggregated
+  properly to national totals.
+- Redesigned `merge_data.py`'s conflict_signal to make ACLED's fatality
+  count the **dominant, ground-truth term** -- structurally mirroring
+  how GDACS already dominates disaster_signal (both are now: confirmed-
+  source severity score, weight 25/tier up to 75, plus GDELT as
+  secondary corroboration). Verified real severity bands against live
+  data before picking them (0 fatalities->0, 1-24->1, 25-99->2, 100+->3
+  -- log-scaled, not linear, since real counts span 0 to 4000+ across
+  our 8 countries).
+- Found and handled a second real pattern in the live data before
+  trusting it: the single most recent available ACLED/HDX month is
+  consistently far below the surrounding trend for nearly every country
+  simultaneously (Sudan 876->70, Ukraine 4008->1010 fatalities, month
+  over month) -- reporting/verification lag, not synchronized
+  de-escalation across unrelated wars. Scoring uses the previous
+  complete month instead; the provisional month is still shown in the
+  chart (visible as a sudden drop at the right edge) with an
+  explanatory note, not hidden.
+- Recalibrated with real data before finalizing: new distribution is
+  4 Red (Ukraine, Sudan, Haiti, Lebanon), 3 Orange (Turkey, Egypt,
+  Israel), 1 Green (Thailand) -- a believable, ground-truth-anchored
+  spread, matching real severity far better than the GDELT-only version.
+- Added a real 24-month ACLED chart (fatalities + events) per country to
+  the frontend, with required ACLED attribution (their Terms of Use
+  mandate clear acknowledgement wherever their data or a derivative is
+  shown, and prohibit redistributing raw data -- this app only shows
+  aggregated/visualized derivatives, never a raw dump) and a
+  "GROUND TRUTH" tag distinguishing it from the media-proxy signals.
+- Updated Documentation, Scripts/README.md, and the About panel's
+  "Data sources & freshness" list accordingly.
+- Re-tested end-to-end in-browser: no console errors, scores match hand
+  calculation, provisional-month drop-off visible and explained in the
+  chart itself.
+
 ### Next up
 - [ ] Build the "hybride sturing" manual-override control (coordinator
       confirms/corrects a suggested classification) -- deliberately
       deferred this round, not an oversight
 - [ ] Re-run `fetch_gdelt_tension.py --backfill` + `generate_synthetic_comms.py`
-      + `merge_data.py` periodically if the signals should stay current
-      (still a one-time snapshot by design — see Documentation)
+      + `fetch_acled_hdx.py` + `merge_data.py` periodically if the signals
+      should stay current (still a one-time snapshot by design — see
+      Documentation)
 - [ ] If this ever needs to become a live-refreshing dashboard rather
       than a one-time snapshot, revisit the GitHub Actions cron option
       that was consciously deferred this round
-- [ ] Register a ReliefWeb appname if conflict/displacement reporting
-      (vs. GDACS's natural-disasters-only coverage) is worth adding later
+- [ ] Register a ReliefWeb appname if disaster/displacement reporting
+      beyond GDACS is worth adding later (ACLED now covers the
+      conflict-confirmed-event gap that ReliefWeb would have)
 - [ ] Commit and push this round's changes, confirm the Pages deploy
