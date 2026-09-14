@@ -57,11 +57,66 @@ See `Documentation/Relevance and function.txt` for the app concept and
   pattern for polling GDELT hourly, is in `Scripts/README.md` under
   "Avoiding the GDELT rate limit."
 
+## 2026-09-14 (continued) — data buildout + first app version
+
+Reviewed the actual pulled data against the Documentation and found it
+was too thin to build a real dashboard from (GDELT: ~2 hours of history;
+GDACS: natural-disasters-only, 4 of 8 tracked countries are
+conflict-driven with zero coverage; CBS: region-level for 7 of 8
+countries). Decisions made with the user:
+- No new account/registration signups — rules out a ReliefWeb appname
+  and a BigQuery-based GDELT backfill.
+- **Ship without ReliefWeb.** GDACS (disasters) + GDELT (media tone) are
+  the permanent confirmed-event/signal layers; conflict-driven countries
+  will only ever show a tone signal, not a confirmed-event marker. Noted
+  in `Documentation/Relevance and function.txt`.
+- **Publish as a one-time static snapshot** on GitHub Pages — no
+  GitHub Actions cron, no recurring refresh.
+- To get more data without any signup: **backfilled GDELT 7 days back at
+  hourly resolution** (168 static bulk-file downloads — same
+  no-key/no-rate-limit mechanism as before, just walking further back in
+  time) instead of only the latest 8 files.
+
+Work done:
+- Checked Eurostat's `tour_dem_ttw` (trips by destination) as a possible
+  fix for CBS's region-only gap. It does have per-country codes for
+  Turkey and Ukraine, but querying the live API confirmed the
+  Netherlands reports **zero data for Ukraine** in it, across every
+  combination — so it adds nothing over CBS. Documented and dropped
+  rather than built; see `Scripts/README.md`.
+- Added `--backfill` mode to `fetch_gdelt_tension.py`: computes and
+  downloads the top-of-hour GKG file for each of the past 7×24 hours
+  directly (rather than following `lastupdate.txt`), producing
+  `Data/GDELT/gdelt_tension_history_<date>.csv`.
+- **Found and fixed a real bug** in `fetch_gdacs_events.py`'s country
+  matching: it matched country names as a substring
+  (`"sudan" in "south sudan"`), so a South Sudan flood event was being
+  incorrectly attributed to our tracked "Sudan". Fixed to match whole
+  comma-separated name tokens, added a `matched_countries` column to the
+  matched-events CSV (the row's own `iso3` only ever names one country
+  in a multi-country event, so it isn't reliable for per-country
+  attribution on its own).
+- Built `Scripts/merge_data.py`: combines GDELT history, matched GDACS
+  events, and CBS travel data into one static `App/data/dataset.json`
+  per country (tension series, events list — genuinely empty where
+  there's no confirmed-event coverage, travel baseline with its
+  granularity flag preserved).
+- Built the first version of the app in `App/` (`index.html`,
+  `styles.css`, `app.js`): a Leaflet marker map + country list
+  color-coded by an illustrative alert level, with a per-country detail
+  view (Chart.js tension trend, matched GDACS events, CBS travel table
+  with a country/region badge) and an About panel stating the data
+  caveats. Plain static site, CDN libraries only, reads
+  `data/dataset.json` via a relative path — works unmodified on GitHub
+  Pages.
+
 ### Next up
-- [ ] Merge the four sources into one per-country/per-period dataset
-- [ ] Decide on a recurring schedule (cron/Task Scheduler) for the GDELT
-      and GDACS pulls if the dashboard should show a live-ish trend
-      rather than one-off snapshots
+- [ ] Run `fetch_gdelt_tension.py --backfill` + `merge_data.py`, and
+      smoke-test the app locally (`python -m http.server` from `App/`)
+- [ ] Publish: repo Settings → Pages → Deploy from branch → `main` →
+      folder `/App` (manual step, not something automatable from here)
+- [ ] If this ever needs to become a live-refreshing dashboard rather
+      than a one-time snapshot, revisit the GitHub Actions cron option
+      that was consciously deferred this round
 - [ ] Register a ReliefWeb appname if conflict/displacement reporting
-      (vs. GDACS's natural-disasters-only coverage) is worth adding
-- [ ] Build dashboard/visualization in `App/`
+      (vs. GDACS's natural-disasters-only coverage) is worth adding later

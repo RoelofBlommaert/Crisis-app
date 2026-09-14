@@ -75,8 +75,13 @@ Data sources used
    - Provides article volume and average "tone" (sentiment) of global
      news coverage, filterable by keyword, country, and date range
    - Used as the core "tension score" per country over time
-   - Note: officially supports roughly the most recent 3 months of
-     queries; older ranges are not guaranteed
+   - Note: the DOC 2.0 query API (originally planned) is only meant for
+     occasional interactive lookups and blocks scripted/cloud IPs after
+     a handful of requests. We pull from GDELT's raw GKG bulk export
+     files instead (updated every 15 min, no key, not rate-limited).
+     Practical effect: there is no ready-made 3-month timeline anymore —
+     each run captures a short recent snapshot, and a real trend has to
+     be built by running the pull on a schedule and appending over time.
 
 2. ReliefWeb / GDACS (disaster and crisis alert databases)
    - Public REST APIs, structured JSON output
@@ -84,6 +89,13 @@ Data sources used
      (type, country, severity, date)
    - Used as a "confirmed event" layer on top of GDELT's noisier
      media-based signal
+   - Note: ReliefWeb now requires a pre-approved `appname` (changed
+     1 Nov 2025) and is currently pending, so only GDACS is live. GDACS
+     covers natural disasters only (earthquakes, floods, storms,
+     droughts, volcanic activity) — it has no conflict/political-crisis
+     coverage, so conflict-driven countries on our list (Ukraine,
+     Lebanon, Israel, Sudan) currently have no confirmed-event layer at
+     all, only GDELT's media signal.
 
 3. Eurostat / CBS (Statistics Netherlands) tourism statistics
    - Public, downloadable datasets (CSV/JSON)
@@ -91,6 +103,10 @@ Data sources used
      destination
    - Used as the "expected" travel volume layer, to compare against
      current signals
+   - Note: CBS only breaks out ~15 individually-named "most visited"
+     destinations; every other country (7 of our 8 tracked countries)
+     is only available at continent/region level. Those rows are rough
+     regional context, not a per-country baseline.
 
 4. OpenSky Network (optional, live-only)
    - Public API, free anonymous access
@@ -107,7 +123,11 @@ How the pieces fit together
 Step 1 — Data collection
   Pull GDELT tone/volume data, ReliefWeb/GDACS event data, and
   Eurostat/CBS travel baselines for a small set of selected
-  countries, over a shared date range.
+  countries, over a shared date range. Because GDELT is now pulled
+  as 15-minute snapshots rather than a ready-made timeline, this step
+  needs to run repeatedly (e.g. a scheduled job) with results appended
+  over time to build up an actual trend, rather than as a single
+  one-off pull.
 
 Step 2 — Merge
   Combine the three sources into one dataset per country per time
@@ -138,6 +158,19 @@ Known limitations of this prototype
   ever be added to this app in its current form.
 - Not intended for operational decision-making; built purely to
   demonstrate technical feasibility within a 2-day course format.
+- Confirmed-event coverage is currently disaster-only (GDACS); the
+  4 conflict-driven countries on our list have no confirmed-event
+  layer until a ReliefWeb appname is approved.
+- Travel-baseline data is region-level (not per-country) for 7 of
+  our 8 tracked countries, due to CBS's limited country breakdown.
+- GDELT trend depth is only as long as the accumulated history of
+  scheduled pulls since this pipeline started — not a true 3-month
+  lookback.
+- The published app is a one-time static snapshot (data pulled once,
+  merged into a static file, deployed to GitHub Pages), not a
+  live-refreshing dashboard. "Current" data is only as current as the
+  day the snapshot was generated -- see the timestamp shown in the app
+  itself. Re-run the data pipeline and republish to refresh it.
 
 ================================================================
 END OF DOCUMENT

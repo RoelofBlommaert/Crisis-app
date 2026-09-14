@@ -26,13 +26,24 @@ schedule (hourly/daily cron, cloud scheduler, etc.) and append the output
 to build up real history over time; see Scripts/README.md for the general
 "how do I poll GDELT hourly" guidance this implies.
 
-Output: Data/GDELT/gdelt_tension_<date>.csv
+Backfill mode (--backfill): instead of only grabbing the most recent
+LOOKBACK_FILES, walks back BACKFILL_DAYS days and downloads one GKG file
+per hour (the top-of-hour :00 file), computing each historical filename
+directly rather than following lastupdate.txt. Same bulk-file mechanism,
+no key, no observed rate limit either way -- this just reaches further
+back in time. Used once to seed a real multi-day trend for the app since
+this project isn't running a recurring scheduled pull.
+
+Output: Data/GDELT/gdelt_tension_<date>.csv (normal mode)
+        Data/GDELT/gdelt_tension_history_<date>.csv (--backfill mode)
 Columns: country, timestamp_utc, date, volume_article_count, avg_tone
 """
 
+import argparse
 import csv
 import io
 import sys
+import time
 import zipfile
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
@@ -44,6 +55,8 @@ from countries import COUNTRIES
 LASTUPDATE_URL = "https://data.gdeltproject.org/gdeltv2/lastupdate.txt"
 FILE_URL_TEMPLATE = "https://data.gdeltproject.org/gdeltv2/{ts}.gkg.csv.zip"
 LOOKBACK_FILES = 8  # 8 x 15min = last ~2 hours; raise for a longer window
+BACKFILL_DAYS = 7  # --backfill: how many days back to pull, at hourly resolution
+BACKFILL_DELAY_SECONDS = 0.5  # politeness delay between backfill downloads
 
 # GKG uses FIPS 10-4 country codes, which differ from ISO for several
 # of our countries (e.g. Turkey is TU in FIPS, TR in ISO).
@@ -79,6 +92,12 @@ def latest_gkg_timestamp() -> str:
 def timestamps_going_back(latest_ts: str, n: int) -> list:
     latest_dt = datetime.strptime(latest_ts, "%Y%m%d%H%M%S")
     return [(latest_dt - timedelta(minutes=15 * i)).strftime("%Y%m%d%H%M%S") for i in range(n)]
+
+
+def hourly_timestamps_going_back(days: int) -> list:
+    """Top-of-hour GKG filenames for the past `days` days, newest first."""
+    now = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0)
+    return [(now - timedelta(hours=i)).strftime("%Y%m%d%H%M%S") for i in range(days * 24)]
 
 
 def fetch_and_aggregate(ts: str, fips_to_country: dict) -> dict:
@@ -122,21 +141,35 @@ def fetch_and_aggregate(ts: str, fips_to_country: dict) -> dict:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--backfill",
+        action="store_true",
+        help=f"Pull {BACKFILL_DAYS} days of history at hourly resolution instead of the last {LOOKBACK_FILES} 15-min files.",
+    )
+    args = parser.parse_args()
+
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     fips_to_country = {v: k for k, v in FIPS_BY_COUNTRY.items()}
 
-    print("Looking up latest GDELT GKG bulk file...")
-    latest_ts = latest_gkg_timestamp()
-    ts_list = timestamps_going_back(latest_ts, LOOKBACK_FILES)
-    print(f"Pulling last {len(ts_list)} files (~{15 * len(ts_list)} min window), newest first: {ts_list[0]}")
+    if args.backfill:
+        ts_list = hourly_timestamps_going_back(BACKFILL_DAYS)
+        print(f"Backfilling {len(ts_list)} hourly files (~{BACKFILL_DAYS} days), newest first: {ts_list[0]}")
+    else:
+        print("Looking up latest GDELT GKG bulk file...")
+        latest_ts = latest_gkg_timestamp()
+        ts_list = timestamps_going_back(latest_ts, LOOKBACK_FILES)
+        print(f"Pulling last {len(ts_list)} files (~{15 * len(ts_list)} min window), newest first: {ts_list[0]}")
 
     rows = []
+    missing = 0
     for i, ts in enumerate(ts_list):
         print(f"[{i + 1}/{len(ts_list)}] {ts}")
         try:
             counts = fetch_and_aggregate(ts, fips_to_country)
         except requests.exceptions.RequestException as exc:
             print(f"  ! request failed: {exc}")
+            missing += 1
             continue
 
         ts_dt = datetime.strptime(ts, "%Y%m%d%H%M%S").replace(tzinfo=timezone.utc)
@@ -153,11 +186,18 @@ def main() -> None:
                 }
             )
 
+        if args.backfill:
+            time.sleep(BACKFILL_DELAY_SECONDS)
+
     if not rows:
         print("No GDELT data retrieved.", file=sys.stderr)
         sys.exit(1)
 
-    out_path = OUT_DIR / f"gdelt_tension_{date.today().isoformat()}.csv"
+    if args.backfill:
+        print(f"\n{missing}/{len(ts_list)} hourly files were missing/failed (best-effort skip).")
+
+    filename = f"gdelt_tension_history_{date.today().isoformat()}.csv" if args.backfill else f"gdelt_tension_{date.today().isoformat()}.csv"
+    out_path = OUT_DIR / filename
     with out_path.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(
             f, fieldnames=["country", "timestamp_utc", "date", "volume_article_count", "avg_tone"]

@@ -1,57 +1,57 @@
 eventtype,eventname,country,iso3,alertlevel,alertscore,fromdate,todate,datemodified,description
 DR,Central America-2026,"The Bahamas, Belize, Cuba, Guatemala, Honduras, Mexico, Nicaragua, El Salvador",BHS,Orange,2,2026-04-21T00:00:00,2026-09-12T00:00:00,2026-09-14T06:09:54,"Drought in The Bahamas, Belize, Cuba, Guatemala, Honduras, Mexico, Nicaragua, El Salvador"
 DR,Madagascar-2026,Madagascar,MDG,Orange,2,2025-11-21T00:00:00,2026-09-12T00:00:00,2026-09-14T05:40:41,Drought in Madagascar
-DR,Europe-2026,"Austria, Bosnia & Herzegovina, Belgium, Belarus, Switzerland, Czech Republic, Germany, Denmark, Spain, France, Croatia, Hungary, Ireland, Italy, Liechtenstein, Luxembourg, Netherlands, Poland, Romania, Serbia, Sweden, Slovenia, Slovakia, San Marino, Ukraine, , ",AUT,Orange,2,2025-12-21T00:00:00,2026-09-12T00:00:00,2026-09-14T07:20:11,"Drought in Austria, Bosnia  and  Herzegovina, Belgium, Belarus, Switzerland, Czech Republic, Germany, Denmark, Spain, France, Croatia, Hungary, Ireland, Italy, Liechtenstein, Luxembourg, Netherlands, Poland, Romania, Serbia, Sweden, Slovenia, Slovakia, San Marino, Ukraine, , "
+DR,Europe-2026,"Austria, Bosnia & Herzegovina, Belgium, Belarus, Switzerland, Czech Republic, Germany, Denmark, Spain, France, Croatia, Hungary, Ireland, Italy, Liechtenstein, Luxembourg, Netherlands, Poland, Romania, Serbia, Sweden, Slovenia, Slovakia, San Marino, Ukraine, , ",AUT,Orange,2,2025-12-21T00:00:00,2026-09-12T00:00:00,2026-09-14T11:40:15,"Drought in Austria, Bosnia  and  Herzegovina, Belgium, Belarus, Switzerland, Czech Republic, Germany, Denmark, Spain, France, Croatia, Hungary, Ireland, Italy, Liechtenstein, Luxembourg, Netherlands, Poland, Romania, Serbia, Sweden, Slovenia, Slovakia, San Marino, Ukraine, , "
 FL,,China,CHN,Orange,2,2026-07-31T01:00:00,2026-09-07T01:00:00,2026-09-06T06:23:52,Flood in China
-VO,Krakatau,Indonesia,IDN,Orange,2,2026-09-04T21:00:00,2026-09-04T21:00:00,2026-09-14T07:20:11,Eruption  Krakatau
+VO,Krakatau,Indonesia,IDN,Orange,2,2026-09-04T21:00:00,2026-09-04T21:00:00,2026-09-14T11:40:13,Eruption  Krakatau
 FL,,India,IND,Orange,2,2026-08-09T01:00:00,2026-09-03T01:00:00,2026-09-08T08:37:00,Flood in India
 TC,SAUDEL-26,"Japan, China, Northern Mariana Islands",CHN,Orange,2,2026-08-18T12:00:00,2026-09-03T00:00:00,2026-09-04T10:04:35,Tropical Cyclone SAUDEL-26
-FL,,Nepal,NPL,Red,3,2026-08-26T01:00:00,2026-09-01T14:00:00,2026-09-14T07:20:11,Flood in Nepal
+FL,,Nepal,NPL,Red,3,2026-08-26T01:00:00,2026-09-01T14:00:00,2026-09-14T11:40:14,Flood in Nepal
 EQ,,China,CHN,Orange,2,2026-08-28T05:13:35,2026-08-28T05:13:35,2026-08-28T07:04:27,Earthquake in China
 FL,,China,CHN,Orange,2,2026-08-22T01:00:00,2026-08-26T01:00:00,2026-08-27T09:04:09,Flood in China
-WF,,Serbia,SRB,Orange,2,2026-08-05T00:00:00,2026-08-25T00:00:00,2026-09-14T07:20:12,Forest fires in Serbia
-WF,,Belgium,BEL,Orange,2,2026-08-14T00:00:00,2026-08-17T00:00:00,2026-09-14T07:20:13,Forest fires in Belgium
+WF,,Serbia,SRB,Orange,2,2026-08-05T00:00:00,2026-08-25T00:00:00,2026-09-14T11:40:15,Forest fires in Serbia
+WF,,Belgium,BEL,Orange,2,2026-08-14T00:00:00,2026-08-17T00:00:00,2026-09-14T11:40:15,Forest fires in Belgium
 WF,,Spain,ESP,Orange,2,2026-08-10T00:00:00,2026-08-17T00:00:00,2026-08-23T07:53:50,Forest fires in Spain
-EQ,,Indonesia,IDN,Red,3,2026-08-14T21:58:21,2026-08-14T21:58:21,2026-09-14T07:20:12,Earthquake in Indonesia
-EQ,,Colombia,COL,Red,3,2026-08-10T12:34:28,2026-08-10T12:34:28,2026-09-14T07:20:15,Earthquake in Colombia
-TC,DOLPHIN-26,"Marshall Islands, Japan, China",MHL,Orange,2,2026-07-27T00:00:00,2026-08-09T12:00:00,2026-09-14T07:13:11,Tropical Cyclone DOLPHIN-26
+EQ,,Indonesia,IDN,Red,3,2026-08-14T21:58:21,2026-08-14T21:58:21,2026-09-14T11:40:15,Earthquake in Indonesia
+EQ,,Colombia,COL,Red,3,2026-08-10T12:34:28,2026-08-10T12:34:28,2026-09-14T11:40:15,Earthquake in Colombia
+TC,DOLPHIN-26,"Marshall Islands, Japan, China",MHL,Orange,2,2026-07-27T00:00:00,2026-08-09T12:00:00,2026-09-14T11:30:03,Tropical Cyclone DOLPHIN-26
 EQ,,Philippines,PHL,Orange,2,2026-08-05T04:14:06,2026-08-05T04:14:06,2026-08-06T14:02:30,Earthquake in Philippines
 WF,,Greece,GRC,Orange,2,2026-07-31T00:00:00,2026-08-05T00:00:00,2026-08-15T19:53:09,Forest fires in Greece
-WF,,Greece,GRC,Orange,2,2026-07-30T00:00:00,2026-08-01T00:00:00,2026-09-14T07:20:16,Forest fires in Greece
-WF,,France,FRA,Red,3,2026-07-22T00:00:00,2026-08-01T00:00:00,2026-09-14T07:20:16,Forest fires in France
+WF,,Greece,GRC,Orange,2,2026-07-30T00:00:00,2026-08-01T00:00:00,2026-09-14T11:40:15,Forest fires in Greece
+WF,,France,FRA,Red,3,2026-07-22T00:00:00,2026-08-01T00:00:00,2026-09-14T11:40:16,Forest fires in France
 FL,,China,CHN,Red,3,2026-07-25T01:00:00,2026-07-31T01:00:00,2026-08-11T10:53:22.9,Flood in China
 DR,"Uganda, Kenya-2026","Democratic Republic of Congo, Kenya, Tanzania, Uganda",COD,Orange,2,2026-05-21T00:00:00,2026-07-30T00:00:00,2026-08-31T08:19:09,"Drought in Democratic Republic of Congo, Kenya, Tanzania, Uganda"
-WF,,Spain,ESP,Orange,2,2026-07-25T00:00:00,2026-07-30T00:00:00,2026-09-14T07:20:16,Forest fires in Spain
-WF,,Spain,ESP,Orange,2,2026-07-22T00:00:00,2026-07-30T00:00:00,2026-09-14T07:20:16,Forest fires in Spain
+WF,,Spain,ESP,Orange,2,2026-07-25T00:00:00,2026-07-30T00:00:00,2026-09-14T11:40:16,Forest fires in Spain
+WF,,Spain,ESP,Orange,2,2026-07-22T00:00:00,2026-07-30T00:00:00,2026-09-14T11:40:16,Forest fires in Spain
 DR,East Africa-2026,"Eritrea, Ethiopia, Kenya, Somalia",ERI,Orange,2,2026-04-21T00:00:00,2026-07-30T00:00:00,2026-08-31T08:18:56,"Drought in Eritrea, Ethiopia, Kenya, Somalia"
-WF,,Tunisia,TUN,Orange,2,2026-07-21T00:00:00,2026-07-29T00:00:00,2026-09-14T07:20:16,Forest fires in Tunisia
-EQ,,Japan,JPN,Orange,2,2026-07-28T07:27:15,2026-07-28T07:27:15,2026-09-14T07:20:16,Earthquake in Japan
+WF,,Tunisia,TUN,Orange,2,2026-07-21T00:00:00,2026-07-29T00:00:00,2026-09-14T11:40:16,Forest fires in Tunisia
+EQ,,Japan,JPN,Orange,2,2026-07-28T07:27:15,2026-07-28T07:27:15,2026-09-14T11:40:16,Earthquake in Japan
 EQ,,China,CHN,Orange,2,2026-07-28T03:16:08,2026-07-28T03:16:08,2026-08-05T02:05:35,Earthquake in China
 TC,NOUL-26,"China, Philippines",CHN,Orange,2,2026-07-23T06:00:00,2026-07-26T00:00:00,2026-07-27T00:37:14,Tropical Cyclone NOUL-26
-WF,,Spain,ESP,Orange,2,2026-07-18T00:00:00,2026-07-25T00:00:00,2026-09-14T07:20:16,Forest fires in Spain
+WF,,Spain,ESP,Orange,2,2026-07-18T00:00:00,2026-07-25T00:00:00,2026-09-14T11:40:16,Forest fires in Spain
 EQ,,Peru,PER,Orange,2,2026-07-19T02:24:35,2026-07-19T02:24:35,2026-07-22T02:06:24,Earthquake in Peru
 VO,Mayon,Philippines,PHL,Orange,2,2026-07-16T01:59:00,2026-07-16T01:59:00,2026-07-16T08:01:21,Eruption  Mayon
 FL,,China,CHN,Orange,2,2026-06-06T01:00:00,2026-07-14T01:00:00,2026-08-17T12:11:17,Flood in China
 WF,,France,FRA,Orange,2,2026-07-12T00:00:00,2026-07-14T00:00:00,2026-07-27T15:48:30,Forest fires in France
-TC,BAVI-26,"Guam, Northern Mariana Islands, Japan, Taiwan, China",CHN,Red,3,2026-07-01T00:00:00,2026-07-11T18:00:00,2026-09-14T07:20:16,Tropical Cyclone BAVI-26
+TC,BAVI-26,"Guam, Northern Mariana Islands, Japan, Taiwan, China",CHN,Red,3,2026-07-01T00:00:00,2026-07-11T18:00:00,2026-09-14T11:40:16,Tropical Cyclone BAVI-26
 WF,,Spain,ESP,Orange,2,2026-07-09T00:00:00,2026-07-11T00:00:00,2026-07-24T03:31:10,Forest fires in Spain
-WF,,France,FRA,Orange,2,2026-07-04T00:00:00,2026-07-08T00:00:00,2026-09-14T07:20:16,Forest fires in France
-WF,,Portugal,PRT,Orange,2,2026-07-02T00:00:00,2026-07-08T00:00:00,2026-09-14T07:20:16,Forest fires in Portugal
+WF,,France,FRA,Orange,2,2026-07-04T00:00:00,2026-07-08T00:00:00,2026-09-14T11:40:16,Forest fires in France
+WF,,Portugal,PRT,Orange,2,2026-07-02T00:00:00,2026-07-08T00:00:00,2026-09-14T11:40:16,Forest fires in Portugal
 TC,MAYSAK-26,"Viet Nam, China, Laos",VNM,Orange,2,2026-07-01T18:00:00,2026-07-04T18:00:00,2026-07-04T22:01:20,Tropical Cyclone MAYSAK-26
 EQ,,Philippines,PHL,Orange,2,2026-06-26T11:34:41,2026-06-26T11:34:41,2026-06-27T14:03:54,Earthquake in Philippines
-EQ,,Venezuela,VEN,Red,3,2026-06-24T22:05:12,2026-06-24T22:05:12,2026-09-14T07:20:16,Earthquake in Venezuela
-EQ,,Venezuela,VEN,Red,3,2026-06-24T22:04:32,2026-06-24T22:04:32,2026-09-14T07:20:16,Earthquake in Venezuela
+EQ,,Venezuela,VEN,Red,3,2026-06-24T22:05:12,2026-06-24T22:05:12,2026-09-14T11:40:16,Earthquake in Venezuela
+EQ,,Venezuela,VEN,Red,3,2026-06-24T22:04:32,2026-06-24T22:04:32,2026-09-14T11:40:16,Earthquake in Venezuela
 EQ,,China,CHN,Orange,2,2026-06-16T09:06:55,2026-06-16T09:06:55,2026-06-18T02:00:44,Earthquake in China
-EQ,,Indonesia,IDN,Orange,2,2026-06-16T03:27:44,2026-06-16T03:27:44,2026-09-14T07:20:16,Earthquake in Indonesia
-EQ,,Philippines,PHL,Orange,2,2026-06-07T23:37:40,2026-06-07T23:37:40,2026-09-14T07:20:17,Earthquake in Philippines
+EQ,,Indonesia,IDN,Orange,2,2026-06-16T03:27:44,2026-06-16T03:27:44,2026-09-14T11:40:16,Earthquake in Indonesia
+EQ,,Philippines,PHL,Orange,2,2026-06-07T23:37:40,2026-06-07T23:37:40,2026-09-14T11:40:16,Earthquake in Philippines
 EQ,,China,CHN,Orange,2,2026-05-18T13:44:26,2026-05-18T13:44:26,2026-05-23T03:00:26,Earthquake in China
 VO,Dukono,Indonesia,IDN,Orange,2,2026-05-08T09:10:00,2026-05-08T09:10:00,2026-05-08T08:00:42,Eruption  Dukono
 EQ,,Japan,JPN,Orange,2,2026-04-20T07:53:00,2026-04-20T07:53:00,2026-04-21T09:01:16,Earthquake in Japan
 DR,Argentina-Uruguay-2025,"Argentina, Uruguay",ARG,Orange,2,2025-11-21T00:00:00,2026-04-20T00:00:00,2026-05-21T13:07:09,"Drought in Argentina, Uruguay"
-TC,SINLAKU-26,"Northern Mariana Islands, Guam",MNP,Red,3,2026-04-09T00:00:00,2026-04-19T18:00:00,2026-09-14T07:20:17,Tropical Cyclone SINLAKU-26
+TC,SINLAKU-26,"Northern Mariana Islands, Guam",MNP,Red,3,2026-04-09T00:00:00,2026-04-19T18:00:00,2026-09-14T11:40:17,Tropical Cyclone SINLAKU-26
 FL,,Afghanistan,AFG,Orange,2,2026-03-25T01:00:00,2026-04-14T01:00:00,2026-09-03T13:36:40,Flood in Afghanistan
 FL,,Brazil,BRA,Orange,2,2026-02-03T01:00:00,2026-03-31T01:00:00,2026-07-31T17:10:19,Flood in Brazil
-DR,East Africa-2025,"Kenya, Somalia",KEN,Orange,2,2025-05-21T00:00:00,2026-03-30T00:00:00,2026-09-14T07:20:17,"Drought in Kenya, Somalia"
+DR,East Africa-2025,"Kenya, Somalia",KEN,Orange,2,2025-05-21T00:00:00,2026-03-30T00:00:00,2026-09-14T11:40:16,"Drought in Kenya, Somalia"
 VO,Kanlaon,Philippines,PHL,Orange,2,2026-03-15T10:54:00,2026-03-15T10:54:00,2026-03-16T08:06:16.423,Eruption  Kanlaon
 FL,,Ethiopia,ETH,Orange,2,2026-03-09T01:00:00,2026-03-11T01:00:00,2026-08-14T16:15:28,Flood in Ethiopia
 FL,,Democratic Republic of Congo,COD,Orange,2,2026-02-11T01:00:00,2026-03-05T01:00:00,2026-04-10T05:40:34,Flood in Democratic Republic of Congo
@@ -97,4 +97,3 @@ TC,RAGASA-25,"Philippines, China",CHN,Red,3,2025-09-18T12:00:00,2025-09-24T12:00
 FL,,United States,USA,Orange,2,2025-06-15T01:00:00,2025-09-21T01:00:00,2025-10-08T14:23:01,Flood in United States
 FL,,South Sudan,SSD,Orange,2,2025-07-15T01:00:00,2025-09-19T01:00:00,2025-09-19T15:02:35,Flood in South Sudan
 EQ,,Russia,RUS,Orange,2,2025-09-18T18:58:12,2025-09-18T18:58:12,2025-09-19T20:01:59,Earthquake in Russia
-EQ,,India,IND,Orange,2,2025-09-14T11:11:51,2025-09-14T11:11:51,2025-09-15T15:02:38,Earthquake in India

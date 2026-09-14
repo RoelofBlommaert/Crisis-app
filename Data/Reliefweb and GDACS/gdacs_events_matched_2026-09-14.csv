@@ -1,9 +1,8 @@
-eventtype,eventname,country,iso3,alertlevel,alertscore,fromdate,todate,datemodified,description
-DR,Europe-2026,"Austria, Bosnia & Herzegovina, Belgium, Belarus, Switzerland, Czech Republic, Germany, Denmark, Spain, France, Croatia, Hungary, Ireland, Italy, Liechtenstein, Luxembourg, Netherlands, Poland, Romania, Serbia, Sweden, Slovenia, Slovakia, San Marino, Ukraine, , ",AUT,Orange,2,2025-12-21T00:00:00,2026-09-12T00:00:00,2026-09-14T07:20:11,"Drought in Austria, Bosnia  and  Herzegovina, Belgium, Belarus, Switzerland, Czech Republic, Germany, Denmark, Spain, France, Croatia, Hungary, Ireland, Italy, Liechtenstein, Luxembourg, Netherlands, Poland, Romania, Serbia, Sweden, Slovenia, Slovakia, San Marino, Ukraine, , "
-FL,,"Malaysia, Thailand",MYS,Orange,2,2025-12-12T13:00:00,2025-12-12T13:00:00,2025-12-13T06:45:16,"Flood in Malaysia, Thailand"
-FL,,"Indonesia, Malaysia, Thailand",IDN,Red,3,2025-12-03T01:00:00,2025-12-06T01:00:00,2025-12-10T10:21:22,"Flood in Indonesia, Malaysia, Thailand"
-FL,,Thailand,THA,Orange,2,2025-11-17T01:00:00,2025-12-01T14:00:00,2025-12-03T00:30:27,Flood in Thailand
-TC,MELISSA-25,"Jamaica, Cuba, Bahamas, Bermuda, Haiti, Canada",JAM,Red,3,2025-10-21T15:00:00,2025-10-31T15:00:00,2026-02-11T15:18:59.037,Tropical Cyclone MELISSA-25
-EQ,,Türkiye,TUR,Orange,2,2025-10-27T19:48:29,2025-10-27T19:48:29,2025-10-29T15:00:37,Earthquake in Türkiye
-TC,FENGSHEN-25,"Viet Nam, China, Cambodia, Philippines, Laos, Thailand",KHM,Orange,2,2025-10-18T00:00:00,2025-10-23T00:00:00,2026-02-11T15:18:59.037,Tropical Cyclone FENGSHEN-25
-FL,,South Sudan,SSD,Orange,2,2025-07-15T01:00:00,2025-09-19T01:00:00,2025-09-19T15:02:35,Flood in South Sudan
+eventtype,eventname,country,iso3,alertlevel,alertscore,fromdate,todate,datemodified,description,matched_countries
+DR,Europe-2026,"Austria, Bosnia & Herzegovina, Belgium, Belarus, Switzerland, Czech Republic, Germany, Denmark, Spain, France, Croatia, Hungary, Ireland, Italy, Liechtenstein, Luxembourg, Netherlands, Poland, Romania, Serbia, Sweden, Slovenia, Slovakia, San Marino, Ukraine, , ",AUT,Orange,2,2025-12-21T00:00:00,2026-09-12T00:00:00,2026-09-14T11:40:15,"Drought in Austria, Bosnia  and  Herzegovina, Belgium, Belarus, Switzerland, Czech Republic, Germany, Denmark, Spain, France, Croatia, Hungary, Ireland, Italy, Liechtenstein, Luxembourg, Netherlands, Poland, Romania, Serbia, Sweden, Slovenia, Slovakia, San Marino, Ukraine, , ",Ukraine
+FL,,"Malaysia, Thailand",MYS,Orange,2,2025-12-12T13:00:00,2025-12-12T13:00:00,2025-12-13T06:45:16,"Flood in Malaysia, Thailand",Thailand
+FL,,"Indonesia, Malaysia, Thailand",IDN,Red,3,2025-12-03T01:00:00,2025-12-06T01:00:00,2025-12-10T10:21:22,"Flood in Indonesia, Malaysia, Thailand",Thailand
+FL,,Thailand,THA,Orange,2,2025-11-17T01:00:00,2025-12-01T14:00:00,2025-12-03T00:30:27,Flood in Thailand,Thailand
+TC,MELISSA-25,"Jamaica, Cuba, Bahamas, Bermuda, Haiti, Canada",JAM,Red,3,2025-10-21T15:00:00,2025-10-31T15:00:00,2026-02-11T15:18:59.037,Tropical Cyclone MELISSA-25,Haiti
+EQ,,Türkiye,TUR,Orange,2,2025-10-27T19:48:29,2025-10-27T19:48:29,2025-10-29T15:00:37,Earthquake in Türkiye,Turkey
+TC,FENGSHEN-25,"Viet Nam, China, Cambodia, Philippines, Laos, Thailand",KHM,Orange,2,2025-10-18T00:00:00,2025-10-23T00:00:00,2026-02-11T15:18:59.037,Tropical Cyclone FENGSHEN-25,Thailand

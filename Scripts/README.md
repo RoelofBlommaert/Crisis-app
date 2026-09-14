@@ -17,13 +17,23 @@ Python 3.9+.
 
 | Script | Source | Needs a key? | Output |
 |---|---|---|---|
-| `fetch_gdelt_tension.py` | GDELT 2.0 GKG bulk files | No | `Data/GDELT/gdelt_tension_<date>.csv` |
+| `fetch_gdelt_tension.py` | GDELT 2.0 GKG bulk files | No | `Data/GDELT/gdelt_tension_<date>.csv` (or `gdelt_tension_history_<date>.csv` with `--backfill`) |
 | `fetch_gdacs_events.py` | GDACS event list | No | `Data/Reliefweb and GDACS/gdacs_events_<date>.{json,csv}` |
 | `fetch_reliefweb_events.py` | ReliefWeb API v2 | **Yes, see below** | `Data/Reliefweb and GDACS/reliefweb_disasters_<date>.csv` |
 | `fetch_cbs_travel.py` | CBS StatLine table 84365NED | No | `Data/Travel and flights/cbs_travel_<date>.csv` |
 | `fetch_opensky_snapshot.py` | OpenSky Network (live only) | No | `Data/Travel and flights/opensky_snapshot_<timestamp>.csv` |
+| `merge_data.py` | combines all of the above | No | `App/data/dataset.json` (what the frontend reads) |
 
-Run everything: `python run_all.py`
+Run everything: `python run_all.py`, then `python merge_data.py` to
+produce the merged JSON the app reads. `run_all.py` does not pass
+`--backfill` to `fetch_gdelt_tension.py` (a normal run only takes a few
+seconds; the backfill takes several minutes) — run that one separately
+when you want to (re)seed the trend history:
+
+```
+python fetch_gdelt_tension.py --backfill
+python merge_data.py
+```
 
 ## Country list
 
@@ -47,6 +57,21 @@ which countries are tracked.
   (e.g. all of "Africa" lumped together), so `cbs_travel_*.csv` marks
   each row's `cbs_granularity` as `country` or `region` -- treat `region`
   rows as rough context, not a per-country baseline.
+- **Checked and dropped: Eurostat `tour_dem_ttw`** as a fix for the CBS
+  region-only gap. It does have a per-country `c_dest` dimension
+  (including individual codes for Turkey and Ukraine), which looked like
+  it could bump Ukraine from region- to country-level. In practice, the
+  Netherlands reports **zero data for Ukraine** in this dataset across
+  every purpose/duration/year combination (likely suppressed for being
+  too small a sample) -- confirmed by querying the API directly, not
+  assumed. Turkey does have real data there, but CBS already covers
+  Turkey at country level, so it adds nothing. The other 6 countries
+  aren't broken out individually in Eurostat's own codelist either (they
+  fall under "other Africa/Asia/Americas" buckets, same coarseness as
+  CBS's regions). Conclusion: no free/no-key source found that improves
+  on CBS's region-level granularity for Lebanon, Israel, Egypt, Sudan,
+  Haiti, Ukraine, or Thailand -- not worth re-investigating without a
+  different (likely paid or registration-gated) data source.
 - **GDELT** volume/tone is a media-attention proxy, not ground-truth
   instability. We pull it from the raw GKG bulk files (updated every 15
   min), not the DOC 2.0 query API — see "Avoiding the GDELT rate limit"
@@ -60,6 +85,19 @@ which countries are tracked.
   droughts, volcanic activity) — it does not cover conflict, political
   unrest, or civil war, which matters for a couple of the countries on
   the list.
+- **Fixed: GDACS country matching had a substring bug.** The event
+  list's `country` field is a plain comma-separated name string (e.g.
+  "Jamaica, Cuba, Bahamas, ... Haiti, Canada"), and the original matching
+  checked `name in row["country"].lower()` — a substring test, so
+  "sudan" matched inside "south sudan" and incorrectly attributed a
+  South Sudan flood event to our tracked "Sudan". Fixed to match whole
+  comma-separated tokens instead (with a small alias table for name
+  mismatches like GDACS's "Türkiye" vs. our "Turkey"). The matched CSV
+  now also carries a `matched_countries` column listing exactly which
+  tracked country/countries triggered each row, since a single
+  multi-country event's `iso3` field only ever names one (usually the
+  first-listed) country — not reliable for per-country attribution on
+  its own.
 
 ## Avoiding the GDELT rate limit (and how to query GDELT hourly, in general)
 

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crisis &amp; Connectivity Monitor</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1>Crisis &amp; Connectivity Monitor</h1>
+    <p class="subtitle">
+      A 2-day vibe-coding course demo &mdash; media-tone signal (GDELT),
+      confirmed disaster events (GDACS), and Dutch outbound travel
+      baselines (CBS), side by side per country. Not an operational tool.
+      <a href="#about" id="about-link">About &amp; limitations</a>
+    </p>
+    <p class="snapshot-note" id="snapshot-note">Loading dataset&hellip;</p>
+  </header>
+
+  <main>
+    <section id="map" aria-label="Country map"></section>
+
+    <section class="country-list" aria-label="Tracked countries">
+      <h2>Tracked countries</h2>
+      <ul id="country-list-items"></ul>
+    </section>
+
+    <section class="detail-panel" id="detail-panel" aria-label="Country detail">
+      <p class="detail-placeholder">Select a country marker or list item to see its trend.</p>
+    </section>
+  </main>
+
+  <section id="about" class="about-panel" hidden>
+    <h2>About this app</h2>
+    <p>
+      Built as a learning exercise for a vibe-coding course, using a
+      scenario relevant to MFA work: monitoring instability abroad and
+      how it may relate to travel/tourism patterns. See
+      <code>Documentation/Relevance and function.txt</code> in the repo
+      for the full writeup, and <code>Scripts/README.md</code> for known
+      data-source limitations. In short:
+    </p>
+    <ul>
+      <li>This is a <strong>one-time static snapshot</strong>, not a live feed &mdash; see the generation time above.</li>
+      <li><strong>GDELT</strong> tone/volume is a media-attention proxy, not ground-truth instability.</li>
+      <li><strong>GDACS</strong> covers natural disasters only; conflict-driven countries (Ukraine, Lebanon, Israel, Sudan) have no confirmed-event coverage from it.</li>
+      <li><strong>CBS travel</strong> figures are region-level (not per-country) for most tracked countries &mdash; shown with a badge, not disguised as country-specific.</li>
+      <li>No personal, internal, or classified MFA data is used anywhere in this app.</li>
+    </ul>
+    <button type="button" id="about-close">Close</button>
+  </section>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

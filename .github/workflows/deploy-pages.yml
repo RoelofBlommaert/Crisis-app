@@ -1,0 +1,42 @@
+name: Deploy App to GitHub Pages
+
+# Publishes only the App/ folder (the static site) to GitHub Pages.
+# Everything else in the repo (Data/, Scripts/, Documentation/) stays
+# out of the published site -- Pages' branch-deploy UI only supports
+# root or /docs, so this uses the Actions-based deploy scoped to App/
+# instead of restructuring the repo.
+#
+# One-time setup (can't be done from a workflow file): in the repo's
+# Settings -> Pages, set "Build and deployment: Source" to
+# "GitHub Actions". After that, every push to main that touches App/
+# redeploys automatically.
+
+on:
+  push:
+    branches: [main]
+    paths: ["App/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: App
+      - id: deployment
+        uses: actions/deploy-pages@v4

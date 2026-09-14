@@ -45,6 +45,23 @@ FIELDS = [
     "description",
 ]
 
+MATCHED_FIELDS = FIELDS + ["matched_countries"]
+
+# GDACS's "country" field is a plain comma-separated name list; matching by
+# substring (e.g. "sudan" in "south sudan") produces false positives, so we
+# match whole comma-separated tokens instead. A couple of GDACS's own names
+# don't match our country list verbatim.
+NAME_ALIASES = {
+    "turkiye": "turkey",
+}
+
+
+def _normalize(name: str) -> str:
+    name = name.strip().lower()
+    # strip diacritics GDACS uses (e.g. "Türkiye") so alias lookups match
+    name = name.replace("ü", "u").replace("ç", "c").replace("ö", "o")
+    return NAME_ALIASES.get(name, name)
+
 
 def main() -> None:
     OUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -72,18 +89,30 @@ def main() -> None:
         writer.writeheader()
         writer.writerows(all_rows)
 
-    target_iso3 = {c["iso3"] for c in COUNTRIES}
-    target_names = {c["name"].lower() for c in COUNTRIES}
-    matched_rows = [
-        row
-        for row in all_rows
-        if row["iso3"] in target_iso3
-        or any(name in row["country"].lower() for name in target_names)
-    ]
+    iso3_to_name = {c["iso3"]: c["name"] for c in COUNTRIES}
+    name_to_target = {_normalize(c["name"]): c["name"] for c in COUNTRIES}
+
+    matched_rows = []
+    for row in all_rows:
+        matched = set()
+        # iso3 identifies the event's primary/first-listed country only --
+        # trustworthy on its own for single-country events.
+        if row["iso3"] in iso3_to_name:
+            matched.add(iso3_to_name[row["iso3"]])
+        # For multi-country events, check each comma-separated name token
+        # against our list (whole-token match, not substring).
+        for token in row["country"].split(","):
+            token_norm = _normalize(token)
+            if token_norm in name_to_target:
+                matched.add(name_to_target[token_norm])
+        if matched:
+            row = dict(row)
+            row["matched_countries"] = ";".join(sorted(matched))
+            matched_rows.append(row)
 
     matched_path = OUT_DIR / f"gdacs_events_matched_{today}.csv"
     with matched_path.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=FIELDS)
+        writer = csv.DictWriter(f, fieldnames=MATCHED_FIELDS)
         writer.writeheader()
         writer.writerows(matched_rows)
 
