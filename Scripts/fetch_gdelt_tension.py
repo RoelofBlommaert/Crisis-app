@@ -41,8 +41,16 @@ no key, no observed rate limit either way -- this just reaches further
 back in time. Used once to seed a real multi-day trend for the app since
 this project isn't running a recurring scheduled pull.
 
+Also writes a small summary, `gdelt_theme_breakdown_<date>.csv`
+(country, theme_code, category, article_count): a per-theme-code tally
+across the whole run, so the app can show *what* is happening (e.g.
+"ARMEDCONFLICT: 312 articles, PROTEST: 89, TERROR: 45") instead of just
+a compressed share number. One summary for the whole run, not one row
+per 15-min file.
+
 Output: Data/GDELT/gdelt_tension_<date>.csv (normal mode)
         Data/GDELT/gdelt_tension_history_<date>.csv (--backfill mode)
+        Data/GDELT/gdelt_theme_breakdown_<date>.csv (both modes)
 Columns: country, timestamp_utc, date, volume_article_count, avg_tone,
          conflict_article_count, disaster_article_count
 """
@@ -127,26 +135,27 @@ def hourly_timestamps_going_back(days: int) -> list:
     return [(now - timedelta(hours=i)).strftime("%Y%m%d%H%M%S") for i in range(days * 24)]
 
 
-def _article_theme_flags(themes_field: str) -> tuple:
-    """Returns (is_conflict, is_disaster) for one article's V2Themes field."""
-    is_conflict = False
-    is_disaster = False
+def _article_theme_codes(themes_field: str) -> tuple:
+    """Returns (conflict_codes, disaster_codes) sets of matched theme codes
+    for one article's V2Themes field (not just booleans) -- so callers can
+    tally *which* themes are driving the signal, not only whether one matched."""
+    conflict_codes = set()
+    disaster_codes = set()
     for entry in themes_field.split(";"):
         code = entry.split(",")[0]
         if not code:
             continue
         if code in CONFLICT_THEMES:
-            is_conflict = True
+            conflict_codes.add(code)
         elif code.startswith(DISASTER_THEME_PREFIX):
-            is_disaster = True
-        if is_conflict and is_disaster:
-            break
-    return is_conflict, is_disaster
+            disaster_codes.add(code)
+    return conflict_codes, disaster_codes
 
 
-def fetch_and_aggregate(ts: str, fips_to_country: dict) -> dict:
+def fetch_and_aggregate(ts: str, fips_to_country: dict, theme_totals: dict) -> dict:
     """Returns {country_name: (article_count, tone_sum, conflict_count, disaster_count)}
-    for one 15-min file."""
+    for one 15-min file. Mutates `theme_totals[country][theme_code]` in
+    place with per-article theme-code counts across the whole run."""
     url = FILE_URL_TEMPLATE.format(ts=ts)
     resp = requests.get(url, timeout=60)
     if resp.status_code == 404:
@@ -180,16 +189,19 @@ def fetch_and_aggregate(ts: str, fips_to_country: dict) -> dict:
 
                 if not matched_countries:
                     continue
-                is_conflict, is_disaster = _article_theme_flags(themes)
+                conflict_codes, disaster_codes = _article_theme_codes(themes)
 
                 for country_name in matched_countries:
                     n, total, n_conflict, n_disaster = counts.get(country_name, (0, 0.0, 0, 0))
                     counts[country_name] = (
                         n + 1,
                         total + tone,
-                        n_conflict + (1 if is_conflict else 0),
-                        n_disaster + (1 if is_disaster else 0),
+                        n_conflict + (1 if conflict_codes else 0),
+                        n_disaster + (1 if disaster_codes else 0),
                     )
+                    country_totals = theme_totals.setdefault(country_name, {})
+                    for code in conflict_codes | disaster_codes:
+                        country_totals[code] = country_totals.get(code, 0) + 1
 
     print(f"  {ts}: processed, {sum(c[0] for c in counts.values())} matching articles")
     return counts
@@ -217,11 +229,12 @@ def main() -> None:
         print(f"Pulling last {len(ts_list)} files (~{15 * len(ts_list)} min window), newest first: {ts_list[0]}")
 
     rows = []
+    theme_totals = {}
     missing = 0
     for i, ts in enumerate(ts_list):
         print(f"[{i + 1}/{len(ts_list)}] {ts}")
         try:
-            counts = fetch_and_aggregate(ts, fips_to_country)
+            counts = fetch_and_aggregate(ts, fips_to_country, theme_totals)
         except requests.exceptions.RequestException as exc:
             print(f"  ! request failed: {exc}")
             missing += 1
@@ -272,6 +285,24 @@ def main() -> None:
         writer.writerows(rows)
 
     print(f"\nSaved {len(rows)} rows to {out_path}")
+
+    theme_path = OUT_DIR / f"gdelt_theme_breakdown_{date.today().isoformat()}.csv"
+    theme_rows = [
+        {
+            "country": country_name,
+            "theme_code": code,
+            "category": "conflict" if code in CONFLICT_THEMES else "disaster",
+            "article_count": count,
+        }
+        for country_name, codes in theme_totals.items()
+        for code, count in codes.items()
+    ]
+    theme_rows.sort(key=lambda r: (r["country"], -r["article_count"]))
+    with theme_path.open("w", newline="", encoding="utf-8") as f:
+        writer = csv.DictWriter(f, fieldnames=["country", "theme_code", "category", "article_count"])
+        writer.writeheader()
+        writer.writerows(theme_rows)
+    print(f"Saved {len(theme_rows)} theme-breakdown rows to {theme_path}")
 
 
 if __name__ == "__main__":

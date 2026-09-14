@@ -17,9 +17,10 @@
         <div>
           <h1>Crisis &amp; Connectivity Monitor</h1>
           <p class="subtitle">
-            Media-tone signal (GDELT), confirmed disaster events (GDACS), and Dutch outbound
-            travel baselines (CBS) &mdash; scored day by day. A course demo, not an operational tool.
-            <a href="#about" id="about-link">About &amp; limitations</a>
+            A proof of concept for classifying what's happening in a country right now, from data
+            that already exists (GDELT, GDACS, CBS) plus an illustrative comms-volume layer &mdash;
+            built for a crisis coordinator, not a finished operational tool.
+            <a href="#about" id="about-link">About &amp; method</a>
           </p>
         </div>
       </div>
@@ -44,45 +45,66 @@
   <section id="about" class="about-panel" hidden>
     <h2>About this app</h2>
     <p>
-      Built as a learning exercise for a vibe-coding course, using a
-      scenario relevant to MFA work: monitoring instability abroad and
-      how it may relate to travel/tourism patterns. See
-      <code>Documentation/Relevance and function.txt</code> in the repo
-      for the full writeup, and <code>Scripts/README.md</code> for known
-      data-source limitations. In short:
+      This is a proof of concept, not a finished tool: it shows what public
+      data (GDELT, GDACS, CBS) is available and how it could combine into a
+      per-country risk indication for a crisis coordinator &mdash; it is
+      <strong>not</strong> an automatic, validated classifier, and it does
+      <strong>not</strong> forecast or predict crises. See
+      <code>Documentation/Relevance and function.txt</code> for the full
+      writeup and <code>Scripts/README.md</code> for data-source details.
     </p>
-    <ul>
-      <li>This is a <strong>one-time static snapshot</strong>, not a live feed &mdash; see the generation time above.</li>
-      <li><strong>GDELT</strong> tone/volume is a media-attention proxy, not ground-truth instability.</li>
-      <li><strong>GDACS</strong> covers natural disasters only; conflict-driven countries (Ukraine, Lebanon, Israel, Sudan) have no confirmed-event coverage from it.</li>
-      <li><strong>CBS travel</strong> figures are region-level (not per-country) for most tracked countries &mdash; shown with a badge, not disguised as country-specific.</li>
-      <li>No personal, internal, or classified MFA data is used anywhere in this app.</li>
-    </ul>
+
+    <h3>Data sources &amp; freshness</h3>
+    <ul id="data-sources-list"></ul>
 
     <h3>Conflict &amp; disaster signals</h3>
     <p>
       Each country gets two 0&ndash;100 gauges, <strong>not</strong> a
       statistical probability of war or disaster &mdash; there is no
       calibrated base rate or validated model behind them. They're scored
-      <strong>one day at a time</strong> (see the 7-day strip under each
-      gauge) rather than as one flat weekly number, built from:
+      <strong>one day at a time</strong> (see the strip under each gauge)
+      rather than as one flat weekly number, built from:
     </p>
     <ul>
-      <li><strong>Conflict signal:</strong> that day's share of articles carrying a conflict/war/protest/terrorism theme tag (via GDELT's GKG theme tagging), plus that day's tone severity and a volume-spike bonus.</li>
-      <li><strong>Disaster signal:</strong> any GDACS alert level for an event actually active <em>on that day</em> (by the event's own date range, weighted highest), plus that day's share of articles carrying a natural-disaster theme tag.</li>
+      <li><strong>Conflict signal:</strong> that day's share of articles carrying a conflict/war/protest/terrorism theme tag (via GDELT's GKG theme tagging), damped on low-volume days, plus that day's tone severity and a volume-spike bonus.</li>
+      <li><strong>Disaster signal:</strong> any GDACS alert level for an event actually active <em>on that day</em> (by the event's own date range, weighted highest), plus that day's (damped) share of articles carrying a natural-disaster theme tag.</li>
     </ul>
     <p>
       Scoring day-by-day (rather than "is there any matching event at all")
-      is a deliberate fix: GDACS keeps recently-modified events listed for a
+      fixes a real bug: GDACS keeps recently-modified events listed for a
       while after they're actually over, so a months-old cyclone or
       earthquake would otherwise keep inflating "today's" score forever.
       Those older events still show up in the country's event list, just
-      labelled <strong>historical</strong> instead of active. Note also that
+      labelled <strong>historical</strong> instead of active. The "What's
+      happening this week" section under the gauges shows the actual theme
+      breakdown driving the number (with each theme's share of that week's
+      total articles) rather than just the compressed score. Note also that
       GDELT tags an article with every country it <em>mentions</em>, so a
       bordering or mediating country (e.g. Egypt or Turkey in Gaza-related
       coverage) can pick up a real conflict-theme share without being a
-      combatant itself &mdash; a known limitation, not a bug we can fully
-      resolve without deeper text analysis.
+      combatant itself &mdash; a known limitation, not something fixable
+      without deeper text analysis.
+    </p>
+
+    <h3>What's deliberately not here yet</h3>
+    <p>
+      Per this PoC's scope: no manual override control for the coordinator
+      to confirm or correct a suggested classification (the "automatic
+      detection + manual override" track) &mdash; a known, deliberately
+      deferred gap, not an oversight. No live/scheduled refresh (this is a
+      one-time static snapshot; see the timestamp above). No real
+      consular-call integration (see the fictional comms-volume layer
+      below) and no RNI linkage.
+    </p>
+
+    <h3>Fictional data: comms volume</h3>
+    <p>
+      The "incoming communication volume" chart on each country is
+      <strong>entirely synthetic</strong> &mdash; generated locally to
+      illustrate what combining a comms-volume signal with the real data
+      could look like, since real access to that kind of source isn't
+      confirmed yet. It is not connected to any real system and should
+      never be read as real call/message data.
     </p>
     <button type="button" id="about-close">Close</button>
   </section>

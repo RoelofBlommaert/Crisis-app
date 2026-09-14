@@ -22,6 +22,7 @@ Python 3.9+.
 | `fetch_reliefweb_events.py` | ReliefWeb API v2 | **Yes, see below** | `Data/Reliefweb and GDACS/reliefweb_disasters_<date>.csv` |
 | `fetch_cbs_travel.py` | CBS StatLine table 84365NED | No | `Data/Travel and flights/cbs_travel_<date>.csv` |
 | `fetch_opensky_snapshot.py` | OpenSky Network (live only) | No | `Data/Travel and flights/opensky_snapshot_<timestamp>.csv` |
+| `generate_synthetic_comms.py` | **fictional**, not a real source | No | `Data/Synthetic/comms_volume_<date>.csv` |
 | `merge_data.py` | combines all of the above | No | `App/data/dataset.json` (what the frontend reads) |
 
 Run everything: `python run_all.py`, then `python merge_data.py` to
@@ -32,8 +33,13 @@ when you want to (re)seed the trend history:
 
 ```
 python fetch_gdelt_tension.py --backfill
+python generate_synthetic_comms.py
 python merge_data.py
 ```
+
+`generate_synthetic_comms.py` must run after the GDELT backfill (it reads
+`gdelt_tension_history_*.csv` to loosely scale its fictional numbers) and
+before `merge_data.py`.
 
 ## Country list
 
@@ -86,6 +92,26 @@ which countries are tracked.
   tagging each article's GKG themes (see below) and using conflict-theme
   *share* + a recent-vs-baseline trend instead of a flat weekly average;
   see `merge_data.py`.
+- **Then the fix over-corrected: almost every country landed
+  Orange-or-above almost every day.** `conflict_share * 70` alone crosses
+  the Orange cutoff (30) once ~43% of a country's articles carry a
+  conflict theme tag, and GDELT tags an article with *every* country it
+  mentions -- so regional spillover coverage (Egypt/Turkey appearing in
+  Gaza-adjacent stories) clears that easily without those countries being
+  combatants. Separately, `disaster_share * 100` let a single article on
+  a low-volume day swing the score by up to 100 points of pure sampling
+  noise (Haiti, at 1-10 articles/day, ranged 10-69 across a week with no
+  active disaster event behind any of it). Recalibrated in `merge_data.py`:
+  lower weights, a `confidence = min(1, day_volume/15)` dampener on the
+  share-based terms, and raised bands (Red>=65, Orange>=35, was 60/30).
+- **Per STRATEGY.md, this project isn't meant to auto-classify crises yet**
+  ("classificatie hoeft in de PoC nog niet automatisch te werken -- puur
+  laten zien wat er aan data is"). The 0-100 gauges stay (per-round
+  decision to keep the mechanism, just recalibrated) but are now paired
+  with `top_conflict_themes` / `top_disaster_themes` (see below) so the
+  app explains *what* is driving a score, not just the compressed number.
+  A manual-override control ("hybride sturing" in the strategy doc) is a
+  known, deliberately deferred gap -- not built this round.
 - **OpenSky** is live-snapshot only under anonymous access; it cannot
   answer "how has flight volume out of country X changed" (see
   `Documentation/Data ideation.txt`). It's wired in only as an optional
@@ -185,3 +211,28 @@ broader/noisier codes like generic `MILITARY` or `TAX_MILITARY_TITLE_*`
 (military titles/spending stories aren't necessarily about actual
 conflict) and `CRISISLEX_CRISISLEXREC` (fires on both conflict and
 disaster stories, not a clean signal either way).
+
+`fetch_gdelt_tension.py` also now tallies *which specific* theme codes
+matched (not just the conflict/disaster booleans), across the whole run,
+into `Data/GDELT/gdelt_theme_breakdown_<date>.csv`
+(`country, theme_code, category, article_count`). `merge_data.py` turns
+this into `top_conflict_themes` / `top_disaster_themes` per country (top
+5 by count, with a human-readable label from `THEME_LABELS`) -- this is
+the concrete "what is happening" answer (e.g. "Armed conflict: 312
+articles, Protests: 89, Terrorism-related coverage: 45") rather than
+just a compressed score, per STRATEGY.md's ask to show the underlying
+data, not only an automated verdict.
+
+## Synthetic data: incoming communication volume
+
+`generate_synthetic_comms.py` produces a **fictional** daily "incoming
+communication volume" (e.g. consular calls/signals) per country. This is
+not connected to any real NWW/consular system -- STRATEGY.md explicitly
+names combining the tension signal with incoming-communication volume as
+core to the primary user's (crisis coordinator) workflow, and explicitly
+allows synthetic data for sources without confirmed real access (calls,
+RNI, CBS-flights). The numbers are deterministic (seeded per
+country+date, not random per run) and loosely scaled off that day's real
+GDELT article volume plus a fixed per-country baseline, so the demo isn't
+arbitrary -- but they must never be mistaken for real data. The app
+labels this layer as fictional everywhere it appears.

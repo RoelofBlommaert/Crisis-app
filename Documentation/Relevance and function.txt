@@ -16,20 +16,39 @@ extend the concept after the course.
 
 Why this topic
 --------------
-The app was built as a learning exercise for a vibe-coding course,
-using a scenario relevant to MFA work: monitoring instability abroad
-and how it may relate to travel/tourism patterns of Dutch citizens.
+The app started as a learning exercise for a vibe-coding course, using
+a scenario relevant to MFA work: monitoring instability abroad. A
+separate strategy document (`STRATEGY.md`, kept alongside this project
+but outside the repo) later gave this a sharper, specific purpose that
+this app is now aligned to:
 
-The MFA regularly needs to reason about:
-- Where instability or crises are emerging or escalating
-- Whether official information (e.g. travel advisories) is keeping
-  pace with events on the ground
-- How travel/tourism patterns to a country shift around a crisis
+**Primary framing (per STRATEGY.md):** a proof of concept for a
+*crisis coordinator*, who currently has to build up a picture of an
+unfolding situation from fragmented, role-specific, human-driven
+sources (policy officer, spokesperson, post) and is structurally too
+slow and too error-prone as a result. The strategy's approach is
+incremental automation: connect existing open sources (GDACS, GDELT)
+into one coherent per-area picture first, and only later work toward
+actually automating classification -- this PoC's job is to show what
+data exists and how it *could* combine into a risk indication, not to
+deliver a finished automatic classifier.
 
-A tool that visualizes these signals side by side can support early
-situational awareness. This demo is a simplified, non-operational
-prototype of that idea — built to explore what's technically
-possible, not a production tool.
+The MFA/coordinator needs to reason about:
+- What's actually happening in an area right now (conflict? disaster?
+  both? neither?), not a compressed, months-stale summary
+- Whether official information is keeping pace with events on the
+  ground
+- Roughly how many Dutch travelers are even present, for context
+- Incoming signal volume (e.g. consular calls) as a corroborating
+  indicator -- not yet available for real, so a synthetic placeholder
+  is used to show what combining it would look like (see below)
+
+A tool that visualizes these signals side by side, explains what's
+driving them, and is honest about their limits can support earlier
+situational awareness than the current fragmented, manual process.
+This remains a simplified, non-operational prototype -- not a
+production tool, and per STRATEGY.md, not yet an automatic classifier
+either.
 
 Why NO internal MFA data was used
 ----------------------------------
@@ -57,16 +76,25 @@ are involved at any point.
 
 Concept
 -------
-The app shows, per selected country:
-1. An instability/tension signal derived from open news data
-2. Confirmed crisis/disaster events from official open databases
-3. A travel/tourism trend layer, to see how actual or expected
-   travel volume compares with the current situation
+The app shows, per tracked country:
+1. A conflict signal and a disaster signal (0-100, illustrative, scored
+   per day) derived from open news data, each paired with a real
+   breakdown of *which* themes are driving it that week -- not just
+   the compressed number
+2. Confirmed crisis/disaster events from GDACS, split into "active
+   this week" vs. "historical" by the event's own date range
+3. Rough context on how many Dutch travelers visit the country (CBS),
+   shown as a single context figure, not a trend-vs-crisis narrative
+4. An illustrative, clearly-labelled SYNTHETIC incoming-communication-
+   volume layer, showing what combining that kind of signal with the
+   others could look like
 
-The idea is to visually spot patterns such as "tension is rising in
-country X" alongside "travel volume/interest is dropping faster than
-seasonal norms" — a pattern of interest for MFA-style situational
-awareness, without touching any real traveler or citizen data.
+The idea is to show, side by side and with real per-source freshness,
+what data already exists and how it could combine into one coherent
+per-area picture -- the "data-integratie" and "classificatie"
+groundwork tracks from STRATEGY.md -- without touching any real
+traveler, citizen, or consular data, and without pretending to be a
+finished automatic classifier or a crisis forecast.
 
 Data sources used
 ------------------
@@ -118,6 +146,19 @@ Data sources used
    - Used only for an optional "right now" live map layer, not as
      part of the core trend/insight logic
 
+5. Incoming communication volume -- SYNTHETIC / FICTIONAL, not a real source
+   - STRATEGY.md names combining the tension signal with incoming
+     communication volume (e.g. consular calls) as core to the primary
+     user's actual workflow, and explicitly allows synthetic/fictional
+     data for sources without confirmed real access (calls, RNI,
+     CBS-flights).
+   - `Scripts/generate_synthetic_comms.py` produces a deterministic
+     (seeded, not random-per-run), loosely-real-data-scaled fictional
+     daily count per country, purely to demonstrate what this layer
+     would look like combined with the others. Labelled as synthetic
+     everywhere it appears in the app and docs -- never to be mistaken
+     for real data, and never to be treated as validated in any way.
+
 How the pieces fit together
 ----------------------------
 Step 1 — Data collection
@@ -130,9 +171,12 @@ Step 1 — Data collection
   one-off pull.
 
 Step 2 — Merge
-  Combine the three sources into one dataset per country per time
-  period (e.g. daily or weekly), so each row has: tension score,
-  confirmed events (if any), and travel volume vs. baseline.
+  Combine GDELT, GDACS, CBS, and the synthetic comms-volume layer into
+  one dataset per country (`Scripts/merge_data.py`), scored per day so
+  each day has: conflict/disaster signal, which events were actually
+  active that specific day (not just "matched at some point"), the
+  real theme breakdown behind the signal, and the (clearly-labelled
+  real vs. synthetic) context layers.
 
 Step 3 — Visualization
   Display results on a country-level map/dashboard:
@@ -186,9 +230,12 @@ underlying data, not something fixable without deeper text analysis --
 documented rather than hidden.
 
 Step 4 — Insight
-  Highlight countries where instability is rising and travel volume
-  is deviating from seasonal norms — the "signal worth watching"
-  pattern that gives the demo its practical framing.
+  Surface which countries currently carry an elevated conflict or
+  disaster signal, why (the real theme breakdown, not just the
+  number), and whether that's corroborated by a confirmed GDACS event
+  active this specific week -- the "what's actually happening, and
+  what's driving it" pattern that gives this PoC its practical framing,
+  per STRATEGY.md's classification-support purpose.
 
 Known limitations of this prototype
 -------------------------------------
@@ -212,8 +259,32 @@ Known limitations of this prototype
 - The published app is a one-time static snapshot (data pulled once,
   merged into a static file, deployed to GitHub Pages), not a
   live-refreshing dashboard. "Current" data is only as current as the
-  day the snapshot was generated -- see the timestamp shown in the app
-  itself. Re-run the data pipeline and republish to refresh it.
+  day the snapshot was generated -- see the timestamp and the "Data
+  sources & freshness" list shown in the app itself (About panel).
+  Re-run the data pipeline and republish to refresh it. STRATEGY.md
+  names "near-real-time engineering" as its own track; this PoC
+  deliberately stays a static snapshot but makes freshness honest and
+  visible rather than implying liveness it doesn't have.
+- STRATEGY.md's "Flexibiliteit / hybride sturing" track (automatic
+  detection running *alongside* a manual override the coordinator can
+  use to confirm or correct a suggestion) has **no representation in
+  this app** -- a deliberately deferred gap for a later round, not an
+  oversight. The gauges remain fully automatic with no override control.
+- Per STRATEGY.md, automatic crisis classification isn't required to
+  work yet at this PoC stage ("classificatie hoeft nog niet automatisch
+  te werken -- puur laten zien wat er aan data is"). The conflict/
+  disaster gauges were kept (a deliberate choice this round) but are
+  now paired with an explicit "What's happening this week" breakdown
+  (real GDELT theme counts, each shown with its share of that week's
+  total articles) so the app explains what's driving a score instead of
+  only showing the compressed number.
+- The gauge thresholds were recalibrated after an earlier version put
+  almost every tracked country at Orange-or-above almost every day --
+  root-caused to GDELT's broad "mentions" tagging (a bordering/mediating
+  country picks up conflict-theme share without being a combatant) and
+  to un-dampened noise on low-volume country-days. See
+  `Scripts/merge_data.py`'s "Scoring" docstring for the exact formula
+  and recalibration history.
 
 ================================================================
 END OF DOCUMENT

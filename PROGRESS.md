@@ -193,12 +193,82 @@ via a CSS filter on the OSM tile layer rather than a paid/keyed tile
 provider. Re-verified end-to-end in-browser: no console errors, Turkey's
 old earthquake correctly shows "Historical," gauges/strips/charts render.
 
+## 2026-09-14 (continued 4) — realigned with STRATEGY.md
+
+User found `C:\Users\roelo\Downloads\STRATEGY.md` (the actual strategy doc
+for this PoC -- crisis classification support for NWW/MFA) and asked for
+a from-scratch comparison against what had actually been built. Found
+real misalignment, not just polish:
+- STRATEGY.md explicitly says no crisis prediction and no automatic
+  classification are required yet at this PoC stage, but the app had
+  quietly become exactly that: an automatic 0-100 score classifying every
+  country with no human step.
+- STRATEGY.md's primary user (crisis coordinator) and its named tracks
+  (near-real-time engineering, data integration, classification
+  groundwork, flexibiliteit/hybride sturing) had no clear representation
+  in the app -- it instead starred a travel/tourism narrative and had no
+  comms-volume layer at all, despite the strategy naming that as core to
+  the primary workflow and explicitly allowing synthetic data for it.
+
+Decisions (via clarifying questions): keep the automatic scoring
+mechanism but recalibrate it, explain the data instead of only scoring
+it, add a synthetic comms-volume layer, reframe CBS as context (not a
+trend narrative), keep the static snapshot but surface freshness, and
+leave the "hybride sturing" manual-override track as a deliberately
+deferred gap this round (not built).
+
+Work done:
+- **Recalibrated scoring** (`Scripts/merge_data.py`): live data showed
+  6-8 of 8 countries at Orange-or-above almost every day. Root cause:
+  `conflict_share * 70` crosses the old Orange cutoff at ~43% share, and
+  GDELT tags articles with every country they *mention* (so Egypt/Turkey
+  pick up conflict share from Gaza-adjacent coverage without being
+  combatants); `disaster_share * 100` let single-article low-volume days
+  swing the score by up to 100 points of noise. Fixed with lower weights,
+  a `confidence = min(1, day_volume/15)` dampener, and raised bands
+  (Red>=65, Orange>=35, was 60/30). Result: 0 Red / 5 Orange / 3 Green
+  today, a believable spread.
+- **Added a real "what's happening" explanation**: extended
+  `fetch_gdelt_tension.py` to tally which *specific* theme codes matched
+  (not just a conflict/disaster boolean) into a new
+  `gdelt_theme_breakdown_<date>.csv`; `merge_data.py` exposes
+  `top_conflict_themes`/`top_disaster_themes` per country with a
+  human-readable label and each theme's **share of that week's total
+  articles** (added after noticing a bare count like "Famine: 96
+  articles" reads as a real signal without that context, when it's
+  <2% of a high-volume country's week).
+- **Added the synthetic comms-volume layer**: new
+  `Scripts/generate_synthetic_comms.py`, deterministic per country+day,
+  loosely scaled off real GDELT volume, labelled SYNTHETIC everywhere in
+  the UI and docs -- per STRATEGY.md's explicit allowance for
+  unconfirmed sources.
+- **Restructured the frontend**: "What's happening this week" leads
+  (real theme breakdown before any chart), GDACS events split into
+  active-this-week (expanded) vs. historical (collapsed `<details>`,
+  fixing the earlier complaint that old 2025 events dominated the
+  picture), CBS travel reframed as a one-line context stat with the
+  5-year table collapsed, decoded GDACS event-type badges
+  (EQ→Earthquake etc.), and a new "Data sources & freshness" section in
+  the About panel listing each source's real vintage.
+- **Realigned Documentation** (`Documentation/Relevance and function.txt`):
+  crisis-coordinator framing (not general travel-advisory framing),
+  explicit note that the "hybride sturing" override track is a
+  deliberately deferred gap, and the recalibration/synthetic-data
+  rationale.
+- Re-tested end-to-end in-browser: no console errors, score distribution
+  now spans Green/Orange/Red sensibly, historical events collapse
+  correctly, synthetic layer clearly labelled throughout.
+
 ### Next up
-- [ ] Re-run `fetch_gdelt_tension.py --backfill` + `merge_data.py`
-      periodically if the signals should stay current (still a one-time
-      snapshot by design — see Documentation)
+- [ ] Build the "hybride sturing" manual-override control (coordinator
+      confirms/corrects a suggested classification) -- deliberately
+      deferred this round, not an oversight
+- [ ] Re-run `fetch_gdelt_tension.py --backfill` + `generate_synthetic_comms.py`
+      + `merge_data.py` periodically if the signals should stay current
+      (still a one-time snapshot by design — see Documentation)
 - [ ] If this ever needs to become a live-refreshing dashboard rather
       than a one-time snapshot, revisit the GitHub Actions cron option
       that was consciously deferred this round
 - [ ] Register a ReliefWeb appname if conflict/displacement reporting
       (vs. GDACS's natural-disasters-only coverage) is worth adding later
+- [ ] Commit and push this round's changes, confirm the Pages deploy

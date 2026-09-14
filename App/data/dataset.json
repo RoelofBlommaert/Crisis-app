@@ -1,6 +1,26 @@
 {
-  "generated_at": "2026-09-14T12:27:13.789747+00:00",
+  "generated_at": "2026-09-14T13:27:51.566501+00:00",
   "note": "One-time static snapshot, not a live-refreshing feed. conflict_signal/disaster_signal are an illustrative 0-100 heuristic, not a statistical forecast or probability -- see Documentation/ and Scripts/merge_data.py.",
+  "data_sources": {
+    "gdelt": {
+      "kind": "real",
+      "latest_timestamp_utc": "2026-09-14T13:00:00+00:00",
+      "earliest_timestamp_utc": "2026-09-07T14:00:00+00:00"
+    },
+    "gdacs": {
+      "kind": "real",
+      "fetched_on": "2026-09-14"
+    },
+    "cbs_travel": {
+      "kind": "real",
+      "fetched_on": "2026-09-14",
+      "latest_year": "2025"
+    },
+    "comms_volume": {
+      "kind": "synthetic",
+      "note": "Fictional data generated for this demo -- not connected to any real NWW/consular system."
+    }
+  },
   "countries": [
     {
       "name": "Turkey",
@@ -10,76 +30,69 @@
         39.0,
         35.0
       ],
-      "conflict_signal": 30,
-      "disaster_signal": 10,
-      "alert_level": "Orange",
+      "conflict_signal": 25,
+      "disaster_signal": 5,
+      "alert_level": "Green",
       "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 45,
-          "disaster_signal": 29,
+          "conflict_signal": 37,
+          "disaster_signal": 12,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 49,
-          "disaster_signal": 8,
+          "conflict_signal": 41,
+          "disaster_signal": 3,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-09",
-          "conflict_signal": 37,
-          "disaster_signal": 7,
-          "alert_level": "Orange",
+          "conflict_signal": 29,
+          "disaster_signal": 3,
+          "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-10",
-          "conflict_signal": 41,
-          "disaster_signal": 8,
-          "alert_level": "Orange",
+          "conflict_signal": 31,
+          "disaster_signal": 3,
+          "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-11",
-          "conflict_signal": 54,
-          "disaster_signal": 4,
-          "alert_level": "Orange",
-          "driver": "conflict"
-        },
-        {
-          "date": "2026-09-12",
-          "conflict_signal": 49,
-          "disaster_signal": 6,
-          "alert_level": "Orange",
-          "driver": "conflict"
-        },
-        {
-          "date": "2026-09-13",
-          "conflict_signal": 58,
+          "conflict_signal": 43,
           "disaster_signal": 2,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
-          "date": "2026-09-14",
-          "conflict_signal": 30,
-          "disaster_signal": 10,
+          "date": "2026-09-12",
+          "conflict_signal": 38,
+          "disaster_signal": 2,
           "alert_level": "Orange",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-13",
+          "conflict_signal": 44,
+          "disaster_signal": 1,
+          "alert_level": "Orange",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-14",
+          "conflict_signal": 25,
+          "disaster_signal": 5,
+          "alert_level": "Green",
           "driver": "conflict"
         }
       ],
       "tension_series": [
-        {
-          "timestamp_utc": "2026-09-07T13:00:00+00:00",
-          "volume_article_count": 7,
-          "avg_tone": -0.0842,
-          "conflict_article_count": 3,
-          "disaster_article_count": 1
-        },
         {
           "timestamp_utc": "2026-09-07T14:00:00+00:00",
           "volume_article_count": 30,
@@ -1248,6 +1261,87 @@
           "avg_tone": -0.0144,
           "conflict_article_count": 4,
           "disaster_article_count": 1
+        },
+        {
+          "timestamp_utc": "2026-09-14T13:00:00+00:00",
+          "volume_article_count": 9,
+          "avg_tone": -3.7246,
+          "conflict_article_count": 5,
+          "disaster_article_count": 3
+        }
+      ],
+      "top_conflict_themes": [
+        {
+          "code": "WB_2432_FRAGILITY_CONFLICT_AND_VIOLENCE",
+          "label": "Fragility & conflict",
+          "category": "conflict",
+          "count": 599,
+          "share_of_week": 0.4183
+        },
+        {
+          "code": "ARMEDCONFLICT",
+          "label": "Armed conflict",
+          "category": "conflict",
+          "count": 522,
+          "share_of_week": 0.3645
+        },
+        {
+          "code": "WB_2433_CONFLICT_AND_VIOLENCE",
+          "label": "Conflict & violence",
+          "category": "conflict",
+          "count": 486,
+          "share_of_week": 0.3394
+        },
+        {
+          "code": "TERROR",
+          "label": "Terrorism-related coverage",
+          "category": "conflict",
+          "count": 279,
+          "share_of_week": 0.1948
+        },
+        {
+          "code": "UNREST_BELLIGERENT",
+          "label": "Civil unrest",
+          "category": "conflict",
+          "count": 240,
+          "share_of_week": 0.1676
+        }
+      ],
+      "top_disaster_themes": [
+        {
+          "code": "NATURAL_DISASTER_EROSION",
+          "label": "Erosion",
+          "category": "disaster",
+          "count": 27,
+          "share_of_week": 0.0189
+        },
+        {
+          "code": "NATURAL_DISASTER_ICE",
+          "label": "Ice",
+          "category": "disaster",
+          "count": 25,
+          "share_of_week": 0.0175
+        },
+        {
+          "code": "NATURAL_DISASTER_WILDFIRES",
+          "label": "Wildfires",
+          "category": "disaster",
+          "count": 19,
+          "share_of_week": 0.0133
+        },
+        {
+          "code": "NATURAL_DISASTER_FLOODS",
+          "label": "Floods",
+          "category": "disaster",
+          "count": 10,
+          "share_of_week": 0.007
+        },
+        {
+          "code": "NATURAL_DISASTER_FLOOD",
+          "label": "Flood",
+          "category": "disaster",
+          "count": 9,
+          "share_of_week": 0.0063
         }
       ],
       "events": [
@@ -1302,7 +1396,41 @@
             "total_spend_eur_million": "401"
           }
         ]
-      }
+      },
+      "comms_volume": [
+        {
+          "date": "2026-09-07",
+          "synthetic_incoming_signals": 38
+        },
+        {
+          "date": "2026-09-08",
+          "synthetic_incoming_signals": 73
+        },
+        {
+          "date": "2026-09-09",
+          "synthetic_incoming_signals": 62
+        },
+        {
+          "date": "2026-09-10",
+          "synthetic_incoming_signals": 81
+        },
+        {
+          "date": "2026-09-11",
+          "synthetic_incoming_signals": 85
+        },
+        {
+          "date": "2026-09-12",
+          "synthetic_incoming_signals": 39
+        },
+        {
+          "date": "2026-09-13",
+          "synthetic_incoming_signals": 37
+        },
+        {
+          "date": "2026-09-14",
+          "synthetic_incoming_signals": 43
+        }
+      ]
     },
     {
       "name": "Ukraine",
@@ -1312,76 +1440,69 @@
         49.0,
         31.5
       ],
-      "conflict_signal": 71,
-      "disaster_signal": 10,
-      "alert_level": "Red",
+      "conflict_signal": 59,
+      "disaster_signal": 4,
+      "alert_level": "Orange",
       "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 73,
-          "disaster_signal": 69,
-          "alert_level": "Red",
+          "conflict_signal": 59,
+          "disaster_signal": 58,
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 64,
-          "disaster_signal": 58,
-          "alert_level": "Red",
-          "driver": "conflict"
+          "conflict_signal": 51,
+          "disaster_signal": 53,
+          "alert_level": "Orange",
+          "driver": "disaster"
         },
         {
           "date": "2026-09-09",
-          "conflict_signal": 65,
-          "disaster_signal": 57,
-          "alert_level": "Red",
-          "driver": "conflict"
+          "conflict_signal": 52,
+          "disaster_signal": 53,
+          "alert_level": "Orange",
+          "driver": "disaster"
         },
         {
           "date": "2026-09-10",
-          "conflict_signal": 69,
-          "disaster_signal": 65,
-          "alert_level": "Red",
-          "driver": "conflict"
+          "conflict_signal": 55,
+          "disaster_signal": 56,
+          "alert_level": "Orange",
+          "driver": "disaster"
         },
         {
           "date": "2026-09-11",
-          "conflict_signal": 74,
-          "disaster_signal": 57,
-          "alert_level": "Red",
+          "conflict_signal": 60,
+          "disaster_signal": 53,
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-12",
-          "conflict_signal": 74,
-          "disaster_signal": 54,
-          "alert_level": "Red",
+          "conflict_signal": 58,
+          "disaster_signal": 52,
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-13",
-          "conflict_signal": 72,
-          "disaster_signal": 3,
-          "alert_level": "Red",
+          "conflict_signal": 58,
+          "disaster_signal": 1,
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-14",
-          "conflict_signal": 71,
-          "disaster_signal": 10,
-          "alert_level": "Red",
+          "conflict_signal": 59,
+          "disaster_signal": 4,
+          "alert_level": "Orange",
           "driver": "conflict"
         }
       ],
       "tension_series": [
-        {
-          "timestamp_utc": "2026-09-07T13:00:00+00:00",
-          "volume_article_count": 36,
-          "avg_tone": -1.7712,
-          "conflict_article_count": 29,
-          "disaster_article_count": 6
-        },
         {
           "timestamp_utc": "2026-09-07T14:00:00+00:00",
           "volume_article_count": 52,
@@ -2550,6 +2671,87 @@
           "avg_tone": -3.6042,
           "conflict_article_count": 18,
           "disaster_article_count": 0
+        },
+        {
+          "timestamp_utc": "2026-09-14T13:00:00+00:00",
+          "volume_article_count": 39,
+          "avg_tone": -5.3196,
+          "conflict_article_count": 33,
+          "disaster_article_count": 1
+        }
+      ],
+      "top_conflict_themes": [
+        {
+          "code": "ARMEDCONFLICT",
+          "label": "Armed conflict",
+          "category": "conflict",
+          "count": 2556,
+          "share_of_week": 0.6721
+        },
+        {
+          "code": "WB_2432_FRAGILITY_CONFLICT_AND_VIOLENCE",
+          "label": "Fragility & conflict",
+          "category": "conflict",
+          "count": 2133,
+          "share_of_week": 0.5609
+        },
+        {
+          "code": "WB_2433_CONFLICT_AND_VIOLENCE",
+          "label": "Conflict & violence",
+          "category": "conflict",
+          "count": 1586,
+          "share_of_week": 0.417
+        },
+        {
+          "code": "TERROR",
+          "label": "Terrorism-related coverage",
+          "category": "conflict",
+          "count": 604,
+          "share_of_week": 0.1588
+        },
+        {
+          "code": "UNREST_BELLIGERENT",
+          "label": "Civil unrest",
+          "category": "conflict",
+          "count": 565,
+          "share_of_week": 0.1486
+        }
+      ],
+      "top_disaster_themes": [
+        {
+          "code": "NATURAL_DISASTER_ICE",
+          "label": "Ice",
+          "category": "disaster",
+          "count": 45,
+          "share_of_week": 0.0118
+        },
+        {
+          "code": "NATURAL_DISASTER_BLIZZARD",
+          "label": "Blizzard",
+          "category": "disaster",
+          "count": 39,
+          "share_of_week": 0.0103
+        },
+        {
+          "code": "NATURAL_DISASTER_EROSION",
+          "label": "Erosion",
+          "category": "disaster",
+          "count": 35,
+          "share_of_week": 0.0092
+        },
+        {
+          "code": "NATURAL_DISASTER_HURRICANE",
+          "label": "Hurricane",
+          "category": "disaster",
+          "count": 28,
+          "share_of_week": 0.0074
+        },
+        {
+          "code": "NATURAL_DISASTER_WILDFIRES",
+          "label": "Wildfires",
+          "category": "disaster",
+          "count": 21,
+          "share_of_week": 0.0055
         }
       ],
       "events": [
@@ -2604,7 +2806,41 @@
             "total_spend_eur_million": "425"
           }
         ]
-      }
+      },
+      "comms_volume": [
+        {
+          "date": "2026-09-07",
+          "synthetic_incoming_signals": 57
+        },
+        {
+          "date": "2026-09-08",
+          "synthetic_incoming_signals": 208
+        },
+        {
+          "date": "2026-09-09",
+          "synthetic_incoming_signals": 130
+        },
+        {
+          "date": "2026-09-10",
+          "synthetic_incoming_signals": 142
+        },
+        {
+          "date": "2026-09-11",
+          "synthetic_incoming_signals": 135
+        },
+        {
+          "date": "2026-09-12",
+          "synthetic_incoming_signals": 115
+        },
+        {
+          "date": "2026-09-13",
+          "synthetic_incoming_signals": 123
+        },
+        {
+          "date": "2026-09-14",
+          "synthetic_incoming_signals": 101
+        }
+      ]
     },
     {
       "name": "Lebanon",
@@ -2614,76 +2850,69 @@
         33.85,
         35.85
       ],
-      "conflict_signal": 64,
-      "disaster_signal": 9,
-      "alert_level": "Red",
+      "conflict_signal": 53,
+      "disaster_signal": 5,
+      "alert_level": "Orange",
       "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 88,
-          "disaster_signal": 1,
+          "conflict_signal": 74,
+          "disaster_signal": 0,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 81,
-          "disaster_signal": 11,
+          "conflict_signal": 67,
+          "disaster_signal": 4,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-09",
-          "conflict_signal": 72,
-          "disaster_signal": 16,
-          "alert_level": "Red",
+          "conflict_signal": 60,
+          "disaster_signal": 6,
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-10",
-          "conflict_signal": 73,
-          "disaster_signal": 24,
-          "alert_level": "Red",
+          "conflict_signal": 60,
+          "disaster_signal": 10,
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-11",
-          "conflict_signal": 87,
-          "disaster_signal": 14,
+          "conflict_signal": 73,
+          "disaster_signal": 6,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-12",
-          "conflict_signal": 81,
-          "disaster_signal": 7,
+          "conflict_signal": 65,
+          "disaster_signal": 3,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-13",
-          "conflict_signal": 51,
-          "disaster_signal": 13,
+          "conflict_signal": 39,
+          "disaster_signal": 5,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-14",
-          "conflict_signal": 64,
-          "disaster_signal": 9,
-          "alert_level": "Red",
+          "conflict_signal": 53,
+          "disaster_signal": 5,
+          "alert_level": "Orange",
           "driver": "conflict"
         }
       ],
       "tension_series": [
-        {
-          "timestamp_utc": "2026-09-07T13:00:00+00:00",
-          "volume_article_count": 6,
-          "avg_tone": -5.7233,
-          "conflict_article_count": 5,
-          "disaster_article_count": 0
-        },
         {
           "timestamp_utc": "2026-09-07T14:00:00+00:00",
           "volume_article_count": 19,
@@ -3852,6 +4081,87 @@
           "avg_tone": -2.2297,
           "conflict_article_count": 6,
           "disaster_article_count": 1
+        },
+        {
+          "timestamp_utc": "2026-09-14T13:00:00+00:00",
+          "volume_article_count": 12,
+          "avg_tone": -3.5463,
+          "conflict_article_count": 12,
+          "disaster_article_count": 3
+        }
+      ],
+      "top_conflict_themes": [
+        {
+          "code": "ARMEDCONFLICT",
+          "label": "Armed conflict",
+          "category": "conflict",
+          "count": 663,
+          "share_of_week": 0.7238
+        },
+        {
+          "code": "WB_2432_FRAGILITY_CONFLICT_AND_VIOLENCE",
+          "label": "Fragility & conflict",
+          "category": "conflict",
+          "count": 627,
+          "share_of_week": 0.6845
+        },
+        {
+          "code": "WB_2433_CONFLICT_AND_VIOLENCE",
+          "label": "Conflict & violence",
+          "category": "conflict",
+          "count": 519,
+          "share_of_week": 0.5666
+        },
+        {
+          "code": "TERROR",
+          "label": "Terrorism-related coverage",
+          "category": "conflict",
+          "count": 398,
+          "share_of_week": 0.4345
+        },
+        {
+          "code": "PROTEST",
+          "label": "Protests",
+          "category": "conflict",
+          "count": 176,
+          "share_of_week": 0.1921
+        }
+      ],
+      "top_disaster_themes": [
+        {
+          "code": "NATURAL_DISASTER_FAMINE",
+          "label": "Famine",
+          "category": "disaster",
+          "count": 35,
+          "share_of_week": 0.0382
+        },
+        {
+          "code": "NATURAL_DISASTER_NATURAL_DISASTERS",
+          "label": "Natural Disasters",
+          "category": "disaster",
+          "count": 26,
+          "share_of_week": 0.0284
+        },
+        {
+          "code": "NATURAL_DISASTER_EARTHQUAKES",
+          "label": "Earthquakes",
+          "category": "disaster",
+          "count": 25,
+          "share_of_week": 0.0273
+        },
+        {
+          "code": "NATURAL_DISASTER_ICE",
+          "label": "Ice",
+          "category": "disaster",
+          "count": 18,
+          "share_of_week": 0.0197
+        },
+        {
+          "code": "NATURAL_DISASTER_VOLCANIC",
+          "label": "Volcanic",
+          "category": "disaster",
+          "count": 17,
+          "share_of_week": 0.0186
         }
       ],
       "events": [],
@@ -3895,7 +4205,41 @@
             "total_spend_eur_million": "3024"
           }
         ]
-      }
+      },
+      "comms_volume": [
+        {
+          "date": "2026-09-07",
+          "synthetic_incoming_signals": 34
+        },
+        {
+          "date": "2026-09-08",
+          "synthetic_incoming_signals": 41
+        },
+        {
+          "date": "2026-09-09",
+          "synthetic_incoming_signals": 39
+        },
+        {
+          "date": "2026-09-10",
+          "synthetic_incoming_signals": 51
+        },
+        {
+          "date": "2026-09-11",
+          "synthetic_incoming_signals": 73
+        },
+        {
+          "date": "2026-09-12",
+          "synthetic_incoming_signals": 35
+        },
+        {
+          "date": "2026-09-13",
+          "synthetic_incoming_signals": 23
+        },
+        {
+          "date": "2026-09-14",
+          "synthetic_incoming_signals": 20
+        }
+      ]
     },
     {
       "name": "Israel",
@@ -3905,76 +4249,69 @@
         31.5,
         34.8
       ],
-      "conflict_signal": 73,
-      "disaster_signal": 12,
-      "alert_level": "Red",
+      "conflict_signal": 60,
+      "disaster_signal": 5,
+      "alert_level": "Orange",
       "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 63,
-          "disaster_signal": 13,
-          "alert_level": "Red",
+          "conflict_signal": 52,
+          "disaster_signal": 5,
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 78,
-          "disaster_signal": 7,
+          "conflict_signal": 66,
+          "disaster_signal": 3,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-09",
-          "conflict_signal": 73,
-          "disaster_signal": 7,
-          "alert_level": "Red",
+          "conflict_signal": 62,
+          "disaster_signal": 3,
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-10",
-          "conflict_signal": 70,
-          "disaster_signal": 6,
-          "alert_level": "Red",
+          "conflict_signal": 58,
+          "disaster_signal": 2,
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-11",
-          "conflict_signal": 73,
-          "disaster_signal": 7,
-          "alert_level": "Red",
+          "conflict_signal": 59,
+          "disaster_signal": 3,
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-12",
-          "conflict_signal": 69,
-          "disaster_signal": 11,
-          "alert_level": "Red",
+          "conflict_signal": 54,
+          "disaster_signal": 4,
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-13",
-          "conflict_signal": 68,
-          "disaster_signal": 4,
-          "alert_level": "Red",
+          "conflict_signal": 52,
+          "disaster_signal": 2,
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-14",
-          "conflict_signal": 73,
-          "disaster_signal": 12,
-          "alert_level": "Red",
+          "conflict_signal": 60,
+          "disaster_signal": 5,
+          "alert_level": "Orange",
           "driver": "conflict"
         }
       ],
       "tension_series": [
-        {
-          "timestamp_utc": "2026-09-07T13:00:00+00:00",
-          "volume_article_count": 24,
-          "avg_tone": -2.6533,
-          "conflict_article_count": 18,
-          "disaster_article_count": 3
-        },
         {
           "timestamp_utc": "2026-09-07T14:00:00+00:00",
           "volume_article_count": 63,
@@ -5143,6 +5480,87 @@
           "avg_tone": -2.2236,
           "conflict_article_count": 25,
           "disaster_article_count": 3
+        },
+        {
+          "timestamp_utc": "2026-09-14T13:00:00+00:00",
+          "volume_article_count": 30,
+          "avg_tone": -4.3189,
+          "conflict_article_count": 27,
+          "disaster_article_count": 5
+        }
+      ],
+      "top_conflict_themes": [
+        {
+          "code": "ARMEDCONFLICT",
+          "label": "Armed conflict",
+          "category": "conflict",
+          "count": 3484,
+          "share_of_week": 0.6273
+        },
+        {
+          "code": "WB_2432_FRAGILITY_CONFLICT_AND_VIOLENCE",
+          "label": "Fragility & conflict",
+          "category": "conflict",
+          "count": 3457,
+          "share_of_week": 0.6224
+        },
+        {
+          "code": "WB_2433_CONFLICT_AND_VIOLENCE",
+          "label": "Conflict & violence",
+          "category": "conflict",
+          "count": 2746,
+          "share_of_week": 0.4944
+        },
+        {
+          "code": "TERROR",
+          "label": "Terrorism-related coverage",
+          "category": "conflict",
+          "count": 2061,
+          "share_of_week": 0.3711
+        },
+        {
+          "code": "PROTEST",
+          "label": "Protests",
+          "category": "conflict",
+          "count": 1161,
+          "share_of_week": 0.209
+        }
+      ],
+      "top_disaster_themes": [
+        {
+          "code": "NATURAL_DISASTER_FAMINE",
+          "label": "Famine",
+          "category": "disaster",
+          "count": 96,
+          "share_of_week": 0.0173
+        },
+        {
+          "code": "NATURAL_DISASTER_ICE",
+          "label": "Ice",
+          "category": "disaster",
+          "count": 67,
+          "share_of_week": 0.0121
+        },
+        {
+          "code": "NATURAL_DISASTER_EARTHQUAKE",
+          "label": "Earthquake",
+          "category": "disaster",
+          "count": 53,
+          "share_of_week": 0.0095
+        },
+        {
+          "code": "NATURAL_DISASTER_EROSION",
+          "label": "Erosion",
+          "category": "disaster",
+          "count": 45,
+          "share_of_week": 0.0081
+        },
+        {
+          "code": "NATURAL_DISASTER_VOLCANIC",
+          "label": "Volcanic",
+          "category": "disaster",
+          "count": 36,
+          "share_of_week": 0.0065
         }
       ],
       "events": [],
@@ -5186,7 +5604,41 @@
             "total_spend_eur_million": "3024"
           }
         ]
-      }
+      },
+      "comms_volume": [
+        {
+          "date": "2026-09-07",
+          "synthetic_incoming_signals": 81
+        },
+        {
+          "date": "2026-09-08",
+          "synthetic_incoming_signals": 297
+        },
+        {
+          "date": "2026-09-09",
+          "synthetic_incoming_signals": 219
+        },
+        {
+          "date": "2026-09-10",
+          "synthetic_incoming_signals": 200
+        },
+        {
+          "date": "2026-09-11",
+          "synthetic_incoming_signals": 264
+        },
+        {
+          "date": "2026-09-12",
+          "synthetic_incoming_signals": 227
+        },
+        {
+          "date": "2026-09-13",
+          "synthetic_incoming_signals": 128
+        },
+        {
+          "date": "2026-09-14",
+          "synthetic_incoming_signals": 78
+        }
+      ]
     },
     {
       "name": "Egypt",
@@ -5196,76 +5648,69 @@
         26.8,
         30.8
       ],
-      "conflict_signal": 48,
-      "disaster_signal": 13,
+      "conflict_signal": 38,
+      "disaster_signal": 5,
       "alert_level": "Orange",
       "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 27,
-          "disaster_signal": 6,
+          "conflict_signal": 20,
+          "disaster_signal": 3,
           "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 54,
-          "disaster_signal": 24,
+          "conflict_signal": 44,
+          "disaster_signal": 10,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-09",
-          "conflict_signal": 37,
-          "disaster_signal": 11,
-          "alert_level": "Orange",
+          "conflict_signal": 30,
+          "disaster_signal": 4,
+          "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-10",
-          "conflict_signal": 31,
-          "disaster_signal": 11,
-          "alert_level": "Orange",
+          "conflict_signal": 22,
+          "disaster_signal": 4,
+          "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-11",
-          "conflict_signal": 50,
-          "disaster_signal": 13,
+          "conflict_signal": 39,
+          "disaster_signal": 5,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-12",
-          "conflict_signal": 52,
-          "disaster_signal": 9,
-          "alert_level": "Orange",
-          "driver": "conflict"
-        },
-        {
-          "date": "2026-09-13",
-          "conflict_signal": 46,
+          "conflict_signal": 39,
           "disaster_signal": 4,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
+          "date": "2026-09-13",
+          "conflict_signal": 34,
+          "disaster_signal": 1,
+          "alert_level": "Green",
+          "driver": "conflict"
+        },
+        {
           "date": "2026-09-14",
-          "conflict_signal": 48,
-          "disaster_signal": 13,
+          "conflict_signal": 38,
+          "disaster_signal": 5,
           "alert_level": "Orange",
           "driver": "conflict"
         }
       ],
       "tension_series": [
-        {
-          "timestamp_utc": "2026-09-07T13:00:00+00:00",
-          "volume_article_count": 15,
-          "avg_tone": -0.8186,
-          "conflict_article_count": 5,
-          "disaster_article_count": 0
-        },
         {
           "timestamp_utc": "2026-09-07T14:00:00+00:00",
           "volume_article_count": 11,
@@ -6434,6 +6879,87 @@
           "avg_tone": -1.4106,
           "conflict_article_count": 5,
           "disaster_article_count": 0
+        },
+        {
+          "timestamp_utc": "2026-09-14T13:00:00+00:00",
+          "volume_article_count": 15,
+          "avg_tone": -2.9343,
+          "conflict_article_count": 9,
+          "disaster_article_count": 1
+        }
+      ],
+      "top_conflict_themes": [
+        {
+          "code": "WB_2432_FRAGILITY_CONFLICT_AND_VIOLENCE",
+          "label": "Fragility & conflict",
+          "category": "conflict",
+          "count": 1107,
+          "share_of_week": 0.4727
+        },
+        {
+          "code": "WB_2433_CONFLICT_AND_VIOLENCE",
+          "label": "Conflict & violence",
+          "category": "conflict",
+          "count": 920,
+          "share_of_week": 0.3928
+        },
+        {
+          "code": "ARMEDCONFLICT",
+          "label": "Armed conflict",
+          "category": "conflict",
+          "count": 814,
+          "share_of_week": 0.3476
+        },
+        {
+          "code": "TERROR",
+          "label": "Terrorism-related coverage",
+          "category": "conflict",
+          "count": 459,
+          "share_of_week": 0.196
+        },
+        {
+          "code": "WB_2462_POLITICAL_VIOLENCE_AND_WAR",
+          "label": "Political violence & war",
+          "category": "conflict",
+          "count": 260,
+          "share_of_week": 0.111
+        }
+      ],
+      "top_disaster_themes": [
+        {
+          "code": "NATURAL_DISASTER_FAMINE",
+          "label": "Famine",
+          "category": "disaster",
+          "count": 131,
+          "share_of_week": 0.0559
+        },
+        {
+          "code": "NATURAL_DISASTER_ICE",
+          "label": "Ice",
+          "category": "disaster",
+          "count": 43,
+          "share_of_week": 0.0184
+        },
+        {
+          "code": "NATURAL_DISASTER_VOLCANIC",
+          "label": "Volcanic",
+          "category": "disaster",
+          "count": 41,
+          "share_of_week": 0.0175
+        },
+        {
+          "code": "NATURAL_DISASTER_DROUGHT",
+          "label": "Drought",
+          "category": "disaster",
+          "count": 13,
+          "share_of_week": 0.0056
+        },
+        {
+          "code": "NATURAL_DISASTER_EARTHQUAKE",
+          "label": "Earthquake",
+          "category": "disaster",
+          "count": 13,
+          "share_of_week": 0.0056
         }
       ],
       "events": [],
@@ -6477,7 +7003,41 @@
             "total_spend_eur_million": "1915"
           }
         ]
-      }
+      },
+      "comms_volume": [
+        {
+          "date": "2026-09-07",
+          "synthetic_incoming_signals": 33
+        },
+        {
+          "date": "2026-09-08",
+          "synthetic_incoming_signals": 91
+        },
+        {
+          "date": "2026-09-09",
+          "synthetic_incoming_signals": 64
+        },
+        {
+          "date": "2026-09-10",
+          "synthetic_incoming_signals": 72
+        },
+        {
+          "date": "2026-09-11",
+          "synthetic_incoming_signals": 142
+        },
+        {
+          "date": "2026-09-12",
+          "synthetic_incoming_signals": 123
+        },
+        {
+          "date": "2026-09-13",
+          "synthetic_incoming_signals": 60
+        },
+        {
+          "date": "2026-09-14",
+          "synthetic_incoming_signals": 51
+        }
+      ]
     },
     {
       "name": "Sudan",
@@ -6487,76 +7047,69 @@
         15.5,
         30.5
       ],
-      "conflict_signal": 75,
-      "disaster_signal": 22,
-      "alert_level": "Red",
+      "conflict_signal": 54,
+      "disaster_signal": 8,
+      "alert_level": "Orange",
       "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 66,
-          "disaster_signal": 15,
-          "alert_level": "Red",
+          "conflict_signal": 59,
+          "disaster_signal": 6,
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 79,
-          "disaster_signal": 31,
+          "conflict_signal": 65,
+          "disaster_signal": 13,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-09",
-          "conflict_signal": 74,
-          "disaster_signal": 40,
-          "alert_level": "Red",
+          "conflict_signal": 58,
+          "disaster_signal": 16,
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-10",
-          "conflict_signal": 58,
-          "disaster_signal": 49,
+          "conflict_signal": 43,
+          "disaster_signal": 20,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-11",
-          "conflict_signal": 85,
-          "disaster_signal": 17,
+          "conflict_signal": 69,
+          "disaster_signal": 7,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-12",
-          "conflict_signal": 67,
-          "disaster_signal": 16,
-          "alert_level": "Red",
+          "conflict_signal": 54,
+          "disaster_signal": 6,
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-13",
-          "conflict_signal": 80,
-          "disaster_signal": 6,
-          "alert_level": "Red",
+          "conflict_signal": 63,
+          "disaster_signal": 2,
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-14",
-          "conflict_signal": 75,
-          "disaster_signal": 22,
-          "alert_level": "Red",
+          "conflict_signal": 54,
+          "disaster_signal": 8,
+          "alert_level": "Orange",
           "driver": "conflict"
         }
       ],
       "tension_series": [
-        {
-          "timestamp_utc": "2026-09-07T13:00:00+00:00",
-          "volume_article_count": 2,
-          "avg_tone": -0.8951,
-          "conflict_article_count": 1,
-          "disaster_article_count": 0
-        },
         {
           "timestamp_utc": "2026-09-07T14:00:00+00:00",
           "volume_article_count": 5,
@@ -7725,6 +8278,87 @@
           "avg_tone": -0.3017,
           "conflict_article_count": 1,
           "disaster_article_count": 0
+        },
+        {
+          "timestamp_utc": "2026-09-14T13:00:00+00:00",
+          "volume_article_count": 1,
+          "avg_tone": -0.5464,
+          "conflict_article_count": 0,
+          "disaster_article_count": 0
+        }
+      ],
+      "top_conflict_themes": [
+        {
+          "code": "WB_2432_FRAGILITY_CONFLICT_AND_VIOLENCE",
+          "label": "Fragility & conflict",
+          "category": "conflict",
+          "count": 274,
+          "share_of_week": 0.7896
+        },
+        {
+          "code": "WB_2433_CONFLICT_AND_VIOLENCE",
+          "label": "Conflict & violence",
+          "category": "conflict",
+          "count": 238,
+          "share_of_week": 0.6859
+        },
+        {
+          "code": "ARMEDCONFLICT",
+          "label": "Armed conflict",
+          "category": "conflict",
+          "count": 214,
+          "share_of_week": 0.6167
+        },
+        {
+          "code": "TERROR",
+          "label": "Terrorism-related coverage",
+          "category": "conflict",
+          "count": 115,
+          "share_of_week": 0.3314
+        },
+        {
+          "code": "WB_2462_POLITICAL_VIOLENCE_AND_WAR",
+          "label": "Political violence & war",
+          "category": "conflict",
+          "count": 93,
+          "share_of_week": 0.268
+        }
+      ],
+      "top_disaster_themes": [
+        {
+          "code": "NATURAL_DISASTER_NATURAL_DISASTERS",
+          "label": "Natural Disasters",
+          "category": "disaster",
+          "count": 26,
+          "share_of_week": 0.0749
+        },
+        {
+          "code": "NATURAL_DISASTER_EARTHQUAKES",
+          "label": "Earthquakes",
+          "category": "disaster",
+          "count": 25,
+          "share_of_week": 0.072
+        },
+        {
+          "code": "NATURAL_DISASTER_FAMINE",
+          "label": "Famine",
+          "category": "disaster",
+          "count": 24,
+          "share_of_week": 0.0692
+        },
+        {
+          "code": "NATURAL_DISASTER_ICE",
+          "label": "Ice",
+          "category": "disaster",
+          "count": 16,
+          "share_of_week": 0.0461
+        },
+        {
+          "code": "NATURAL_DISASTER_FLOODS",
+          "label": "Floods",
+          "category": "disaster",
+          "count": 8,
+          "share_of_week": 0.0231
         }
       ],
       "events": [],
@@ -7768,7 +8402,41 @@
             "total_spend_eur_million": "1915"
           }
         ]
-      }
+      },
+      "comms_volume": [
+        {
+          "date": "2026-09-07",
+          "synthetic_incoming_signals": 15
+        },
+        {
+          "date": "2026-09-08",
+          "synthetic_incoming_signals": 25
+        },
+        {
+          "date": "2026-09-09",
+          "synthetic_incoming_signals": 19
+        },
+        {
+          "date": "2026-09-10",
+          "synthetic_incoming_signals": 18
+        },
+        {
+          "date": "2026-09-11",
+          "synthetic_incoming_signals": 31
+        },
+        {
+          "date": "2026-09-12",
+          "synthetic_incoming_signals": 26
+        },
+        {
+          "date": "2026-09-13",
+          "synthetic_incoming_signals": 19
+        },
+        {
+          "date": "2026-09-14",
+          "synthetic_incoming_signals": 14
+        }
+      ]
     },
     {
       "name": "Haiti",
@@ -7778,76 +8446,69 @@
         18.95,
         -72.3
       ],
-      "conflict_signal": 20,
-      "disaster_signal": 43,
-      "alert_level": "Orange",
-      "driver": "disaster",
+      "conflict_signal": 13,
+      "disaster_signal": 11,
+      "alert_level": "Green",
+      "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 48,
-          "disaster_signal": 29,
-          "alert_level": "Orange",
+          "conflict_signal": 33,
+          "disaster_signal": 11,
+          "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 27,
-          "disaster_signal": 14,
+          "conflict_signal": 21,
+          "disaster_signal": 6,
           "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-09",
-          "conflict_signal": 80,
-          "disaster_signal": 18,
+          "conflict_signal": 69,
+          "disaster_signal": 7,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-10",
-          "conflict_signal": 75,
-          "disaster_signal": 69,
-          "alert_level": "Red",
-          "driver": "conflict"
-        },
-        {
-          "date": "2026-09-11",
-          "conflict_signal": 67,
-          "disaster_signal": 42,
-          "alert_level": "Red",
-          "driver": "conflict"
-        },
-        {
-          "date": "2026-09-12",
-          "conflict_signal": 43,
-          "disaster_signal": 10,
+          "conflict_signal": 63,
+          "disaster_signal": 28,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
+          "date": "2026-09-11",
+          "conflict_signal": 55,
+          "disaster_signal": 17,
+          "alert_level": "Orange",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-12",
+          "conflict_signal": 34,
+          "disaster_signal": 4,
+          "alert_level": "Green",
+          "driver": "conflict"
+        },
+        {
           "date": "2026-09-13",
-          "conflict_signal": 27,
-          "disaster_signal": 25,
+          "conflict_signal": 15,
+          "disaster_signal": 3,
           "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-14",
-          "conflict_signal": 20,
-          "disaster_signal": 43,
-          "alert_level": "Orange",
-          "driver": "disaster"
+          "conflict_signal": 13,
+          "disaster_signal": 11,
+          "alert_level": "Green",
+          "driver": "conflict"
         }
       ],
       "tension_series": [
-        {
-          "timestamp_utc": "2026-09-07T13:00:00+00:00",
-          "volume_article_count": 0,
-          "avg_tone": null,
-          "conflict_article_count": 0,
-          "disaster_article_count": 0
-        },
         {
           "timestamp_utc": "2026-09-07T14:00:00+00:00",
           "volume_article_count": 1,
@@ -9016,6 +9677,87 @@
           "avg_tone": null,
           "conflict_article_count": 0,
           "disaster_article_count": 0
+        },
+        {
+          "timestamp_utc": "2026-09-14T13:00:00+00:00",
+          "volume_article_count": 2,
+          "avg_tone": 0.1408,
+          "conflict_article_count": 2,
+          "disaster_article_count": 1
+        }
+      ],
+      "top_conflict_themes": [
+        {
+          "code": "WB_2432_FRAGILITY_CONFLICT_AND_VIOLENCE",
+          "label": "Fragility & conflict",
+          "category": "conflict",
+          "count": 163,
+          "share_of_week": 0.5582
+        },
+        {
+          "code": "WB_2433_CONFLICT_AND_VIOLENCE",
+          "label": "Conflict & violence",
+          "category": "conflict",
+          "count": 109,
+          "share_of_week": 0.3733
+        },
+        {
+          "code": "ARMEDCONFLICT",
+          "label": "Armed conflict",
+          "category": "conflict",
+          "count": 86,
+          "share_of_week": 0.2945
+        },
+        {
+          "code": "PROTEST",
+          "label": "Protests",
+          "category": "conflict",
+          "count": 39,
+          "share_of_week": 0.1336
+        },
+        {
+          "code": "TERROR",
+          "label": "Terrorism-related coverage",
+          "category": "conflict",
+          "count": 31,
+          "share_of_week": 0.1062
+        }
+      ],
+      "top_disaster_themes": [
+        {
+          "code": "NATURAL_DISASTER_EARTHQUAKES",
+          "label": "Earthquakes",
+          "category": "disaster",
+          "count": 41,
+          "share_of_week": 0.1404
+        },
+        {
+          "code": "NATURAL_DISASTER_ICE",
+          "label": "Ice",
+          "category": "disaster",
+          "count": 39,
+          "share_of_week": 0.1336
+        },
+        {
+          "code": "NATURAL_DISASTER_NATURAL_DISASTERS",
+          "label": "Natural Disasters",
+          "category": "disaster",
+          "count": 38,
+          "share_of_week": 0.1301
+        },
+        {
+          "code": "NATURAL_DISASTER_EARTHQUAKE",
+          "label": "Earthquake",
+          "category": "disaster",
+          "count": 22,
+          "share_of_week": 0.0753
+        },
+        {
+          "code": "NATURAL_DISASTER_HYPOTHERMIA",
+          "label": "Hypothermia",
+          "category": "disaster",
+          "count": 21,
+          "share_of_week": 0.0719
         }
       ],
       "events": [
@@ -9070,7 +9812,41 @@
             "total_spend_eur_million": "1396"
           }
         ]
-      }
+      },
+      "comms_volume": [
+        {
+          "date": "2026-09-07",
+          "synthetic_incoming_signals": 9
+        },
+        {
+          "date": "2026-09-08",
+          "synthetic_incoming_signals": 17
+        },
+        {
+          "date": "2026-09-09",
+          "synthetic_incoming_signals": 22
+        },
+        {
+          "date": "2026-09-10",
+          "synthetic_incoming_signals": 27
+        },
+        {
+          "date": "2026-09-11",
+          "synthetic_incoming_signals": 17
+        },
+        {
+          "date": "2026-09-12",
+          "synthetic_incoming_signals": 13
+        },
+        {
+          "date": "2026-09-13",
+          "synthetic_incoming_signals": 9
+        },
+        {
+          "date": "2026-09-14",
+          "synthetic_incoming_signals": 8
+        }
+      ]
     },
     {
       "name": "Thailand",
@@ -9080,76 +9856,69 @@
         15.0,
         101.0
       ],
-      "conflict_signal": 18,
-      "disaster_signal": 2,
+      "conflict_signal": 14,
+      "disaster_signal": 1,
       "alert_level": "Green",
       "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 26,
-          "disaster_signal": 9,
+          "conflict_signal": 18,
+          "disaster_signal": 3,
           "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 25,
-          "disaster_signal": 15,
-          "alert_level": "Green",
-          "driver": "conflict"
-        },
-        {
-          "date": "2026-09-09",
-          "conflict_signal": 17,
-          "disaster_signal": 7,
-          "alert_level": "Green",
-          "driver": "conflict"
-        },
-        {
-          "date": "2026-09-10",
-          "conflict_signal": 32,
-          "disaster_signal": 3,
-          "alert_level": "Orange",
-          "driver": "conflict"
-        },
-        {
-          "date": "2026-09-11",
-          "conflict_signal": 28,
+          "conflict_signal": 18,
           "disaster_signal": 6,
           "alert_level": "Green",
           "driver": "conflict"
         },
         {
+          "date": "2026-09-09",
+          "conflict_signal": 12,
+          "disaster_signal": 3,
+          "alert_level": "Green",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-10",
+          "conflict_signal": 24,
+          "disaster_signal": 1,
+          "alert_level": "Green",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-11",
+          "conflict_signal": 20,
+          "disaster_signal": 2,
+          "alert_level": "Green",
+          "driver": "conflict"
+        },
+        {
           "date": "2026-09-12",
-          "conflict_signal": 25,
-          "disaster_signal": 11,
+          "conflict_signal": 18,
+          "disaster_signal": 4,
           "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-13",
-          "conflict_signal": 23,
-          "disaster_signal": 5,
+          "conflict_signal": 17,
+          "disaster_signal": 2,
           "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-14",
-          "conflict_signal": 18,
-          "disaster_signal": 2,
+          "conflict_signal": 14,
+          "disaster_signal": 1,
           "alert_level": "Green",
           "driver": "conflict"
         }
       ],
       "tension_series": [
-        {
-          "timestamp_utc": "2026-09-07T13:00:00+00:00",
-          "volume_article_count": 8,
-          "avg_tone": 1.6203,
-          "conflict_article_count": 3,
-          "disaster_article_count": 2
-        },
         {
           "timestamp_utc": "2026-09-07T14:00:00+00:00",
           "volume_article_count": 8,
@@ -10318,6 +11087,87 @@
           "avg_tone": -0.0195,
           "conflict_article_count": 3,
           "disaster_article_count": 0
+        },
+        {
+          "timestamp_utc": "2026-09-14T13:00:00+00:00",
+          "volume_article_count": 12,
+          "avg_tone": 1.1095,
+          "conflict_article_count": 1,
+          "disaster_article_count": 0
+        }
+      ],
+      "top_conflict_themes": [
+        {
+          "code": "WB_2432_FRAGILITY_CONFLICT_AND_VIOLENCE",
+          "label": "Fragility & conflict",
+          "category": "conflict",
+          "count": 335,
+          "share_of_week": 0.2438
+        },
+        {
+          "code": "WB_2433_CONFLICT_AND_VIOLENCE",
+          "label": "Conflict & violence",
+          "category": "conflict",
+          "count": 212,
+          "share_of_week": 0.1543
+        },
+        {
+          "code": "ARMEDCONFLICT",
+          "label": "Armed conflict",
+          "category": "conflict",
+          "count": 160,
+          "share_of_week": 0.1164
+        },
+        {
+          "code": "PROTEST",
+          "label": "Protests",
+          "category": "conflict",
+          "count": 58,
+          "share_of_week": 0.0422
+        },
+        {
+          "code": "WB_2462_POLITICAL_VIOLENCE_AND_WAR",
+          "label": "Political violence & war",
+          "category": "conflict",
+          "count": 44,
+          "share_of_week": 0.032
+        }
+      ],
+      "top_disaster_themes": [
+        {
+          "code": "NATURAL_DISASTER_ICE",
+          "label": "Ice",
+          "category": "disaster",
+          "count": 37,
+          "share_of_week": 0.0269
+        },
+        {
+          "code": "NATURAL_DISASTER_TYPHOON",
+          "label": "Typhoon",
+          "category": "disaster",
+          "count": 12,
+          "share_of_week": 0.0087
+        },
+        {
+          "code": "NATURAL_DISASTER_EXTREME_WEATHER",
+          "label": "Extreme Weather",
+          "category": "disaster",
+          "count": 12,
+          "share_of_week": 0.0087
+        },
+        {
+          "code": "NATURAL_DISASTER_MONSOON",
+          "label": "Monsoon",
+          "category": "disaster",
+          "count": 10,
+          "share_of_week": 0.0073
+        },
+        {
+          "code": "NATURAL_DISASTER_FLOODING",
+          "label": "Flooding",
+          "category": "disaster",
+          "count": 9,
+          "share_of_week": 0.0066
         }
       ],
       "events": [
@@ -10402,7 +11252,41 @@
             "total_spend_eur_million": "3024"
           }
         ]
-      }
+      },
+      "comms_volume": [
+        {
+          "date": "2026-09-07",
+          "synthetic_incoming_signals": 17
+        },
+        {
+          "date": "2026-09-08",
+          "synthetic_incoming_signals": 67
+        },
+        {
+          "date": "2026-09-09",
+          "synthetic_incoming_signals": 62
+        },
+        {
+          "date": "2026-09-10",
+          "synthetic_incoming_signals": 73
+        },
+        {
+          "date": "2026-09-11",
+          "synthetic_incoming_signals": 63
+        },
+        {
+          "date": "2026-09-12",
+          "synthetic_incoming_signals": 54
+        },
+        {
+          "date": "2026-09-13",
+          "synthetic_incoming_signals": 45
+        },
+        {
+          "date": "2026-09-14",
+          "synthetic_incoming_signals": 45
+        }
+      ]
     }
   ]
 }

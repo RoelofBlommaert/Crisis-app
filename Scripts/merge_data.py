@@ -25,57 +25,98 @@ after refreshing the source CSVs, then commit App/data/dataset.json.
 
 These are NOT a statistical probability of conflict or disaster -- there
 is no calibrated base rate or validated model behind them, and the app
-says so explicitly. They're a transparent, inspectable heuristic meant to
-replace the earlier (buggy) approach of color-coding countries by their
-flat 7-day-average GDELT tone: that stayed "Green" for Israel/Lebanon
-even during heavy negative coverage, because a week-long average dilutes
-acute events with routine reporting (Lebanon's week-average tone was
-only -2.9, nowhere near the old -4 threshold).
+says so explicitly. Per STRATEGY.md, automatic classification isn't even
+required to work at this PoC stage -- this stays a transparent, inspectable
+heuristic whose job is to illustrate how the raw signals *could* combine,
+alongside showing the raw signals themselves (see `top_conflict_themes` /
+`top_disaster_themes` below), not to be the definitive answer.
 
 We score **one day at a time** rather than one flat weekly number, so a
 week-old GDACS event can't quietly keep contributing to "today's" score
 forever. For each calendar day present in the 7-day GDELT history:
 
+  confidence = min(1, day_volume / MIN_CONFIDENT_VOLUME)   # dampens thin days
+
   conflict_signal = clamp(
-      day_conflict_theme_share * 70            # up to 70, share of that day's articles
-    + max(0, -day_avg_tone) * 5                # up to 25, tone severity that day
+      day_conflict_theme_share * 50 * confidence   # up to 50, was 70 w/ no dampening
+    + max(0, -day_avg_tone) * 6                    # up to ~30, tone severity that day
     + max(0, day_volume / week_avg_volume - 1) * 15,  # up to 20, spike vs the week's own average
     0, 100)
 
   disaster_signal = clamp(
       active_gdacs_alertscore * 25             # up to 75, only events active ON THAT DAY
-    + day_disaster_theme_share * 100,          # up to 25, disaster-theme article share that day
+    + day_disaster_theme_share * 40 * confidence,  # up to 40, was *100 w/ no dampening
     0, 100)
+
+alert_level bands: Red >= 65, Orange >= 35, else Green (raised from
+60/30 -- see below).
+
+**Recalibration history:** the original 70/100-weighted, undampened
+version put almost every tracked country at Orange-or-above nearly every
+day. Root cause, found by inspecting the live dataset: (a)
+`conflict_share * 70` alone crosses the old Orange cutoff (30) once
+~43% of a country's articles carry a conflict theme tag, and GDELT tags
+an article with *every* country it mentions, so regional spillover
+coverage (Egypt/Turkey appearing in Gaza-adjacent stories) clears that
+easily without those countries being combatants; (b) `disaster_share *
+100` with no confidence dampening let a single article on a low-volume
+day swing the score by up to 100 points of pure sampling noise (Haiti,
+at 1-10 articles/day, saw disaster_signal range 10-69 across a week with
+**no active disaster event** driving any of it). The `confidence` factor
+and lower weights above fix both.
 
 A GDACS event only counts toward a given day's disaster_signal if that
 day falls within the event's own fromdate/todate range (`event_active_on`
-below) -- this is what fixes the original bug: Haiti's October-2025
+below) -- this is what fixes a separate, earlier bug: Haiti's October-2025
 cyclone and Turkey's October-2025 earthquake are still in the "matched
 events" list (GDACS keeps recently-modified events listed for a while
 after they end) but are correctly no longer active in the current 7-day
 window, so they show up as *historical* events in the app rather than
 inflating today's score.
 
-`daily_scores` (7 entries, oldest first) carries this per-day breakdown;
+`daily_scores` (7-8 entries, oldest first) carries this per-day breakdown;
 the top-level conflict_signal/disaster_signal/alert_level/driver fields
 are simply the most recent day's entry, so "today's" gauge and the
 history strip are always the same underlying numbers.
-
-alert_level (Green/Orange/Red) = whichever band max(conflict_signal,
-disaster_signal) falls in (>=60 Red, >=30 Orange, else Green) -- so a
-confirmed Red GDACS event or a strong conflict-theme spike both surface
-the same way, and the frontend shows which signal is driving it.
 """
 
 from __future__ import annotations
 
 import csv
 import json
+import re
 from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
 from countries import COUNTRIES
+
+# Human-readable labels for the theme codes we tally (see
+# fetch_gdelt_tension.py's CONFLICT_THEMES / DISASTER_THEME_PREFIX).
+THEME_LABELS = {
+    "ARMEDCONFLICT": "Armed conflict",
+    "PROTEST": "Protests",
+    "TERROR": "Terrorism-related coverage",
+    "UNREST_BELLIGERENT": "Civil unrest",
+    "WB_739_POLITICAL_VIOLENCE_AND_CIVIL_WAR": "Political violence & civil war",
+    "WB_2432_FRAGILITY_CONFLICT_AND_VIOLENCE": "Fragility & conflict",
+    "WB_2433_CONFLICT_AND_VIOLENCE": "Conflict & violence",
+    "WB_2462_POLITICAL_VIOLENCE_AND_WAR": "Political violence & war",
+    "WB_2467_TERRORISM": "Terrorism",
+    "WB_2468_CONVENTIONAL_WAR": "Conventional war",
+    "WB_2492_COUNTER_TERRORISM": "Counter-terrorism",
+    "WB_2510_WAR_CRIMES": "War crimes",
+}
+DISASTER_THEME_PREFIX = "NATURAL_DISASTER_"
+
+
+def theme_label(code: str) -> str:
+    if code in THEME_LABELS:
+        return THEME_LABELS[code]
+    if code.startswith(DISASTER_THEME_PREFIX):
+        suffix = code[len(DISASTER_THEME_PREFIX):]
+        return re.sub(r"_", " ", suffix).title()
+    return code
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = REPO_ROOT / "Data"
@@ -178,7 +219,47 @@ def load_cbs_travel() -> dict:
     return baseline
 
 
+def load_theme_breakdown() -> dict:
+    d = DATA_DIR / "GDELT"
+    path = latest_file(d, "gdelt_theme_breakdown_*.csv")
+    breakdown = defaultdict(list)
+    if not path:
+        print("  ! no GDELT theme-breakdown file found")
+        return breakdown
+    with path.open(encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            breakdown[row["country"]].append(
+                {
+                    "code": row["theme_code"],
+                    "label": theme_label(row["theme_code"]),
+                    "category": row["category"],
+                    "count": int(row["article_count"]),
+                }
+            )
+    print(f"  loaded theme breakdown from {path.name} ({sum(len(v) for v in breakdown.values())} rows)")
+    return breakdown
+
+
+def load_synthetic_comms() -> dict:
+    d = DATA_DIR / "Synthetic"
+    path = latest_file(d, "comms_volume_*.csv")
+    comms = defaultdict(list)
+    if not path:
+        print("  ! no synthetic comms-volume file found (run generate_synthetic_comms.py)")
+        return comms
+    with path.open(encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            comms[row["country"]].append(
+                {"date": row["date"], "synthetic_incoming_signals": int(row["synthetic_incoming_signals"])}
+            )
+    for name in comms:
+        comms[name].sort(key=lambda r: r["date"])
+    print(f"  loaded FICTIONAL comms volume from {path.name} ({sum(len(v) for v in comms.values())} rows)")
+    return comms
+
+
 ALERT_ORDER = {"Green": 1, "Orange": 2, "Red": 3}
+MIN_CONFIDENT_VOLUME = 15
 
 
 def _clamp(x: float, lo: float, hi: float) -> float:
@@ -189,6 +270,7 @@ def _window_stats(points: list) -> dict:
     total_volume = sum(p["volume_article_count"] for p in points)
     tones = [p["avg_tone"] for p in points if p["avg_tone"] is not None]
     return {
+        "total_volume": total_volume,
         "avg_volume": total_volume / len(points) if points else 0.0,
         "avg_tone": sum(tones) / len(tones) if tones else None,
         "conflict_share": (sum(p["conflict_article_count"] for p in points) / total_volume) if total_volume else 0.0,
@@ -218,9 +300,9 @@ def event_active_on(event: dict, day) -> bool:
 
 
 def _alert_band(score: float) -> str:
-    if score >= 60:
+    if score >= 65:
         return "Red"
-    if score >= 30:
+    if score >= 35:
         return "Orange"
     return "Green"
 
@@ -246,10 +328,13 @@ def score_country(events: list, tension_series: list) -> dict:
         day_stats = _window_stats(day_points)
         day_tone = day_stats["avg_tone"] if day_stats["avg_tone"] is not None else 0.0
         volume_ratio = day_stats["avg_volume"] / week_avg_volume
+        confidence = min(1.0, day_stats["total_volume"] / MIN_CONFIDENT_VOLUME)
 
         conflict_signal = round(
             _clamp(
-                day_stats["conflict_share"] * 70 + max(0.0, -day_tone) * 5 + max(0.0, volume_ratio - 1) * 15,
+                day_stats["conflict_share"] * 50 * confidence
+                + max(0.0, -day_tone) * 6
+                + max(0.0, volume_ratio - 1) * 15,
                 0,
                 100,
             )
@@ -257,7 +342,9 @@ def score_country(events: list, tension_series: list) -> dict:
 
         active_events = [e for e in events if e["alertlevel"] in ALERT_ORDER and event_active_on(e, day)]
         gdacs_alertscore = max((e["alertscore"] for e in active_events), default=0)
-        disaster_signal = round(_clamp(gdacs_alertscore * 25 + day_stats["disaster_share"] * 100, 0, 100))
+        disaster_signal = round(
+            _clamp(gdacs_alertscore * 25 + day_stats["disaster_share"] * 40 * confidence, 0, 100)
+        )
 
         daily_scores.append(
             {
@@ -285,11 +372,25 @@ def score_country(events: list, tension_series: list) -> dict:
     }
 
 
+def top_themes(theme_rows: list, category: str, total_volume: int, limit: int = 5) -> list:
+    """Top theme codes by count, each annotated with its share of the
+    country's total weekly article volume -- without that, a small
+    absolute count (e.g. "Famine: 96 articles") reads as a real signal
+    out of context, when it might be <2% of a high-volume country's week."""
+    matching = [r for r in theme_rows if r["category"] == category]
+    matching.sort(key=lambda r: -r["count"])
+    for r in matching:
+        r["share_of_week"] = round(r["count"] / total_volume, 4) if total_volume else 0.0
+    return matching[:limit]
+
+
 def main() -> None:
     print("Loading source data...")
     gdelt = load_gdelt_history()
     gdacs = load_gdacs_events()
     cbs = load_cbs_travel()
+    theme_breakdown = load_theme_breakdown()
+    synthetic_comms = load_synthetic_comms()
 
     countries_out = []
     for c in COUNTRIES:
@@ -304,6 +405,9 @@ def main() -> None:
             e["is_current"] = bool(latest_day_parsed and event_active_on(e, latest_day_parsed))
         events.sort(key=lambda e: e["fromdate"], reverse=True)
 
+        country_themes = theme_breakdown.get(name, [])
+        week_total_volume = sum(p["volume_article_count"] for p in tension_series)
+
         countries_out.append(
             {
                 "name": name,
@@ -312,12 +416,43 @@ def main() -> None:
                 "coords": COUNTRY_COORDS.get(name),
                 **scores,
                 "tension_series": tension_series,
+                "top_conflict_themes": top_themes(country_themes, "conflict", week_total_volume),
+                "top_disaster_themes": top_themes(country_themes, "disaster", week_total_volume),
                 "events": events,
                 "travel_baseline": cbs.get(
                     name, {"granularity": "none", "area_label": "", "series": []}
                 ),
+                "comms_volume": synthetic_comms.get(name, []),
             }
         )
+
+    # Per-source freshness/vintage -- surfaces the "near-real-time
+    # engineering" track's honesty requirement without building live
+    # infrastructure: show exactly how current each source actually is.
+    all_timestamps = [p["timestamp_utc"] for series in gdelt.values() for p in series]
+    gdacs_path = latest_file(DATA_DIR / "Reliefweb and GDACS", "gdacs_events_matched_*.csv")
+    cbs_path = latest_file(DATA_DIR / "Travel and flights", "cbs_travel_*.csv")
+    all_cbs_years = [row["year"] for rows in cbs.values() for row in rows["series"]]
+    data_sources = {
+        "gdelt": {
+            "kind": "real",
+            "latest_timestamp_utc": max(all_timestamps) if all_timestamps else None,
+            "earliest_timestamp_utc": min(all_timestamps) if all_timestamps else None,
+        },
+        "gdacs": {
+            "kind": "real",
+            "fetched_on": gdacs_path.stem.rsplit("_", 1)[-1] if gdacs_path else None,
+        },
+        "cbs_travel": {
+            "kind": "real",
+            "fetched_on": cbs_path.stem.rsplit("_", 1)[-1] if cbs_path else None,
+            "latest_year": max(all_cbs_years) if all_cbs_years else None,
+        },
+        "comms_volume": {
+            "kind": "synthetic",
+            "note": "Fictional data generated for this demo -- not connected to any real NWW/consular system.",
+        },
+    }
 
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     dataset = {
@@ -327,6 +462,7 @@ def main() -> None:
             "conflict_signal/disaster_signal are an illustrative 0-100 heuristic, "
             "not a statistical forecast or probability -- see Documentation/ and Scripts/merge_data.py."
         ),
+        "data_sources": data_sources,
         "countries": countries_out,
     }
     OUT_PATH.write_text(json.dumps(dataset, indent=2), encoding="utf-8")

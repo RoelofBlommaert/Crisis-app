@@ -17,12 +17,26 @@ const DRIVER_LABEL = {
   disaster: "Disaster-driven",
 };
 
+const GDACS_EVENTTYPE_LABEL = {
+  EQ: "Earthquake",
+  FL: "Flood",
+  TC: "Tropical Cyclone",
+  DR: "Drought",
+  VO: "Volcanic activity",
+  WF: "Wildfire",
+  TS: "Tsunami",
+  LS: "Landslide",
+  EP: "Epidemic",
+  ST: "Storm",
+};
+
 const CONFLICT_ICON = `<svg class="gauge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5 17.5 17.5M17.5 6.5 6.5 17.5" stroke-linecap="round"/></svg>`;
 const DISASTER_ICON = `<svg class="gauge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15a4 4 0 0 1 1-7.87A5 5 0 0 1 15 6a4.5 4.5 0 0 1 1 8.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 19l1.5-3M13 19l1.5-3M11 21l1-2" stroke-linecap="round"/></svg>`;
 
 let map;
 let tensionChart;
 let themeChart;
+let commsChart;
 let markers = {};
 let dataset;
 
@@ -31,13 +45,18 @@ function riskScore(country) {
 }
 
 function gaugeColor(value) {
-  if (value >= 60) return LEVEL_COLOR.Red;
-  if (value >= 30) return LEVEL_COLOR.Orange;
+  if (value >= 65) return LEVEL_COLOR.Red;
+  if (value >= 35) return LEVEL_COLOR.Orange;
   return LEVEL_COLOR.Green;
 }
 
 function fmtDay(dateStr) {
   return new Date(dateStr + "T00:00:00Z").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+}
+
+function fmtDateTime(iso) {
+  if (!iso) return "unknown";
+  return new Date(iso).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
 async function init() {
@@ -48,6 +67,8 @@ async function init() {
     `Snapshot generated ${new Date(dataset.generated_at).toLocaleString()} — not a live feed. Conflict/disaster signals are scored per day, not a forecast probability.`;
 
   renderStatStrip();
+  setupAboutPanel();
+  renderDataSources();
 
   map = L.map("map", { scrollWheelZoom: false }).setView([25, 40], 2);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -96,7 +117,6 @@ async function init() {
     listEl.appendChild(li);
   });
 
-  setupAboutPanel();
   selectCountry(sorted[0].name);
 }
 
@@ -112,6 +132,18 @@ function renderStatStrip() {
         `<span class="stat-chip"><span class="dot ${level}"></span>${counts[level]} ${LEVEL_LABEL[level]}</span>`
     )
     .join("");
+}
+
+function renderDataSources() {
+  const ds = dataset.data_sources;
+  if (!ds) return;
+  const el = document.getElementById("data-sources-list");
+  el.innerHTML = `
+    <li><strong>GDELT</strong> (real) — ${fmtDateTime(ds.gdelt.earliest_timestamp_utc)} to ${fmtDateTime(ds.gdelt.latest_timestamp_utc)}</li>
+    <li><strong>GDACS</strong> (real) — fetched ${ds.gdacs.fetched_on || "unknown"}</li>
+    <li><strong>CBS travel</strong> (real) — fetched ${ds.cbs_travel.fetched_on || "unknown"}, latest year ${ds.cbs_travel.latest_year || "n/a"}</li>
+    <li><strong>Comms volume</strong> — <span class="synthetic-tag">SYNTHETIC</span> ${ds.comms_volume.note}</li>
+  `;
 }
 
 function selectCountry(name) {
@@ -148,15 +180,19 @@ function renderDetail(country) {
       ${renderGauge("Disaster signal", DISASTER_ICON, country.disaster_signal, country.daily_scores, "disaster_signal")}
     </div>
     <p class="gauge-disclaimer">
-      Illustrative 0&ndash;100 heuristic, scored one day at a time from recent media tone, conflict/disaster
-      theme tagging, and GDACS events active on that specific day &mdash; <strong>not</strong> a statistical
-      forecast or probability of war/disaster. Bars above show each recent day, oldest to newest, hover for
-      the date and score. See About panel for the method.
+      Illustrative 0&ndash;100 heuristic, scored one day at a time &mdash; <strong>not</strong> a statistical
+      forecast or probability of war/disaster. Bars above show each recent day, oldest to newest.
     </p>
+
+    <h4>What's happening this week</h4>
+    <div class="explain-grid">
+      ${renderThemeExplain("Conflict themes", country.top_conflict_themes)}
+      ${renderThemeExplain("Disaster themes", country.top_disaster_themes)}
+    </div>
 
     <div class="detail-grid">
       <div>
-        <h4>Media signal, last 7 days</h4>
+        <h4>Media signal, last 7-8 days</h4>
         <div class="chart-box"><canvas id="tension-chart"></canvas></div>
         <h4>Conflict vs. disaster theme share</h4>
         <div class="chart-box chart-box-small"><canvas id="theme-chart"></canvas></div>
@@ -166,8 +202,13 @@ function renderDetail(country) {
           <strong>Confirmed events (GDACS)</strong>
           ${renderEvents(country.events)}
         </div>
+        <div class="side-section comms-box">
+          <strong>Incoming communication volume <span class="synthetic-tag">SYNTHETIC</span></strong>
+          <p class="synthetic-note">Fictional, illustrative only &mdash; not connected to any real NWW/consular system. See About panel.</p>
+          <div class="chart-box chart-box-small"><canvas id="comms-chart"></canvas></div>
+        </div>
         <div class="side-section travel-box">
-          <strong>Dutch outbound travel baseline (CBS)</strong>
+          <strong>Dutch travel context (CBS)</strong>
           ${renderTravel(country.travel_baseline)}
         </div>
       </div>
@@ -176,6 +217,7 @@ function renderDetail(country) {
 
   renderTensionChart(country);
   renderThemeChart(country);
+  renderCommsChart(country);
 }
 
 function renderGauge(label, icon, value, dailyScores, field) {
@@ -196,39 +238,63 @@ function renderGauge(label, icon, value, dailyScores, field) {
   `;
 }
 
+function renderThemeExplain(title, themes) {
+  if (!themes || themes.length === 0) {
+    return `<div class="explain-box"><strong>${title}</strong><p class="no-events">No matching themes this week.</p></div>`;
+  }
+  const items = themes
+    .map((t) => `<li>${t.label} <span class="theme-count">${t.count} articles &middot; ${(t.share_of_week * 100).toFixed(1)}% of week</span></li>`)
+    .join("");
+  return `<div class="explain-box"><strong>${title}</strong><ul>${items}</ul></div>`;
+}
+
 function renderEvents(events) {
   if (!events || events.length === 0) {
     return '<p class="no-events">No confirmed GDACS disaster events for this country. Note: GDACS covers natural disasters only, not conflict/political crises — see the About panel.</p>';
   }
-  const items = events
-    .map(
-      (e) => `<li class="${e.is_current ? "" : "historical"}">
-        <span class="badge ${e.alertlevel}" style="font-size:0.68rem;">${e.alertlevel}</span>
-        <span class="event-tag">${e.is_current ? "Active now" : "Historical"}</span><br>
-        ${e.eventname || e.eventtype} &mdash; ${e.description}
-        <br><span style="color:var(--muted);font-size:0.8rem;">${e.fromdate.slice(0, 10)} to ${e.todate.slice(0, 10)}</span></li>`
-    )
-    .join("");
-  return `<ul>${items}</ul>`;
+  const active = events.filter((e) => e.is_current);
+  const historical = events.filter((e) => !e.is_current);
+
+  const renderOne = (e) => `<li>
+      <span class="badge ${e.alertlevel}" style="font-size:0.68rem;">${e.alertlevel}</span>
+      <span class="event-tag">${GDACS_EVENTTYPE_LABEL[e.eventtype] || e.eventtype}</span><br>
+      ${e.eventname || e.eventtype} &mdash; ${e.description}
+      <br><span style="color:var(--muted);font-size:0.8rem;">${e.fromdate.slice(0, 10)} to ${e.todate.slice(0, 10)}</span></li>`;
+
+  let html = "";
+  if (active.length > 0) {
+    html += `<ul>${active.map(renderOne).join("")}</ul>`;
+  } else {
+    html += '<p class="no-events">No disaster event currently active this week.</p>';
+  }
+  if (historical.length > 0) {
+    html += `<details class="history-toggle"><summary>${historical.length} historical event${historical.length > 1 ? "s" : ""} (most recent: ${historical[0].fromdate.slice(0, 10)})</summary><ul>${historical.map(renderOne).join("")}</ul></details>`;
+  }
+  return html;
 }
 
 function renderTravel(baseline) {
   if (!baseline || !baseline.series || baseline.series.length === 0) {
-    return "<p class=\"no-events\">No travel baseline data available.</p>";
+    return "<p class=\"no-events\">No travel context data available.</p>";
   }
   const granClass = `granularity-${baseline.granularity}`;
+  const latest = baseline.series[baseline.series.length - 1];
   const rows = baseline.series
     .map(
       (r) =>
         `<tr><td>${r.year}</td><td>${r.total_trips_x1000 || "–"}</td><td>${r.total_spend_eur_million || "–"}</td></tr>`
     )
     .join("");
+  const areaNote = baseline.granularity === "country" ? "Country-level" : `Region-level: ${baseline.area_label}`;
   return `
-    <span class="badge ${granClass}">${baseline.granularity === "country" ? "Country-level" : "Region-level: " + baseline.area_label}</span>
-    <table>
-      <thead><tr><th>Year</th><th>Trips (x1000)</th><th>Spend (€m)</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table>
+    <p class="travel-context">~${latest.dutch_travellers_x1000 || "?"} thousand Dutch travelers in ${latest.year}
+      <span class="badge ${granClass}" style="margin-left:6px;">${areaNote}</span></p>
+    <details><summary>5-year history</summary>
+      <table>
+        <thead><tr><th>Year</th><th>Trips (x1000)</th><th>Spend (€m)</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </details>
   `;
 }
 
@@ -342,6 +408,40 @@ function renderThemeChart(country) {
       scales: {
         y: { min: 0, max: 100, title: { display: true, text: "% of articles", color: textColor }, ticks: { color: textColor } },
         x: { display: false },
+      },
+    },
+  });
+}
+
+function renderCommsChart(country) {
+  const ctx = document.getElementById("comms-chart");
+  if (!ctx) return;
+  if (commsChart) commsChart.destroy();
+
+  const series = country.comms_volume || [];
+  const labels = series.map((p) => fmtDay(p.date));
+  const textColor = chartTextColor();
+
+  commsChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Synthetic incoming signals",
+          data: series.map((p) => p.synthetic_incoming_signals),
+          backgroundColor: "rgba(148,163,184,0.6)",
+          borderRadius: 4,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { ticks: { color: textColor }, title: { display: true, text: "Signals (fictional)", color: textColor } },
+        x: { ticks: { color: textColor } },
       },
     },
   });
