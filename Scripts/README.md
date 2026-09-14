@@ -77,6 +77,15 @@ which countries are tracked.
   min), not the DOC 2.0 query API — see "Avoiding the GDELT rate limit"
   below for why, and for how to query GDELT for ongoing/hourly
   collection.
+- **Whole-week average tone is a poor crisis signal on its own.** We
+  originally color-coded countries by their 7-day average GDELT tone
+  against fixed thresholds (-4/-8). In practice this stayed "Green" for
+  Israel/Lebanon even during heavy, clearly negative coverage, because
+  a week-long average is diluted by routine reporting -- Lebanon's
+  7-day average tone was only -2.9, never close to -4. Fixed by also
+  tagging each article's GKG themes (see below) and using conflict-theme
+  *share* + a recent-vs-baseline trend instead of a flat weekly average;
+  see `merge_data.py`.
 - **OpenSky** is live-snapshot only under anonymous access; it cannot
   answer "how has flight volume out of country X changed" (see
   `Documentation/Data ideation.txt`). It's wired in only as an optional
@@ -150,3 +159,29 @@ of GKG files as a recent snapshot rather than backfilling months of
 history in one run — bump that constant, or run the script on a
 schedule and concatenate its output over time, to build up a longer
 series.
+
+## Conflict/disaster theme tagging
+
+`fetch_gdelt_tension.py` also parses each article's `V2Themes` field
+(GKG's per-article topic tags) and counts, per country per file, how
+many matching articles carry a conflict-related theme vs. a
+natural-disaster-related theme -- `conflict_article_count` /
+`disaster_article_count` columns. This is what lets the app show a
+"conflict signal" separate from a "disaster signal" instead of lumping
+everything into one tone number.
+
+The theme codes used (`CONFLICT_THEMES` set, `NATURAL_DISASTER_` prefix
+in the script) were picked by **downloading a live GKG file and checking
+which codes actually appear** for our tracked countries, not copied
+blind from GDELT's documentation (theme taxonomies drift and the docs
+aren't fully authoritative). `NATURAL_DISASTER_*` reliably prefixes every
+disaster-specific tag observed (flooding, hurricane, wildfire, landslide,
+avalanche, monsoon, ...). Conflict signal is a fixed set of codes that
+showed up on real conflict-country articles: `ARMEDCONFLICT`, `PROTEST`,
+`TERROR`, `UNREST_BELLIGERENT`, and several World Bank taxonomy codes
+(`WB_2462_POLITICAL_VIOLENCE_AND_WAR`, `WB_2467_TERRORISM`,
+`WB_739_POLITICAL_VIOLENCE_AND_CIVIL_WAR`, etc). Deliberately excluded
+broader/noisier codes like generic `MILITARY` or `TAX_MILITARY_TITLE_*`
+(military titles/spending stories aren't necessarily about actual
+conflict) and `CRISISLEX_CRISISLEXREC` (fires on both conflict and
+disaster stories, not a clean signal either way).

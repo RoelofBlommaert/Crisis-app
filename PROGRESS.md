@@ -110,11 +110,59 @@ Work done:
   `data/dataset.json` via a relative path — works unmodified on GitHub
   Pages.
 
+Published: committed, pushed, and deployed to GitHub Pages via a
+GitHub Actions workflow (`.github/workflows/deploy-pages.yml`) scoped to
+`App/` only — Data/Scripts/Documentation stay out of the live site. The
+first auto-triggered run failed at `configure-pages` because Pages
+wasn't enabled yet at push time; fixed by enabling Settings → Pages →
+Source: GitHub Actions and re-running the workflow manually.
+
+## 2026-09-14 (continued 2) — conflict/disaster signal scoring + frontend pass
+
+User feedback after seeing the deployed app: Israel/Lebanon showed high
+article volume and strongly negative tone (real ongoing Levant crisis)
+but still rendered "Green" — the alert-level heuristic was broken. Root
+cause: it used the whole 7-day *average* tone against fixed thresholds
+(-4/-8), which a week-long average essentially never reaches even during
+real crises (Lebanon's week-average tone was only -2.9) because routine
+coverage dilutes acute events.
+
+Fix, plus the requested "chances of conflict" feature: explicitly framed
+this as an illustrative 0-100 heuristic, not a real statistical
+probability — there's no calibrated base rate or validated model behind
+it, consistent with this app's existing "not operational, not validated"
+framing.
+- Downloaded a live GDELT GKG file and inspected real `V2Themes` tags for
+  our tracked countries (rather than trusting docs alone) to find actual
+  in-use codes: `NATURAL_DISASTER_*` prefix for disaster articles;
+  `ARMEDCONFLICT`, `PROTEST`, `TERROR`, `UNREST_BELLIGERENT`, and several
+  World Bank taxonomy codes for conflict articles.
+- Extended `fetch_gdelt_tension.py` to tally `conflict_article_count` /
+  `disaster_article_count` per country per file, re-ran the 7-day
+  hourly backfill.
+- Rewrote `merge_data.py`'s scoring: `conflict_signal` and
+  `disaster_signal` (0-100 each), combining recent (last-24h) theme
+  share, tone severity, a volume-spike bonus, and confirmed GDACS
+  alert level — replacing the flat-average-tone `alert_level_for`.
+  Verified against real recomputed data before settling on constants
+  (Israel/Lebanon now correctly land "Red, conflict-driven"; Sudan's
+  civil war also correctly surfaces as high-conflict; Egypt/Turkey come
+  out moderately elevated too, which is real but partly an artifact of
+  GDELT tagging bordering/mediating countries mentioned in Gaza-related
+  coverage — documented as a known limitation, not hidden).
+- Frontend pass: header stat strip (count of Red/Orange/Green), country
+  list sorted by risk with dual conflict/disaster mini-bars, per-country
+  gauge bars with an explicit "not a forecast" disclaimer, a second
+  chart showing conflict-vs-disaster theme share over time, map markers
+  sized by recent volume, general visual polish. About panel and
+  `Documentation/` updated with the new methodology and its limitations.
+- Re-tested end-to-end in a browser: bug confirmed fixed, no console
+  errors, gauges/charts/list all render correctly.
+
 ### Next up
-- [ ] Run `fetch_gdelt_tension.py --backfill` + `merge_data.py`, and
-      smoke-test the app locally (`python -m http.server` from `App/`)
-- [ ] Publish: repo Settings → Pages → Deploy from branch → `main` →
-      folder `/App` (manual step, not something automatable from here)
+- [ ] Re-run `fetch_gdelt_tension.py --backfill` + `merge_data.py`
+      periodically if the signals should stay current (still a one-time
+      snapshot by design — see Documentation)
 - [ ] If this ever needs to become a live-refreshing dashboard rather
       than a one-time snapshot, revisit the GitHub Actions cron option
       that was consciously deferred this round

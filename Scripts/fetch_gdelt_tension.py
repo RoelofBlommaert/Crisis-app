@@ -16,9 +16,16 @@ published every 15 minutes, no key, no rate limit (plain files on GCS):
 
 Each row is one article; V2Locations lists (type#name#countrycode#...)
 per place mentioned (FIPS 10-4 country codes); V2Tone's first value is
-that article's average tone (-100..+100). We match articles whose
-V2Locations includes one of our target countries' FIPS code, and
-aggregate per country per 15-minute file: article count + mean tone.
+that article's average tone (-100..+100); V2Themes lists GKG theme tags
+(code,offset;code,offset;...). We match articles whose V2Locations
+includes one of our target countries' FIPS code, and aggregate per
+country per 15-minute file: article count, mean tone, and how many of
+those articles carry a conflict-related or natural-disaster-related
+theme tag (CONFLICT_THEMES / DISASTER_THEME_PREFIX below) -- this is
+what lets the app separate "political/conflict signal" from "natural
+disaster signal" instead of relying on tone alone. Codes were picked by
+downloading a live GKG file and checking which ones actually appear
+(not from documentation alone) -- see Scripts/README.md.
 
 This trades DOC 2.0's ~3-month daily timeline for a short, high-resolution
 (15-min) recent window -- see LOOKBACK_FILES below. Run this on a
@@ -36,7 +43,8 @@ this project isn't running a recurring scheduled pull.
 
 Output: Data/GDELT/gdelt_tension_<date>.csv (normal mode)
         Data/GDELT/gdelt_tension_history_<date>.csv (--backfill mode)
-Columns: country, timestamp_utc, date, volume_article_count, avg_tone
+Columns: country, timestamp_utc, date, volume_article_count, avg_tone,
+         conflict_article_count, disaster_article_count
 """
 
 import argparse
@@ -71,9 +79,28 @@ FIPS_BY_COUNTRY = {
     "Thailand": "TH",
 }
 
+V2THEMES_COL = 8
 V2LOCATIONS_COL = 10
 V2TONE_COL = 15
 DATE_COL = 1
+
+# Verified against a live GKG file (2026-09-14) rather than assumed from
+# docs -- see Scripts/README.md "Conflict/disaster theme tagging".
+CONFLICT_THEMES = {
+    "ARMEDCONFLICT",
+    "PROTEST",
+    "TERROR",
+    "UNREST_BELLIGERENT",
+    "WB_739_POLITICAL_VIOLENCE_AND_CIVIL_WAR",
+    "WB_2432_FRAGILITY_CONFLICT_AND_VIOLENCE",
+    "WB_2433_CONFLICT_AND_VIOLENCE",
+    "WB_2462_POLITICAL_VIOLENCE_AND_WAR",
+    "WB_2467_TERRORISM",
+    "WB_2468_CONVENTIONAL_WAR",
+    "WB_2492_COUNTER_TERRORISM",
+    "WB_2510_WAR_CRIMES",
+}
+DISASTER_THEME_PREFIX = "NATURAL_DISASTER_"
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 OUT_DIR = REPO_ROOT / "Data" / "GDELT"
@@ -100,8 +127,26 @@ def hourly_timestamps_going_back(days: int) -> list:
     return [(now - timedelta(hours=i)).strftime("%Y%m%d%H%M%S") for i in range(days * 24)]
 
 
+def _article_theme_flags(themes_field: str) -> tuple:
+    """Returns (is_conflict, is_disaster) for one article's V2Themes field."""
+    is_conflict = False
+    is_disaster = False
+    for entry in themes_field.split(";"):
+        code = entry.split(",")[0]
+        if not code:
+            continue
+        if code in CONFLICT_THEMES:
+            is_conflict = True
+        elif code.startswith(DISASTER_THEME_PREFIX):
+            is_disaster = True
+        if is_conflict and is_disaster:
+            break
+    return is_conflict, is_disaster
+
+
 def fetch_and_aggregate(ts: str, fips_to_country: dict) -> dict:
-    """Returns {country_name: (article_count, tone_sum)} for one 15-min file."""
+    """Returns {country_name: (article_count, tone_sum, conflict_count, disaster_count)}
+    for one 15-min file."""
     url = FILE_URL_TEMPLATE.format(ts=ts)
     resp = requests.get(url, timeout=60)
     if resp.status_code == 404:
@@ -119,6 +164,7 @@ def fetch_and_aggregate(ts: str, fips_to_country: dict) -> dict:
                     fields = line.rstrip("\n").split("\t")
                     locations = fields[V2LOCATIONS_COL]
                     tone = float(fields[V2TONE_COL].split(",")[0])
+                    themes = fields[V2THEMES_COL]
                 except (IndexError, ValueError):
                     continue
 
@@ -132,11 +178,20 @@ def fetch_and_aggregate(ts: str, fips_to_country: dict) -> dict:
                     if country_name:
                         matched_countries.add(country_name)
 
-                for country_name in matched_countries:
-                    n, total = counts.get(country_name, (0, 0.0))
-                    counts[country_name] = (n + 1, total + tone)
+                if not matched_countries:
+                    continue
+                is_conflict, is_disaster = _article_theme_flags(themes)
 
-    print(f"  {ts}: processed, {sum(c for c, _ in counts.values())} matching articles")
+                for country_name in matched_countries:
+                    n, total, n_conflict, n_disaster = counts.get(country_name, (0, 0.0, 0, 0))
+                    counts[country_name] = (
+                        n + 1,
+                        total + tone,
+                        n_conflict + (1 if is_conflict else 0),
+                        n_disaster + (1 if is_disaster else 0),
+                    )
+
+    print(f"  {ts}: processed, {sum(c[0] for c in counts.values())} matching articles")
     return counts
 
 
@@ -175,7 +230,7 @@ def main() -> None:
         ts_dt = datetime.strptime(ts, "%Y%m%d%H%M%S").replace(tzinfo=timezone.utc)
         for country in COUNTRIES:
             name = country["name"]
-            n, total = counts.get(name, (0, 0.0))
+            n, total, n_conflict, n_disaster = counts.get(name, (0, 0.0, 0, 0))
             rows.append(
                 {
                     "country": name,
@@ -183,6 +238,8 @@ def main() -> None:
                     "date": ts_dt.date().isoformat(),
                     "volume_article_count": n,
                     "avg_tone": round(total / n, 4) if n else "",
+                    "conflict_article_count": n_conflict,
+                    "disaster_article_count": n_disaster,
                 }
             )
 
@@ -200,7 +257,16 @@ def main() -> None:
     out_path = OUT_DIR / filename
     with out_path.open("w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(
-            f, fieldnames=["country", "timestamp_utc", "date", "volume_article_count", "avg_tone"]
+            f,
+            fieldnames=[
+                "country",
+                "timestamp_utc",
+                "date",
+                "volume_article_count",
+                "avg_tone",
+                "conflict_article_count",
+                "disaster_article_count",
+            ],
         )
         writer.writeheader()
         writer.writerows(rows)

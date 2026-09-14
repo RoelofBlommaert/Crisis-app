@@ -141,6 +141,37 @@ Step 3 — Visualization
     seasonal baseline
   - Optional: current Dutch travel advisory level shown alongside,
     to visually flag if advisory and data appear to diverge
+  - Two illustrative 0-100 signal gauges per country: "conflict signal"
+    and "disaster signal" (see below) -- explicitly NOT a statistical
+    probability of war or disaster; there is no calibrated base rate or
+    validated model behind them.
+
+Conflict/disaster signal scoring
+---------------------------------
+An earlier version color-coded countries by their flat 7-day-average
+GDELT tone against fixed thresholds. This stayed "Green" for Israel and
+Lebanon even during heavy, clearly negative coverage, because a
+week-long average dilutes acute events with routine reporting (Lebanon's
+week-average tone was only -2.9, nowhere near the -4 threshold used).
+
+Fixed by also tagging each article's GDELT GKG theme codes (verified
+against a live GKG file, not assumed from documentation) as
+conflict-related (ARMEDCONFLICT, PROTEST, TERROR, UNREST_BELLIGERENT,
+several World Bank political-violence/war/terrorism codes) or
+disaster-related (the NATURAL_DISASTER_* theme family), and scoring:
+  - conflict_signal: recent (last 24h) conflict-theme article share +
+    recent tone severity + a volume-spike bonus vs. the prior week
+  - disaster_signal: confirmed GDACS alert level (weighted highest) +
+    recent disaster-theme article share
+Whichever is higher drives the overall Green/Orange/Red level, and the
+app labels which one ("conflict-driven" / "disaster-driven").
+
+Known nuance: GDELT tags an article with every country it *mentions*,
+so a bordering or mediating country (e.g. Egypt or Turkey appearing in
+Gaza-related diplomacy coverage) can pick up a real conflict-theme share
+without being a combatant itself. This is a genuine property of the
+underlying data, not something fixable without deeper text analysis --
+documented rather than hidden.
 
 Step 4 — Insight
   Highlight countries where instability is rising and travel volume

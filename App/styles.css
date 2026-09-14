@@ -53,10 +53,24 @@ body {
 .subtitle a { color: var(--accent); }
 
 .snapshot-note {
-  margin: 0;
+  margin: 0 0 8px;
   font-size: 0.8rem;
   color: var(--muted);
   font-style: italic;
+}
+
+.stat-strip {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.stat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
 main {
@@ -74,6 +88,7 @@ main {
   border: 1px solid var(--border);
   grid-column: 1;
   grid-row: 1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .country-list {
@@ -85,6 +100,7 @@ main {
   padding: 12px 16px;
   max-height: 380px;
   overflow-y: auto;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .country-list h2 { margin-top: 0; font-size: 1rem; }
@@ -108,11 +124,32 @@ main {
   text-align: left;
   font-size: 0.95rem;
   color: var(--text);
+  transition: background 0.15s ease;
 }
 
 .country-item:hover, .country-item.active {
   background: var(--bg);
 }
+
+.country-item-name { flex-shrink: 0; }
+
+.mini-bars {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 70px;
+}
+
+.mini-bar {
+  display: block;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--border);
+}
+
+.mini-bar.conflict { background: var(--red); max-width: 100%; }
+.mini-bar.disaster { background: var(--orange); max-width: 100%; }
 
 .dot {
   width: 12px;
@@ -133,6 +170,7 @@ main {
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 16px 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
 .detail-placeholder { color: var(--muted); }
@@ -146,6 +184,51 @@ main {
 }
 
 .detail-header h3 { margin: 0; font-size: 1.3rem; }
+
+.driver-tag {
+  margin-left: auto;
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.gauges {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.gauge-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.gauge-value { font-size: 0.9rem; }
+
+.gauge-track {
+  height: 10px;
+  border-radius: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.gauge-fill {
+  height: 100%;
+  border-radius: 6px 0 0 6px;
+  transition: width 0.4s ease;
+}
+
+.gauge-disclaimer {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin: 8px 0 0;
+  line-height: 1.4;
+}
 
 .badge {
   display: inline-block;
@@ -182,7 +265,15 @@ main {
   margin-top: 12px;
 }
 
-.chart-box { position: relative; height: 260px; }
+.detail-grid h4 {
+  margin: 4px 0 6px;
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.chart-box { position: relative; height: 220px; margin-bottom: 14px; }
+.chart-box-small { height: 130px; margin-bottom: 0; }
 
 .events-list, .travel-box {
   font-size: 0.9rem;
@@ -234,4 +325,6 @@ main {
   .country-list { grid-row: 2; }
   .detail-panel { grid-row: 3; }
   .detail-grid { grid-template-columns: 1fr; }
+  .gauges { grid-template-columns: 1fr; }
+  .mini-bars { width: 50px; }
 }

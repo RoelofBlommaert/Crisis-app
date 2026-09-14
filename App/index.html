@@ -17,6 +17,7 @@
       <a href="#about" id="about-link">About &amp; limitations</a>
     </p>
     <p class="snapshot-note" id="snapshot-note">Loading dataset&hellip;</p>
+    <div class="stat-strip" id="stat-strip"></div>
   </header>
 
   <main>
@@ -49,6 +50,29 @@
       <li><strong>CBS travel</strong> figures are region-level (not per-country) for most tracked countries &mdash; shown with a badge, not disguised as country-specific.</li>
       <li>No personal, internal, or classified MFA data is used anywhere in this app.</li>
     </ul>
+
+    <h3>Conflict &amp; disaster signals</h3>
+    <p>
+      Each country gets two 0&ndash;100 gauges, <strong>not</strong> a
+      statistical probability of war or disaster &mdash; there is no
+      calibrated base rate or validated model behind them. They're a
+      transparent heuristic built from:
+    </p>
+    <ul>
+      <li><strong>Conflict signal:</strong> share of the last 24h's articles carrying a conflict/war/protest/terrorism theme tag (via GDELT's GKG theme tagging), plus recent tone severity and a volume-spike bonus.</li>
+      <li><strong>Disaster signal:</strong> any confirmed GDACS alert level (weighted highest), plus the share of recent articles carrying a natural-disaster theme tag.</li>
+    </ul>
+    <p>
+      This replaced an earlier version that color-coded countries by their
+      flat 7-day-average tone &mdash; which stayed "Green" for Israel and
+      Lebanon even during heavy negative coverage, since a week-long
+      average dilutes acute events with routine reporting. Note also that
+      GDELT tags an article with every country it <em>mentions</em>, so a
+      bordering or mediating country (e.g. Egypt or Turkey in Gaza-related
+      coverage) can pick up a real conflict-theme share without being a
+      combatant itself &mdash; a known limitation, not a bug we can fully
+      resolve without deeper text analysis.
+    </p>
     <button type="button" id="about-close">Close</button>
   </section>
 
