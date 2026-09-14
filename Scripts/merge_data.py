@@ -32,19 +32,34 @@ even during heavy negative coverage, because a week-long average dilutes
 acute events with routine reporting (Lebanon's week-average tone was
 only -2.9, nowhere near the old -4 threshold).
 
-Instead, for each country we split the 7-day hourly series into the most
-recent 24h ("recent") vs. the preceding ~6 days ("baseline"), and score:
+We score **one day at a time** rather than one flat weekly number, so a
+week-old GDACS event can't quietly keep contributing to "today's" score
+forever. For each calendar day present in the 7-day GDELT history:
 
   conflict_signal = clamp(
-      recent_conflict_theme_share * 70          # up to 55, share of recent
-    + max(0, -recent_avg_tone) * 5              # up to 25, tone severity
-    + max(0, volume_ratio - 1) * 15,            # up to 20, recent vs baseline spike
+      day_conflict_theme_share * 70            # up to 70, share of that day's articles
+    + max(0, -day_avg_tone) * 5                # up to 25, tone severity that day
+    + max(0, day_volume / week_avg_volume - 1) * 15,  # up to 20, spike vs the week's own average
     0, 100)
 
   disaster_signal = clamp(
-      gdacs_alertscore * 25                     # up to 75, confirmed GDACS event wins
-    + recent_disaster_theme_share * 100,        # up to 25, disaster-theme article share
+      active_gdacs_alertscore * 25             # up to 75, only events active ON THAT DAY
+    + day_disaster_theme_share * 100,          # up to 25, disaster-theme article share that day
     0, 100)
+
+A GDACS event only counts toward a given day's disaster_signal if that
+day falls within the event's own fromdate/todate range (`event_active_on`
+below) -- this is what fixes the original bug: Haiti's October-2025
+cyclone and Turkey's October-2025 earthquake are still in the "matched
+events" list (GDACS keeps recently-modified events listed for a while
+after they end) but are correctly no longer active in the current 7-day
+window, so they show up as *historical* events in the app rather than
+inflating today's score.
+
+`daily_scores` (7 entries, oldest first) carries this per-day breakdown;
+the top-level conflict_signal/disaster_signal/alert_level/driver fields
+are simply the most recent day's entry, so "today's" gauge and the
+history strip are always the same underlying numbers.
 
 alert_level (Green/Orange/Red) = whichever band max(conflict_signal,
 disaster_signal) falls in (>=60 Red, >=30 Orange, else Green) -- so a
@@ -163,7 +178,7 @@ def load_cbs_travel() -> dict:
     return baseline
 
 
-RECENT_WINDOW_HOURS = 24
+ALERT_ORDER = {"Green": 1, "Orange": 2, "Red": 3}
 
 
 def _clamp(x: float, lo: float, hi: float) -> float:
@@ -181,45 +196,92 @@ def _window_stats(points: list) -> dict:
     }
 
 
+def _parse_date(value: str):
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00")).date()
+    except ValueError:
+        return None
+
+
+def event_active_on(event: dict, day) -> bool:
+    """Whether a GDACS event's own fromdate/todate range covers `day`.
+    This is what stops a months-old, still-listed event (GDACS keeps
+    recently-modified events around after they're over) from inflating
+    every subsequent day's disaster_signal forever."""
+    start = _parse_date(event.get("fromdate"))
+    end = _parse_date(event.get("todate")) or start
+    if start is None:
+        return False
+    return start <= day <= end
+
+
+def _alert_band(score: float) -> str:
+    if score >= 60:
+        return "Red"
+    if score >= 30:
+        return "Orange"
+    return "Green"
+
+
 def score_country(events: list, tension_series: list) -> dict:
-    """Returns {conflict_signal, disaster_signal, alert_level, driver}.
-    Illustrative heuristic, not a statistical forecast -- see the module
-    docstring "Scoring" section for the formula and why it replaced the
-    earlier flat-average-tone approach."""
+    """Returns {conflict_signal, disaster_signal, alert_level, driver,
+    daily_scores}. Illustrative heuristic, not a statistical forecast --
+    see the module docstring "Scoring" section for the formula and why
+    each day is scored against events actually active that day rather
+    than one flat weekly number."""
     series = sorted(tension_series, key=lambda p: p["timestamp_utc"])
-    recent = _window_stats(series[-RECENT_WINDOW_HOURS:])
-    baseline = _window_stats(series[:-RECENT_WINDOW_HOURS]) if len(series) > RECENT_WINDOW_HOURS else recent
+    week_stats = _window_stats(series)
+    week_avg_volume = week_stats["avg_volume"] or 1.0
 
-    volume_ratio = (recent["avg_volume"] / baseline["avg_volume"]) if baseline["avg_volume"] else 1.0
-    recent_tone = recent["avg_tone"] if recent["avg_tone"] is not None else 0.0
+    by_day = defaultdict(list)
+    for p in series:
+        by_day[p["timestamp_utc"][:10]].append(p)
 
-    conflict_signal = round(
-        _clamp(
-            recent["conflict_share"] * 70
-            + max(0.0, -recent_tone) * 5
-            + max(0.0, volume_ratio - 1) * 15,
-            0,
-            100,
+    daily_scores = []
+    for day_str in sorted(by_day):
+        day_points = by_day[day_str]
+        day = datetime.fromisoformat(day_str).date()
+        day_stats = _window_stats(day_points)
+        day_tone = day_stats["avg_tone"] if day_stats["avg_tone"] is not None else 0.0
+        volume_ratio = day_stats["avg_volume"] / week_avg_volume
+
+        conflict_signal = round(
+            _clamp(
+                day_stats["conflict_share"] * 70 + max(0.0, -day_tone) * 5 + max(0.0, volume_ratio - 1) * 15,
+                0,
+                100,
+            )
         )
-    )
 
-    order = {"Green": 1, "Orange": 2, "Red": 3}
-    gdacs_alertscore = max((e["alertscore"] for e in events if e["alertlevel"] in order), default=0)
-    disaster_signal = round(_clamp(gdacs_alertscore * 25 + recent["disaster_share"] * 100, 0, 100))
+        active_events = [e for e in events if e["alertlevel"] in ALERT_ORDER and event_active_on(e, day)]
+        gdacs_alertscore = max((e["alertscore"] for e in active_events), default=0)
+        disaster_signal = round(_clamp(gdacs_alertscore * 25 + day_stats["disaster_share"] * 100, 0, 100))
 
-    top_signal = max(conflict_signal, disaster_signal)
-    if top_signal >= 60:
-        alert_level = "Red"
-    elif top_signal >= 30:
-        alert_level = "Orange"
-    else:
-        alert_level = "Green"
+        daily_scores.append(
+            {
+                "date": day_str,
+                "conflict_signal": conflict_signal,
+                "disaster_signal": disaster_signal,
+                "alert_level": _alert_band(max(conflict_signal, disaster_signal)),
+                "driver": "conflict" if conflict_signal >= disaster_signal else "disaster",
+            }
+        )
+
+    current = daily_scores[-1] if daily_scores else {
+        "conflict_signal": 0,
+        "disaster_signal": 0,
+        "alert_level": "unknown",
+        "driver": "conflict",
+    }
 
     return {
-        "conflict_signal": conflict_signal,
-        "disaster_signal": disaster_signal,
-        "alert_level": alert_level,
-        "driver": "conflict" if conflict_signal >= disaster_signal else "disaster",
+        "conflict_signal": current["conflict_signal"],
+        "disaster_signal": current["disaster_signal"],
+        "alert_level": current["alert_level"],
+        "driver": current["driver"],
+        "daily_scores": daily_scores,
     }
 
 
@@ -235,6 +297,13 @@ def main() -> None:
         tension_series = gdelt.get(name, [])
         events = gdacs.get(name, [])
         scores = score_country(events, tension_series)
+
+        latest_day = scores["daily_scores"][-1]["date"] if scores["daily_scores"] else None
+        latest_day_parsed = datetime.fromisoformat(latest_day).date() if latest_day else None
+        for e in events:
+            e["is_current"] = bool(latest_day_parsed and event_active_on(e, latest_day_parsed))
+        events.sort(key=lambda e: e["fromdate"], reverse=True)
+
         countries_out.append(
             {
                 "name": name,

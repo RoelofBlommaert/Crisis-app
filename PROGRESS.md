@@ -159,6 +159,40 @@ framing.
 - Re-tested end-to-end in a browser: bug confirmed fixed, no console
   errors, gauges/charts/list all render correctly.
 
+## 2026-09-14 (continued 3) — fixed year-old events leaking into "current" score + visual overhaul
+
+User caught a second, related bug: GDACS's "matched events" list includes
+events that GDACS keeps listed for a while after they're actually over
+(Haiti's cyclone from Oct 2025, Turkey's earthquake, Thailand's floods —
+all 7-11 months old relative to the current snapshot date), and the
+previous scoring counted *any* matched event toward `disaster_signal`
+regardless of how old it was — silently mixing a year of stale event data
+into what was supposed to be a "last week" score.
+
+Fix: `score_country` in `merge_data.py` now scores **one calendar day at
+a time** instead of one flat number, and a GDACS event only counts toward
+a given day's `disaster_signal` if that day actually falls within the
+event's own `fromdate`/`todate` range (`event_active_on`). Concretely:
+Haiti/Turkey/Thailand's old events no longer inflate today's score (Turkey
+dropped from disaster_signal 57 to 10; Thailand dropped from Red to Green
+entirely), while still showing up in the country's event list tagged
+`is_current: false` / "Historical" rather than being hidden. Each
+country's full `daily_scores` array (conflict/disaster/alert_level per
+day) is now in the dataset, and the top-level fields are simply the most
+recent day's entry — so "today's" gauge and the new 7-8 day history strip
+are guaranteed to agree.
+
+Also did the requested visual overhaul of `App/` (was "very barebones"):
+Inter font, gradient header band with stat chips, redesigned country list
+(risk number + dual mini-bars, sorted by risk), circular CSS
+conic-gradient gauges with a day-by-day color strip underneath each,
+card-based layout with shadows/spacing throughout, active-vs-historical
+event styling, and (after CartoDB's basemap tiles turned out to now
+require a key -- showed a watermark instead of a map) a dark-mode map
+via a CSS filter on the OSM tile layer rather than a paid/keyed tile
+provider. Re-verified end-to-end in-browser: no console errors, Turkey's
+old earthquake correctly shows "Historical," gauges/strips/charts render.
+
 ### Next up
 - [ ] Re-run `fetch_gdelt_tension.py --backfill` + `merge_data.py`
       periodically if the signals should stay current (still a one-time

@@ -158,13 +158,25 @@ Fixed by also tagging each article's GDELT GKG theme codes (verified
 against a live GKG file, not assumed from documentation) as
 conflict-related (ARMEDCONFLICT, PROTEST, TERROR, UNREST_BELLIGERENT,
 several World Bank political-violence/war/terrorism codes) or
-disaster-related (the NATURAL_DISASTER_* theme family), and scoring:
-  - conflict_signal: recent (last 24h) conflict-theme article share +
-    recent tone severity + a volume-spike bonus vs. the prior week
-  - disaster_signal: confirmed GDACS alert level (weighted highest) +
-    recent disaster-theme article share
-Whichever is higher drives the overall Green/Orange/Red level, and the
-app labels which one ("conflict-driven" / "disaster-driven").
+disaster-related (the NATURAL_DISASTER_* theme family), and scoring
+**one calendar day at a time** (not one flat weekly number):
+  - conflict_signal: that day's conflict-theme article share +
+    that day's tone severity + a volume-spike bonus vs. the week's own
+    average
+  - disaster_signal: the alert level of any GDACS event whose own
+    fromdate/todate range actually covers that day (weighted highest) +
+    that day's disaster-theme article share
+Whichever is higher drives that day's Green/Orange/Red level, and the
+app labels which one ("conflict-driven" / "disaster-driven"). A 7-8 day
+history strip under each gauge shows every day's score, and the "current"
+badge is simply the most recent day's entry.
+
+Scoring day-by-day (rather than "is there any matching event at all") is
+itself a fix for a second bug: GDACS keeps recently-modified events
+listed for a while after they're actually over, so a months-old cyclone
+or earthquake would otherwise keep inflating "today's" disaster_signal
+indefinitely. Those older events still appear in the country's event
+list, just labelled historical instead of active.
 
 Known nuance: GDELT tags an article with every country it *mentions*,
 so a bordering or mediating country (e.g. Egypt or Turkey appearing in

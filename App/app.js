@@ -17,6 +17,9 @@ const DRIVER_LABEL = {
   disaster: "Disaster-driven",
 };
 
+const CONFLICT_ICON = `<svg class="gauge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5 17.5 17.5M17.5 6.5 6.5 17.5" stroke-linecap="round"/></svg>`;
+const DISASTER_ICON = `<svg class="gauge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15a4 4 0 0 1 1-7.87A5 5 0 0 1 15 6a4.5 4.5 0 0 1 1 8.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 19l1.5-3M13 19l1.5-3M11 21l1-2" stroke-linecap="round"/></svg>`;
+
 let map;
 let tensionChart;
 let themeChart;
@@ -33,12 +36,16 @@ function gaugeColor(value) {
   return LEVEL_COLOR.Green;
 }
 
+function fmtDay(dateStr) {
+  return new Date(dateStr + "T00:00:00Z").toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" });
+}
+
 async function init() {
   const resp = await fetch("data/dataset.json");
   dataset = await resp.json();
 
   document.getElementById("snapshot-note").textContent =
-    `Snapshot generated ${new Date(dataset.generated_at).toLocaleString()} — not a live feed. Conflict/disaster signals are an illustrative heuristic, not a forecast probability.`;
+    `Snapshot generated ${new Date(dataset.generated_at).toLocaleString()} — not a live feed. Conflict/disaster signals are scored per day, not a forecast probability.`;
 
   renderStatStrip();
 
@@ -59,9 +66,9 @@ async function init() {
       const marker = L.circleMarker(country.coords, {
         radius,
         color: "#fff",
-        weight: 1,
+        weight: 1.5,
         fillColor: LEVEL_COLOR[country.alert_level] || LEVEL_COLOR.unknown,
-        fillOpacity: 0.85,
+        fillOpacity: 0.88,
       }).addTo(map);
       marker.bindTooltip(
         `<strong>${country.name}</strong><br>Conflict: ${country.conflict_signal} · Disaster: ${country.disaster_signal}`
@@ -78,10 +85,11 @@ async function init() {
     btn.innerHTML = `
       <span class="dot ${country.alert_level}"></span>
       <span class="country-item-name">${country.name}</span>
-      <span class="mini-bars" title="Conflict signal ${country.conflict_signal} · Disaster signal ${country.disaster_signal}">
-        <span class="mini-bar conflict" style="width:${country.conflict_signal}%"></span>
-        <span class="mini-bar disaster" style="width:${country.disaster_signal}%"></span>
+      <span class="mini-bars">
+        <span class="mini-bar-track"><span class="mini-bar-fill conflict" style="width:${country.conflict_signal}%"></span></span>
+        <span class="mini-bar-track"><span class="mini-bar-fill disaster" style="width:${country.disaster_signal}%"></span></span>
       </span>
+      <span class="risk-num">${riskScore(country)}</span>
     `;
     btn.addEventListener("click", () => selectCountry(country.name));
     li.appendChild(btn);
@@ -136,13 +144,14 @@ function renderDetail(country) {
     </div>
 
     <div class="gauges">
-      ${renderGauge("Conflict signal", country.conflict_signal)}
-      ${renderGauge("Disaster signal", country.disaster_signal)}
+      ${renderGauge("Conflict signal", CONFLICT_ICON, country.conflict_signal, country.daily_scores, "conflict_signal")}
+      ${renderGauge("Disaster signal", DISASTER_ICON, country.disaster_signal, country.daily_scores, "disaster_signal")}
     </div>
     <p class="gauge-disclaimer">
-      Illustrative 0&ndash;100 heuristic combining recent media tone, conflict/disaster theme
-      tagging, and confirmed GDACS events &mdash; <strong>not</strong> a statistical forecast or
-      probability of war/disaster. See About panel for the method.
+      Illustrative 0&ndash;100 heuristic, scored one day at a time from recent media tone, conflict/disaster
+      theme tagging, and GDACS events active on that specific day &mdash; <strong>not</strong> a statistical
+      forecast or probability of war/disaster. Bars above show each recent day, oldest to newest, hover for
+      the date and score. See About panel for the method.
     </p>
 
     <div class="detail-grid">
@@ -153,11 +162,11 @@ function renderDetail(country) {
         <div class="chart-box chart-box-small"><canvas id="theme-chart"></canvas></div>
       </div>
       <div>
-        <div class="events-list">
+        <div class="side-section events-list">
           <strong>Confirmed events (GDACS)</strong>
           ${renderEvents(country.events)}
         </div>
-        <div class="travel-box">
+        <div class="side-section travel-box">
           <strong>Dutch outbound travel baseline (CBS)</strong>
           ${renderTravel(country.travel_baseline)}
         </div>
@@ -169,12 +178,20 @@ function renderDetail(country) {
   renderThemeChart(country);
 }
 
-function renderGauge(label, value) {
+function renderGauge(label, icon, value, dailyScores, field) {
   const color = gaugeColor(value);
+  const strip = (dailyScores || [])
+    .map((d) => `<span class="day-chip ${d.alert_level}" title="${fmtDay(d.date)}: ${field === "conflict_signal" ? "conflict" : "disaster"} ${d[field]}"></span>`)
+    .join("");
   return `
-    <div class="gauge">
-      <div class="gauge-label"><span>${label}</span><span class="gauge-value" style="color:${color}">${value}</span></div>
-      <div class="gauge-track"><div class="gauge-fill" style="width:${value}%;background:${color}"></div></div>
+    <div class="gauge-card">
+      <div class="radial-gauge" style="--value:${value};--gauge-color:${color}">
+        <span class="radial-value">${value}</span>
+      </div>
+      <div class="gauge-info">
+        <div class="gauge-title">${icon}${label}</div>
+        <div class="day-strip">${strip}</div>
+      </div>
     </div>
   `;
 }
@@ -185,7 +202,9 @@ function renderEvents(events) {
   }
   const items = events
     .map(
-      (e) => `<li><span class="badge ${e.alertlevel}" style="font-size:0.7rem;">${e.alertlevel}</span>
+      (e) => `<li class="${e.is_current ? "" : "historical"}">
+        <span class="badge ${e.alertlevel}" style="font-size:0.68rem;">${e.alertlevel}</span>
+        <span class="event-tag">${e.is_current ? "Active now" : "Historical"}</span><br>
         ${e.eventname || e.eventtype} &mdash; ${e.description}
         <br><span style="color:var(--muted);font-size:0.8rem;">${e.fromdate.slice(0, 10)} to ${e.todate.slice(0, 10)}</span></li>`
     )
@@ -213,6 +232,14 @@ function renderTravel(baseline) {
   `;
 }
 
+function chartTextColor() {
+  return getComputedStyle(document.body).getPropertyValue("--muted").trim() || "#6b7280";
+}
+
+function chartGridColor() {
+  return getComputedStyle(document.body).getPropertyValue("--border").trim() || "#e5e7eb";
+}
+
 function renderTensionChart(country) {
   const ctx = document.getElementById("tension-chart");
   if (!ctx) return;
@@ -222,6 +249,8 @@ function renderTensionChart(country) {
   const labels = series.map((p) =>
     new Date(p.timestamp_utc).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit" })
   );
+  const textColor = chartTextColor();
+  const gridColor = chartGridColor();
 
   tensionChart = new Chart(ctx, {
     type: "line",
@@ -231,12 +260,13 @@ function renderTensionChart(country) {
         {
           label: "Article volume",
           data: series.map((p) => p.volume_article_count),
-          borderColor: "#2563eb",
-          backgroundColor: "rgba(37,99,235,0.08)",
+          borderColor: "#4f46e5",
+          backgroundColor: "rgba(79,70,229,0.1)",
           fill: true,
           yAxisID: "y",
-          tension: 0.25,
+          tension: 0.3,
           pointRadius: 0,
+          borderWidth: 2,
         },
         {
           label: "Avg. tone",
@@ -244,8 +274,9 @@ function renderTensionChart(country) {
           borderColor: "#dc2626",
           backgroundColor: "transparent",
           yAxisID: "y1",
-          tension: 0.25,
+          tension: 0.3,
           pointRadius: 0,
+          borderWidth: 2,
         },
       ],
     },
@@ -253,9 +284,11 @@ function renderTensionChart(country) {
       responsive: true,
       maintainAspectRatio: false,
       interaction: { mode: "index", intersect: false },
+      plugins: { legend: { labels: { color: textColor, font: { size: 11 } } } },
       scales: {
-        y: { type: "linear", position: "left", title: { display: true, text: "Articles" } },
-        y1: { type: "linear", position: "right", title: { display: true, text: "Tone" }, grid: { drawOnChartArea: false } },
+        y: { type: "linear", position: "left", title: { display: true, text: "Articles", color: textColor }, ticks: { color: textColor }, grid: { color: gridColor } },
+        y1: { type: "linear", position: "right", title: { display: true, text: "Tone", color: textColor }, ticks: { color: textColor }, grid: { drawOnChartArea: false } },
+        x: { ticks: { color: textColor, maxRotation: 60, minRotation: 60, autoSkip: true, maxTicksLimit: 12 }, grid: { display: false } },
       },
     },
   });
@@ -272,6 +305,7 @@ function renderThemeChart(country) {
   );
   const conflictPct = series.map((p) => (p.volume_article_count ? (100 * p.conflict_article_count) / p.volume_article_count : 0));
   const disasterPct = series.map((p) => (p.volume_article_count ? (100 * p.disaster_article_count) / p.volume_article_count : 0));
+  const textColor = chartTextColor();
 
   themeChart = new Chart(ctx, {
     type: "line",
@@ -284,8 +318,9 @@ function renderThemeChart(country) {
           borderColor: "#dc2626",
           backgroundColor: "rgba(220,38,38,0.15)",
           fill: true,
-          tension: 0.25,
+          tension: 0.3,
           pointRadius: 0,
+          borderWidth: 1.5,
         },
         {
           label: "Disaster-theme share (%)",
@@ -293,8 +328,9 @@ function renderThemeChart(country) {
           borderColor: "#f59e0b",
           backgroundColor: "rgba(245,158,11,0.15)",
           fill: true,
-          tension: 0.25,
+          tension: 0.3,
           pointRadius: 0,
+          borderWidth: 1.5,
         },
       ],
     },
@@ -302,8 +338,10 @@ function renderThemeChart(country) {
       responsive: true,
       maintainAspectRatio: false,
       interaction: { mode: "index", intersect: false },
+      plugins: { legend: { labels: { color: textColor, font: { size: 11 } } } },
       scales: {
-        y: { min: 0, max: 100, title: { display: true, text: "% of articles" } },
+        y: { min: 0, max: 100, title: { display: true, text: "% of articles", color: textColor }, ticks: { color: textColor } },
+        x: { display: false },
       },
     },
   });

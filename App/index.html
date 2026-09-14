@@ -4,21 +4,29 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Crisis &amp; Connectivity Monitor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <header class="app-header">
-    <h1>Crisis &amp; Connectivity Monitor</h1>
-    <p class="subtitle">
-      A 2-day vibe-coding course demo &mdash; media-tone signal (GDELT),
-      confirmed disaster events (GDACS), and Dutch outbound travel
-      baselines (CBS), side by side per country. Not an operational tool.
-      <a href="#about" id="about-link">About &amp; limitations</a>
-    </p>
-    <p class="snapshot-note" id="snapshot-note">Loading dataset&hellip;</p>
-    <div class="stat-strip" id="stat-strip"></div>
-  </header>
+  <div class="header-band">
+    <header class="app-header">
+      <div class="header-top">
+        <div>
+          <h1>Crisis &amp; Connectivity Monitor</h1>
+          <p class="subtitle">
+            Media-tone signal (GDELT), confirmed disaster events (GDACS), and Dutch outbound
+            travel baselines (CBS) &mdash; scored day by day. A course demo, not an operational tool.
+            <a href="#about" id="about-link">About &amp; limitations</a>
+          </p>
+        </div>
+      </div>
+      <p class="snapshot-note" id="snapshot-note">Loading dataset&hellip;</p>
+      <div class="stat-strip" id="stat-strip"></div>
+    </header>
+  </div>
 
   <main>
     <section id="map" aria-label="Country map"></section>
@@ -55,18 +63,21 @@
     <p>
       Each country gets two 0&ndash;100 gauges, <strong>not</strong> a
       statistical probability of war or disaster &mdash; there is no
-      calibrated base rate or validated model behind them. They're a
-      transparent heuristic built from:
+      calibrated base rate or validated model behind them. They're scored
+      <strong>one day at a time</strong> (see the 7-day strip under each
+      gauge) rather than as one flat weekly number, built from:
     </p>
     <ul>
-      <li><strong>Conflict signal:</strong> share of the last 24h's articles carrying a conflict/war/protest/terrorism theme tag (via GDELT's GKG theme tagging), plus recent tone severity and a volume-spike bonus.</li>
-      <li><strong>Disaster signal:</strong> any confirmed GDACS alert level (weighted highest), plus the share of recent articles carrying a natural-disaster theme tag.</li>
+      <li><strong>Conflict signal:</strong> that day's share of articles carrying a conflict/war/protest/terrorism theme tag (via GDELT's GKG theme tagging), plus that day's tone severity and a volume-spike bonus.</li>
+      <li><strong>Disaster signal:</strong> any GDACS alert level for an event actually active <em>on that day</em> (by the event's own date range, weighted highest), plus that day's share of articles carrying a natural-disaster theme tag.</li>
     </ul>
     <p>
-      This replaced an earlier version that color-coded countries by their
-      flat 7-day-average tone &mdash; which stayed "Green" for Israel and
-      Lebanon even during heavy negative coverage, since a week-long
-      average dilutes acute events with routine reporting. Note also that
+      Scoring day-by-day (rather than "is there any matching event at all")
+      is a deliberate fix: GDACS keeps recently-modified events listed for a
+      while after they're actually over, so a months-old cyclone or
+      earthquake would otherwise keep inflating "today's" score forever.
+      Those older events still show up in the country's event list, just
+      labelled <strong>historical</strong> instead of active. Note also that
       GDELT tags an article with every country it <em>mentions</em>, so a
       bordering or mediating country (e.g. Egypt or Turkey in Gaza-related
       coverage) can pick up a real conflict-theme share without being a

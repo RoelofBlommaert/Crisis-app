@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-14T12:15:13.240673+00:00",
+  "generated_at": "2026-09-14T12:27:13.789747+00:00",
   "note": "One-time static snapshot, not a live-refreshing feed. conflict_signal/disaster_signal are an illustrative 0-100 heuristic, not a statistical forecast or probability -- see Documentation/ and Scripts/merge_data.py.",
   "countries": [
     {
@@ -10,10 +10,68 @@
         39.0,
         35.0
       ],
-      "conflict_signal": 44,
-      "disaster_signal": 57,
+      "conflict_signal": 30,
+      "disaster_signal": 10,
       "alert_level": "Orange",
-      "driver": "disaster",
+      "driver": "conflict",
+      "daily_scores": [
+        {
+          "date": "2026-09-07",
+          "conflict_signal": 45,
+          "disaster_signal": 29,
+          "alert_level": "Orange",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-08",
+          "conflict_signal": 49,
+          "disaster_signal": 8,
+          "alert_level": "Orange",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-09",
+          "conflict_signal": 37,
+          "disaster_signal": 7,
+          "alert_level": "Orange",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-10",
+          "conflict_signal": 41,
+          "disaster_signal": 8,
+          "alert_level": "Orange",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-11",
+          "conflict_signal": 54,
+          "disaster_signal": 4,
+          "alert_level": "Orange",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-12",
+          "conflict_signal": 49,
+          "disaster_signal": 6,
+          "alert_level": "Orange",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-13",
+          "conflict_signal": 58,
+          "disaster_signal": 2,
+          "alert_level": "Orange",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-14",
+          "conflict_signal": 30,
+          "disaster_signal": 10,
+          "alert_level": "Orange",
+          "driver": "conflict"
+        }
+      ],
       "tension_series": [
         {
           "timestamp_utc": "2026-09-07T13:00:00+00:00",
@@ -1200,7 +1258,8 @@
           "alertscore": 2,
           "fromdate": "2025-10-27T19:48:29",
           "todate": "2025-10-27T19:48:29",
-          "description": "Earthquake in T\u00fcrkiye"
+          "description": "Earthquake in T\u00fcrkiye",
+          "is_current": false
         }
       ],
       "travel_baseline": {
@@ -1253,10 +1312,68 @@
         49.0,
         31.5
       ],
-      "conflict_signal": 75,
-      "disaster_signal": 57,
+      "conflict_signal": 71,
+      "disaster_signal": 10,
       "alert_level": "Red",
       "driver": "conflict",
+      "daily_scores": [
+        {
+          "date": "2026-09-07",
+          "conflict_signal": 73,
+          "disaster_signal": 69,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-08",
+          "conflict_signal": 64,
+          "disaster_signal": 58,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-09",
+          "conflict_signal": 65,
+          "disaster_signal": 57,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-10",
+          "conflict_signal": 69,
+          "disaster_signal": 65,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-11",
+          "conflict_signal": 74,
+          "disaster_signal": 57,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-12",
+          "conflict_signal": 74,
+          "disaster_signal": 54,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-13",
+          "conflict_signal": 72,
+          "disaster_signal": 3,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-14",
+          "conflict_signal": 71,
+          "disaster_signal": 10,
+          "alert_level": "Red",
+          "driver": "conflict"
+        }
+      ],
       "tension_series": [
         {
           "timestamp_utc": "2026-09-07T13:00:00+00:00",
@@ -2443,7 +2560,8 @@
           "alertscore": 2,
           "fromdate": "2025-12-21T00:00:00",
           "todate": "2026-09-12T00:00:00",
-          "description": "Drought in Austria, Bosnia  and  Herzegovina, Belgium, Belarus, Switzerland, Czech Republic, Germany, Denmark, Spain, France, Croatia, Hungary, Ireland, Italy, Liechtenstein, Luxembourg, Netherlands, Poland, Romania, Serbia, Sweden, Slovenia, Slovakia, San Marino, Ukraine, , "
+          "description": "Drought in Austria, Bosnia  and  Herzegovina, Belgium, Belarus, Switzerland, Czech Republic, Germany, Denmark, Spain, France, Croatia, Hungary, Ireland, Italy, Liechtenstein, Luxembourg, Netherlands, Poland, Romania, Serbia, Sweden, Slovenia, Slovakia, San Marino, Ukraine, , ",
+          "is_current": false
         }
       ],
       "travel_baseline": {
@@ -2496,10 +2614,68 @@
         33.85,
         35.85
       ],
-      "conflict_signal": 61,
-      "disaster_signal": 12,
+      "conflict_signal": 64,
+      "disaster_signal": 9,
       "alert_level": "Red",
       "driver": "conflict",
+      "daily_scores": [
+        {
+          "date": "2026-09-07",
+          "conflict_signal": 88,
+          "disaster_signal": 1,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-08",
+          "conflict_signal": 81,
+          "disaster_signal": 11,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-09",
+          "conflict_signal": 72,
+          "disaster_signal": 16,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-10",
+          "conflict_signal": 73,
+          "disaster_signal": 24,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-11",
+          "conflict_signal": 87,
+          "disaster_signal": 14,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-12",
+          "conflict_signal": 81,
+          "disaster_signal": 7,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-13",
+          "conflict_signal": 51,
+          "disaster_signal": 13,
+          "alert_level": "Orange",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-14",
+          "conflict_signal": 64,
+          "disaster_signal": 9,
+          "alert_level": "Red",
+          "driver": "conflict"
+        }
+      ],
       "tension_series": [
         {
           "timestamp_utc": "2026-09-07T13:00:00+00:00",
@@ -3729,10 +3905,68 @@
         31.5,
         34.8
       ],
-      "conflict_signal": 69,
-      "disaster_signal": 9,
+      "conflict_signal": 73,
+      "disaster_signal": 12,
       "alert_level": "Red",
       "driver": "conflict",
+      "daily_scores": [
+        {
+          "date": "2026-09-07",
+          "conflict_signal": 63,
+          "disaster_signal": 13,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-08",
+          "conflict_signal": 78,
+          "disaster_signal": 7,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-09",
+          "conflict_signal": 73,
+          "disaster_signal": 7,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-10",
+          "conflict_signal": 70,
+          "disaster_signal": 6,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-11",
+          "conflict_signal": 73,
+          "disaster_signal": 7,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-12",
+          "conflict_signal": 69,
+          "disaster_signal": 11,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-13",
+          "conflict_signal": 68,
+          "disaster_signal": 4,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-14",
+          "conflict_signal": 73,
+          "disaster_signal": 12,
+          "alert_level": "Red",
+          "driver": "conflict"
+        }
+      ],
       "tension_series": [
         {
           "timestamp_utc": "2026-09-07T13:00:00+00:00",
@@ -4962,10 +5196,68 @@
         26.8,
         30.8
       ],
-      "conflict_signal": 47,
-      "disaster_signal": 10,
+      "conflict_signal": 48,
+      "disaster_signal": 13,
       "alert_level": "Orange",
       "driver": "conflict",
+      "daily_scores": [
+        {
+          "date": "2026-09-07",
+          "conflict_signal": 27,
+          "disaster_signal": 6,
+          "alert_level": "Green",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-08",
+          "conflict_signal": 54,
+          "disaster_signal": 24,
+          "alert_level": "Orange",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-09",
+          "conflict_signal": 37,
+          "disaster_signal": 11,
+          "alert_level": "Orange",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-10",
+          "conflict_signal": 31,
+          "disaster_signal": 11,
+          "alert_level": "Orange",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-11",
+          "conflict_signal": 50,
+          "disaster_signal": 13,
+          "alert_level": "Orange",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-12",
+          "conflict_signal": 52,
+          "disaster_signal": 9,
+          "alert_level": "Orange",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-13",
+          "conflict_signal": 46,
+          "disaster_signal": 4,
+          "alert_level": "Orange",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-14",
+          "conflict_signal": 48,
+          "disaster_signal": 13,
+          "alert_level": "Orange",
+          "driver": "conflict"
+        }
+      ],
       "tension_series": [
         {
           "timestamp_utc": "2026-09-07T13:00:00+00:00",
@@ -6195,10 +6487,68 @@
         15.5,
         30.5
       ],
-      "conflict_signal": 73,
-      "disaster_signal": 19,
+      "conflict_signal": 75,
+      "disaster_signal": 22,
       "alert_level": "Red",
       "driver": "conflict",
+      "daily_scores": [
+        {
+          "date": "2026-09-07",
+          "conflict_signal": 66,
+          "disaster_signal": 15,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-08",
+          "conflict_signal": 79,
+          "disaster_signal": 31,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-09",
+          "conflict_signal": 74,
+          "disaster_signal": 40,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-10",
+          "conflict_signal": 58,
+          "disaster_signal": 49,
+          "alert_level": "Orange",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-11",
+          "conflict_signal": 85,
+          "disaster_signal": 17,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-12",
+          "conflict_signal": 67,
+          "disaster_signal": 16,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-13",
+          "conflict_signal": 80,
+          "disaster_signal": 6,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-14",
+          "conflict_signal": 75,
+          "disaster_signal": 22,
+          "alert_level": "Red",
+          "driver": "conflict"
+        }
+      ],
       "tension_series": [
         {
           "timestamp_utc": "2026-09-07T13:00:00+00:00",
@@ -7428,10 +7778,68 @@
         18.95,
         -72.3
       ],
-      "conflict_signal": 26,
-      "disaster_signal": 100,
-      "alert_level": "Red",
+      "conflict_signal": 20,
+      "disaster_signal": 43,
+      "alert_level": "Orange",
       "driver": "disaster",
+      "daily_scores": [
+        {
+          "date": "2026-09-07",
+          "conflict_signal": 48,
+          "disaster_signal": 29,
+          "alert_level": "Orange",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-08",
+          "conflict_signal": 27,
+          "disaster_signal": 14,
+          "alert_level": "Green",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-09",
+          "conflict_signal": 80,
+          "disaster_signal": 18,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-10",
+          "conflict_signal": 75,
+          "disaster_signal": 69,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-11",
+          "conflict_signal": 67,
+          "disaster_signal": 42,
+          "alert_level": "Red",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-12",
+          "conflict_signal": 43,
+          "disaster_signal": 10,
+          "alert_level": "Orange",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-13",
+          "conflict_signal": 27,
+          "disaster_signal": 25,
+          "alert_level": "Green",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-14",
+          "conflict_signal": 20,
+          "disaster_signal": 43,
+          "alert_level": "Orange",
+          "driver": "disaster"
+        }
+      ],
       "tension_series": [
         {
           "timestamp_utc": "2026-09-07T13:00:00+00:00",
@@ -8618,7 +9026,8 @@
           "alertscore": 3,
           "fromdate": "2025-10-21T15:00:00",
           "todate": "2025-10-31T15:00:00",
-          "description": "Tropical Cyclone MELISSA-25"
+          "description": "Tropical Cyclone MELISSA-25",
+          "is_current": false
         }
       ],
       "travel_baseline": {
@@ -8671,10 +9080,68 @@
         15.0,
         101.0
       ],
-      "conflict_signal": 19,
-      "disaster_signal": 78,
-      "alert_level": "Red",
-      "driver": "disaster",
+      "conflict_signal": 18,
+      "disaster_signal": 2,
+      "alert_level": "Green",
+      "driver": "conflict",
+      "daily_scores": [
+        {
+          "date": "2026-09-07",
+          "conflict_signal": 26,
+          "disaster_signal": 9,
+          "alert_level": "Green",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-08",
+          "conflict_signal": 25,
+          "disaster_signal": 15,
+          "alert_level": "Green",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-09",
+          "conflict_signal": 17,
+          "disaster_signal": 7,
+          "alert_level": "Green",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-10",
+          "conflict_signal": 32,
+          "disaster_signal": 3,
+          "alert_level": "Orange",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-11",
+          "conflict_signal": 28,
+          "disaster_signal": 6,
+          "alert_level": "Green",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-12",
+          "conflict_signal": 25,
+          "disaster_signal": 11,
+          "alert_level": "Green",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-13",
+          "conflict_signal": 23,
+          "disaster_signal": 5,
+          "alert_level": "Green",
+          "driver": "conflict"
+        },
+        {
+          "date": "2026-09-14",
+          "conflict_signal": 18,
+          "disaster_signal": 2,
+          "alert_level": "Green",
+          "driver": "conflict"
+        }
+      ],
       "tension_series": [
         {
           "timestamp_utc": "2026-09-07T13:00:00+00:00",
@@ -9861,7 +10328,8 @@
           "alertscore": 2,
           "fromdate": "2025-12-12T13:00:00",
           "todate": "2025-12-12T13:00:00",
-          "description": "Flood in Malaysia, Thailand"
+          "description": "Flood in Malaysia, Thailand",
+          "is_current": false
         },
         {
           "eventtype": "FL",
@@ -9870,7 +10338,8 @@
           "alertscore": 3,
           "fromdate": "2025-12-03T01:00:00",
           "todate": "2025-12-06T01:00:00",
-          "description": "Flood in Indonesia, Malaysia, Thailand"
+          "description": "Flood in Indonesia, Malaysia, Thailand",
+          "is_current": false
         },
         {
           "eventtype": "FL",
@@ -9879,7 +10348,8 @@
           "alertscore": 2,
           "fromdate": "2025-11-17T01:00:00",
           "todate": "2025-12-01T14:00:00",
-          "description": "Flood in Thailand"
+          "description": "Flood in Thailand",
+          "is_current": false
         },
         {
           "eventtype": "TC",
@@ -9888,7 +10358,8 @@
           "alertscore": 2,
           "fromdate": "2025-10-18T00:00:00",
           "todate": "2025-10-23T00:00:00",
-          "description": "Tropical Cyclone FENGSHEN-25"
+          "description": "Tropical Cyclone FENGSHEN-25",
+          "is_current": false
         }
       ],
       "travel_baseline": {
