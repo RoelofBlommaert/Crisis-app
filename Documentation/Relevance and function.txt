@@ -1,0 +1,144 @@
+CRISIS & CONNECTIVITY MONITOR
+Documentation: Relevance & App Workings
+Prepared for: 2-day vibe-coding course
+Ministry of Foreign Affairs
+
+================================================================
+1. RELEVANCE
+================================================================
+
+Purpose of this document
+-------------------------
+This document explains why this demo app was built the way it was,
+and how it works technically. It is meant as documentation for
+myself and for colleagues who may want to understand, reuse, or
+extend the concept after the course.
+
+Why this topic
+--------------
+The app was built as a learning exercise for a vibe-coding course,
+using a scenario relevant to MFA work: monitoring instability abroad
+and how it may relate to travel/tourism patterns of Dutch citizens.
+
+The MFA regularly needs to reason about:
+- Where instability or crises are emerging or escalating
+- Whether official information (e.g. travel advisories) is keeping
+  pace with events on the ground
+- How travel/tourism patterns to a country shift around a crisis
+
+A tool that visualizes these signals side by side can support early
+situational awareness. This demo is a simplified, non-operational
+prototype of that idea — built to explore what's technically
+possible, not a production tool.
+
+Why NO internal MFA data was used
+----------------------------------
+The original idea involved things like tracking Dutch citizens abroad
+or predicting individual travel/evacuation patterns. This was
+deliberately dropped because:
+
+- Internal MFA data (consular registrations, citizen records, case
+  data) is sensitive/classified and must never be used in an
+  external tool, sandbox, or vibe-coding environment.
+- Even anonymized or aggregated internal data carries re-identification
+  and classification risks that aren't appropriate for a course
+  setting or any tool outside official, secured MFA systems.
+- The learning goal (build something functional in 2 days) does not
+  require real personal or internal data — public, open datasets
+  give the same technical experience without any of the risk.
+
+Everything in this app uses only public, open data sources. No
+personal data, no internal MFA systems, and no classified information
+are involved at any point.
+
+================================================================
+2. APP WORKINGS
+================================================================
+
+Concept
+-------
+The app shows, per selected country:
+1. An instability/tension signal derived from open news data
+2. Confirmed crisis/disaster events from official open databases
+3. A travel/tourism trend layer, to see how actual or expected
+   travel volume compares with the current situation
+
+The idea is to visually spot patterns such as "tension is rising in
+country X" alongside "travel volume/interest is dropping faster than
+seasonal norms" — a pattern of interest for MFA-style situational
+awareness, without touching any real traveler or citizen data.
+
+Data sources used
+------------------
+1. GDELT (Global Database of Events, Language, and Tone)
+   - Public, free, no API key required
+   - Provides article volume and average "tone" (sentiment) of global
+     news coverage, filterable by keyword, country, and date range
+   - Used as the core "tension score" per country over time
+   - Note: officially supports roughly the most recent 3 months of
+     queries; older ranges are not guaranteed
+
+2. ReliefWeb / GDACS (disaster and crisis alert databases)
+   - Public REST APIs, structured JSON output
+   - Provide confirmed, officially-reported crisis/disaster events
+     (type, country, severity, date)
+   - Used as a "confirmed event" layer on top of GDELT's noisier
+     media-based signal
+
+3. Eurostat / CBS (Statistics Netherlands) tourism statistics
+   - Public, downloadable datasets (CSV/JSON)
+   - Provide seasonal baselines for Dutch outbound travel by
+     destination
+   - Used as the "expected" travel volume layer, to compare against
+     current signals
+
+4. OpenSky Network (optional, live-only)
+   - Public API, free anonymous access
+   - IMPORTANT LIMITATION: anonymous access only returns a live
+     snapshot of current aircraft positions — no historical trend
+     data. Historical flight-volume analysis would require a
+     registered research account and their historical database,
+     which is out of scope for a 2-day build.
+   - Used only for an optional "right now" live map layer, not as
+     part of the core trend/insight logic
+
+How the pieces fit together
+----------------------------
+Step 1 — Data collection
+  Pull GDELT tone/volume data, ReliefWeb/GDACS event data, and
+  Eurostat/CBS travel baselines for a small set of selected
+  countries, over a shared date range.
+
+Step 2 — Merge
+  Combine the three sources into one dataset per country per time
+  period (e.g. daily or weekly), so each row has: tension score,
+  confirmed events (if any), and travel volume vs. baseline.
+
+Step 3 — Visualization
+  Display results on a country-level map/dashboard:
+  - Color-coded instability level (from GDELT + confirmed events)
+  - A trend chart per country: tension score vs. travel volume vs.
+    seasonal baseline
+  - Optional: current Dutch travel advisory level shown alongside,
+    to visually flag if advisory and data appear to diverge
+
+Step 4 — Insight
+  Highlight countries where instability is rising and travel volume
+  is deviating from seasonal norms — the "signal worth watching"
+  pattern that gives the demo its practical framing.
+
+Known limitations of this prototype
+-------------------------------------
+- This is a demo/learning tool, not a validated analytical model.
+  Correlations shown (e.g. tension vs. travel volume) are
+  illustrative, not statistically verified.
+- GDELT's tone/volume metrics are a proxy for media attention, not a
+  direct measure of ground-truth instability.
+- No personal, internal, or classified MFA data is used or should
+  ever be added to this app in its current form.
+- Not intended for operational decision-making; built purely to
+  demonstrate technical feasibility within a 2-day course format.
+
+================================================================
+END OF DOCUMENT
+================================================================

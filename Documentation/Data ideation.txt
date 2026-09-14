@@ -1,0 +1,21 @@
+Data sources, ranked by relevance + ease of actually getting working in a 2-day sprint:
+
+1. GDELT (instability/tension signal) — easiest, most relevant, do this first
+Free, no API key, JSON output, well-documented Python wrapper (gdeltdoc). You can query article counts and average tone matching keyword and country filters over a date range, which gives you a ready-made "tension score" per country per day. This is your dashboard's backbone — build this on day 1 morning. 
+GitHub
+
+2. Eurostat / CBS travel statistics (Dutch outbound travel, seasonal baseline)
+Public, stable, downloadable as CSV/JSON. Gives you "expected" vacation volume per destination per month. No API weirdness, very low risk. Good second layer.
+
+3. ReliefWeb / GDACS (official crisis alerts)
+Both have straightforward public REST APIs returning structured JSON (disaster type, country, severity, date). Easy to layer on top of GDELT as a "confirmed crisis" marker vs. GDELT's noisier media signal.
+
+4. OpenSky Network (flight patterns) — this is the one to reconsider
+Here's the catch I want to flag clearly: OpenSky's free/anonymous tier only gives you a live snapshot of current aircraft positions, not historical trends. Anonymous users can only get the most recent state vectors — the time parameter is ignored. Even with a registered account, you can only retrieve data up to 1 hour in the past. To get "flight volume out of country X over the past month" — which is what your idea actually needs — you'd need their historical research database (Trino/Impala), which requires a research account and is not a 2-day-course-friendly setup. 
+nodered
+nodered
+
+So for the "flight patterns / vacation trends" piece, I'd swap the data source, not the concept:
+
+Use Eurostat/CBS seasonal travel statistics for the "trend" layer instead of live flight tracking — same story ("travel volume vs. what's normal for this season"), far easier data.
+If you still want a live map/visual wow-factor, pull one OpenSky live snapshot for a "right now" view (that part works fine anonymously) — just don't build your core insight on it.
