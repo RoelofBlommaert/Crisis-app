@@ -740,3 +740,64 @@ round's real RNI linkage now made incorrect.
 **Not yet done**: re-deploying/testing this in-browser (next step).
 Local `merge_data.py` output and the Supabase row were both verified via
 script/SQL, not yet visually confirmed in the running app.
+
+## 2026-09-15: Dutch presence score now combines real RNI + synthetic passport trend
+
+Explicit ask, after the styling pass: presence_signal (previously "purely
+real, synthetic passport series shown alongside but never feeding it")
+should instead combine both into one more nuanced number, with a small
+asterisk flagging that it's now partially synthetic. A deliberate,
+explicit exception to this app's usual real-vs-synthetic separation rule
+-- not an oversight -- so every place that rule was documented (module
+docstrings in `merge_data.py` and
+`generate_synthetic_passport_applications.py`, the About panel in
+`App/index.html`) got updated in the same pass, not just the code.
+
+**`Scripts/merge_data.py`**: `presence_signal()` now takes the country's
+passport series too and returns a breakdown, not just a float --
+`rni_component` (up to 92 of 100, same log-scale-against-100k pattern as
+before, just capped at 92 instead of 100 so the trend nudge below always
+has room to move the number) plus `trend_component` (+/-8 max, from a new
+`passport_trend()` helper: recent-3-year vs. prior-7-year average of the
+synthetic series, `(ratio - 1) * 25` clamped to +/-8, labelled Rising
+&gt;=1.1 / Declining &lt;=0.9 / Stable otherwise). Same "dominant real
+signal + smaller corroborating nudge" shape as conflict_signal (ACLED +
+GDELT) and disaster_signal (GDACS + GDELT), but bidirectional (a
+declining trend actually subtracts, unlike the ACLED escalation bonus,
+which only ever adds) since "presence trending down" is itself
+informative here. Each country's `dutch_presence` block gained
+`presence_breakdown` (the full component dict) and
+`is_partially_synthetic: true` -- the components are exposed, not
+compressed away, same as `acled.severity`. Verified locally: nudges landed
+small and sane across all 8 countries (range roughly -5.6 to +3.2, well
+inside the +/-8 cap) -- e.g. Turkey 81.8 (81.3 real + 0.5 synthetic,
+Stable), Sudan 52.6 (58.2 real - 5.6 synthetic, Declining), Ukraine 50.6
+(47.4 real + 3.2 synthetic, Rising).
+
+**Frontend** (`App/app.js`): `renderDutchPresence()` now renders an
+asterisk on the gauge number (orange, `title` tooltip) and a line
+spelling out the real/synthetic split in plain language before the reader
+ever has to wonder what the asterisk means. Dropped the presence-box's
+`GROUND TRUTH` tag (`acled-tag`) since the combined number no longer
+qualifies -- replaced with an inline `SYNTHETIC` mention in the box's
+intro line instead. Verified by injecting sample data into
+`renderDutchPresence()` via the browser console (no real login available
+in this session) -- renders correctly, no console errors, reads clearly
+against the new gov-styling.
+
+**`App/index.html`** About panel: rewrote the two "Dutch presence"
+paragraphs that previously said the passport series "deliberately does
+not feed the presence signal" -- now describes the 92/8 split and the
+asterisk explicitly.
+
+**Pushed to Supabase and deployed** (confirmed by the user). Per this
+project's own convention (see `merge_data.py`'s module docstring),
+pushing a fresh snapshot into Supabase is a separate, deliberate manual
+step from running `merge_data.py` -- did the same surgical
+`jsonb_agg`/`case`-based `UPDATE` (via the Supabase MCP tools) as the
+original Dutch-presence rollout, patching only each country's
+`dutch_presence` key. Verified after: `conflict_signal`/`disaster_signal`
+bit-for-bit identical to before (Ukraine 86, Sudan 63, Lebanon 58, Haiti
+42, Turkey 35, Egypt 28, Thailand 26, Israel 21), `tension_series` still
+168 points per country, and the new `dutch_presence` block correct on
+every country.

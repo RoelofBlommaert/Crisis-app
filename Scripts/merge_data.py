@@ -164,7 +164,8 @@ the top-level conflict_signal/disaster_signal/alert_level/driver fields
 are simply the most recent day's entry, so "today's" gauge and the
 history strip are always the same underlying numbers.
 
-## Dutch presence: presence_signal (illustrative, real RNI + synthetic context)
+## Dutch presence: presence_signal (real RNI, primary + synthetic passport
+## trend, secondary nudge -- clearly flagged as partially synthetic)
 
 A third, fully independent illustrative gauge answering "roughly how
 many Dutch nationals are relevant here" -- explicit steering ask,
@@ -176,27 +177,43 @@ aggregated, de-identified maatwerktabel derived from the RNI
 -- that public CBS release is the real data this signal is built on,
 not raw RNI/BRP records.
 
-  presence_signal = clamp(100 * log10(rni_registered + 1) / log10(100001), 0, 100)
-    -- log-scaled against a fixed external reference of 100,000
-    RNI-registered Dutch nationals (roughly the scale of much larger
-    Dutch communities abroad than our 8 tracked countries, e.g.
-    Germany/Belgium/Spain/US -- a fixed anchor, deliberately NOT
-    derived from our own 8-country sample, so it doesn't shift if
-    countries are added, same pattern as REFERENCE_MAX_EVENTS above)
+As of 2026-09-15 this combines two terms, same "dominant real signal +
+smaller corroborating nudge" pattern as conflict_signal (ACLED primary +
+GDELT nudge) and disaster_signal (GDACS primary + GDELT nudge):
 
-Paired with a separate, clearly-labelled FICTIONAL 10-year
-passport-applications trend per country (generate_synthetic_
-passport_applications.py) -- real per-post passport-application data
-is internal BZ/RvIG data with no public equivalent (checked, not
-assumed). This synthetic series is shown purely as illustrative
-context alongside the real RNI number and its trend; it deliberately
-does NOT feed presence_signal, so a fictional figure can never quietly
-move something presented as a score -- the same real-vs-synthetic
-separation the rest of this app enforces everywhere else.
+  rni_component = clamp(92 * log10(rni_registered + 1) / log10(100001), 0, 92)
+    -- up to 92 of 100 points, log-scaled against a fixed external
+    reference of 100,000 RNI-registered Dutch nationals (roughly the
+    scale of much larger Dutch communities abroad than our 8 tracked
+    countries, e.g. Germany/Belgium/Spain/US -- a fixed anchor,
+    deliberately NOT derived from our own 8-country sample, so it
+    doesn't shift if countries are added, same pattern as
+    REFERENCE_MAX_EVENTS above). Capped at 92, not 100, so the trend
+    nudge below always has headroom to actually move the number, even
+    for a country near the RNI reference ceiling.
+  trend_component = clamp((recent_3yr_avg / prior_7yr_avg - 1) * 25, -8, 8)
+    -- up to +/-8 points from the recent-vs-prior trend in the
+    FICTIONAL 10-year passport-applications series (see passport_trend()
+    and generate_synthetic_passport_applications.py). Bidirectional
+    (rewards a rising trend, penalizes a declining one), unlike the
+    ACLED escalation bonus, since "presence trending down" is itself
+    informative here, not just "no bonus."
+  presence_signal = clamp(rni_component + trend_component, 0, 100)
 
-`presence_signal` has no effect whatsoever on conflict_signal,
-disaster_signal, or alert_level -- it is shown as its own, separate
-number.
+Because trend_component is built from synthetic data, presence_signal
+is now genuinely partially synthetic, not just paired with a synthetic
+chart alongside it -- unlike everywhere else in this app, where a
+synthetic layer is shown but never feeds a number presented as a
+score. That's a deliberate, explicit exception to that rule (steering
+ask, not an oversight), so it's flagged accordingly: `dutch_presence.
+is_partially_synthetic: true` in the output, an asterisk on the number
+in the UI, and the real vs. synthetic split (`presence_breakdown`) is
+exposed rather than hidden inside the one final number -- same
+"show the components, don't just compress them away" principle as
+`acled.severity`.
+
+`presence_signal` still has no effect whatsoever on conflict_signal,
+disaster_signal, or alert_level -- it stays its own, separate number.
 """
 
 from __future__ import annotations
@@ -406,22 +423,61 @@ def load_synthetic_passport_applications() -> dict:
 REFERENCE_MAX_EVENTS = 10000  # fixed external anchor (scale of the world's most intense active unrest), not derived from our 8-country sample
 REFERENCE_URGENT_FATALITIES = 500  # fixed anchor for the fatality accelerant -- deliberately much lower than REFERENCE_MAX_EVENTS so this term rises fast at low death tolls
 REFERENCE_MAX_RNI = 100_000  # fixed external anchor (scale of RNI-registered Dutch nationals in much larger destinations than our 8 tracked countries, e.g. Germany/Belgium/Spain/US), not derived from our own sample
+RNI_COMPONENT_CAP = 92.0  # presence_signal's real-RNI term tops out here, not 100, so the synthetic trend nudge below always has headroom to move the number
+PASSPORT_TREND_RECENT_YEARS = 3  # "recent" window for the passport trend read, vs. the years before it
+PASSPORT_TREND_SCALE = 25.0  # multiplier turning a recent-vs-prior ratio deviation into presence-score points
+PASSPORT_TREND_CAP = 8.0  # max +/- nudge from the synthetic passport trend, kept small so the real RNI term stays dominant
 BASELINE_MONTHS = 12
 
 
-def presence_signal(rni_registered: int) -> float:
-    """Illustrative 0-100 scale for 'how many Dutch nationals are
-    registered here', log-scaled against REFERENCE_MAX_RNI -- same
-    log-scale-against-a-fixed-external-anchor pattern used for
-    unrest_severity above, so a country doesn't need to crack our own
-    8-country sample's ceiling to register meaningfully. Independent of
-    conflict_signal/disaster_signal: this is a separate, third number,
-    not a factor in either of those. Based purely on the real RNI count
-    -- the synthetic passport-applications series is shown alongside as
-    illustrative context only and does NOT feed this number, so a
-    fictional figure never quietly influences something presented as a
-    score."""
-    return round(_clamp(100 * math.log10(rni_registered + 1) / math.log10(REFERENCE_MAX_RNI + 1), 0, 100), 1)
+def passport_trend(series: list) -> dict:
+    """Illustrative Rising/Stable/Declining read on the FICTIONAL
+    passport-applications series: recent PASSPORT_TREND_RECENT_YEARS-year
+    average vs. the average of the years before that. Entirely synthetic
+    input in, so this is illustrative texture on top of the real RNI
+    number, not a real finding on its own -- see presence_signal()."""
+    ordered = sorted(series, key=lambda r: r["year"])
+    if len(ordered) < PASSPORT_TREND_RECENT_YEARS + 2:
+        return {"ratio": 1.0, "label": "Unknown", "component": 0.0}
+    recent = ordered[-PASSPORT_TREND_RECENT_YEARS:]
+    baseline = ordered[:-PASSPORT_TREND_RECENT_YEARS]
+    recent_avg = sum(r["applications"] for r in recent) / len(recent)
+    baseline_avg = sum(r["applications"] for r in baseline) / len(baseline)
+    ratio = recent_avg / max(baseline_avg, 1.0)
+    component = _clamp((ratio - 1) * PASSPORT_TREND_SCALE, -PASSPORT_TREND_CAP, PASSPORT_TREND_CAP)
+    if ratio >= 1.1:
+        label = "Rising"
+    elif ratio <= 0.9:
+        label = "Declining"
+    else:
+        label = "Stable"
+    return {"ratio": round(ratio, 2), "label": label, "component": round(component, 1)}
+
+
+def presence_signal(rni_registered: int, passport_series: list) -> dict:
+    """Combined 0-100 'how many Dutch nationals are relevant here' read.
+    Dominant term (up to RNI_COMPONENT_CAP of 100) is the real,
+    log-scaled RNI count, same log-scale-against-a-fixed-external-anchor
+    pattern used for unrest_severity above, so a country doesn't need to
+    crack our own 8-country sample's ceiling to register meaningfully.
+    A small +/-PASSPORT_TREND_CAP nudge on top reflects the recent-years
+    trend in the synthetic passport-applications series (see
+    passport_trend()) -- because that nudge is synthetic,
+    presence_signal as a whole is now partially synthetic; the caller
+    must carry `is_partially_synthetic` and this breakdown through to
+    the output so the UI can flag it. Independent of conflict_signal/
+    disaster_signal either way: this is a separate, third number, not a
+    factor in either of those."""
+    rni_component = round(_clamp(RNI_COMPONENT_CAP * math.log10(rni_registered + 1) / math.log10(REFERENCE_MAX_RNI + 1), 0, RNI_COMPONENT_CAP), 1)
+    trend = passport_trend(passport_series)
+    value = round(_clamp(rni_component + trend["component"], 0, 100), 1)
+    return {
+        "value": value,
+        "rni_component": rni_component,
+        "trend_component": trend["component"],
+        "trend_ratio": trend["ratio"],
+        "trend_label": trend["label"],
+    }
 
 
 def _trend_label(ratio: float) -> str:
@@ -660,6 +716,8 @@ def main() -> None:
         week_total_volume = sum(p["volume_article_count"] for p in tension_series)
 
         rni_record = rni.get(name)
+        country_passport_series = passport_series.get(name, [])
+        presence = presence_signal(rni_record["registered"], country_passport_series) if rni_record else None
 
         countries_out.append(
             {
@@ -679,14 +737,18 @@ def main() -> None:
                 },
                 "dutch_presence": {
                     "rni": rni_record,
-                    "presence_signal": presence_signal(rni_record["registered"]) if rni_record else None,
+                    "presence_signal": presence["value"] if presence else None,
+                    "presence_breakdown": presence,
+                    "is_partially_synthetic": presence is not None,
                     "passport_applications": {
                         "synthetic": True,
                         "note": (
                             "Fictieve, illustratieve data -- niet gebaseerd op echte BZ-cijfers. "
-                            "Voedt presence_signal niet, dat komt uitsluitend uit het echte RNI-cijfer hiernaast."
+                            "Voedt een klein deel (max +/-8 punten) van presence_signal via de trend "
+                            "hiernaast; het grootste deel van de score komt nog steeds uit het echte "
+                            "RNI-cijfer."
                         ),
-                        "series": passport_series.get(name, []),
+                        "series": country_passport_series,
                     },
                 },
             }

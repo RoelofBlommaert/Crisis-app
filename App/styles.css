@@ -508,6 +508,13 @@ main {
   color: var(--gauge-color);
 }
 
+.synth-asterisk {
+  font-size: 0.55em;
+  color: var(--orange);
+  cursor: help;
+  margin-left: 1px;
+}
+
 .gauge-info { flex: 1; min-width: 0; }
 
 .gauge-title {

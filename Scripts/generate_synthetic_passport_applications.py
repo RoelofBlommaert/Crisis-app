@@ -8,14 +8,18 @@ writing this script, not assumed). Per STRATEGY.md, sources without
 confirmed real access get a clearly-labelled synthetic placeholder
 instead of being silently skipped or faked as real.
 
-This is deliberately a secondary, illustrative layer only: it does NOT
-feed `presence_signal` (see merge_data.py), which is based purely on the
-real RNI count from fetch_rni_nederlanders.py. Mixing a fictional number
-into a score that's shown as if it means something would undermine the
-"real vs. synthetic, always labelled" principle the rest of this app
-follows -- see the removed synthetic comms-volume layer (2026-09-15
-data-minimization pass) for why a synthetic number with no real anchor
-was judged not worth keeping as its own signal.
+This is deliberately a secondary, illustrative layer: `presence_signal`
+(see merge_data.py) is still dominated by the real RNI count from
+fetch_rni_nederlanders.py (up to 92 of 100 points), but as of
+2026-09-15 this series' recent-vs-prior trend also feeds a small
+(max +/-8 point) nudge on top -- an explicit, flagged exception to the
+"synthetic never feeds a score" principle the rest of this app follows
+(see the removed synthetic comms-volume layer from the earlier
+data-minimization pass for why a synthetic-only signal, with no real
+anchor at all, was judged not worth keeping). Because that nudge is
+synthetic, presence_signal is now marked `is_partially_synthetic` in
+the output and shown with an asterisk in the UI, with the real/
+synthetic split (`presence_breakdown`) exposed rather than hidden.
 
 Numbers here are deterministic (seeded per country, not random per run)
 and loosely scaled off that country's real RNI-registered count (bigger

@@ -233,8 +233,8 @@ function renderDetail(country) {
     </div>
 
     <div class="side-section presence-box">
-      <strong>Dutch presence <span class="acled-tag">GROUND TRUTH</span></strong>
-      <p class="synthetic-note">Independent of the signals above &mdash; has no effect on conflict/disaster signal or the alert level.</p>
+      <strong>Dutch presence</strong>
+      <p class="synthetic-note">Independent of the signals above &mdash; has no effect on conflict/disaster signal or the alert level. Mostly real RNI data, with a small <span class="synthetic-tag">SYNTHETIC</span> trend nudge &mdash; see the asterisk (*) below.</p>
       ${renderDutchPresence(country.dutch_presence)}
     </div>
 
@@ -316,12 +316,20 @@ function renderAcledSummary(acled) {
   `;
 }
 
+const PRESENCE_TREND_ARROW = {
+  Rising: "↑",
+  Stable: "→",
+  Declining: "↓",
+  Unknown: "",
+};
+
 function renderDutchPresence(dp) {
   if (!dp || !dp.rni) {
     return '<p class="no-events">No RNI data available for this country.</p>';
   }
   const rni = dp.rni;
   const value = Math.round(dp.presence_signal);
+  const bd = dp.presence_breakdown;
   // Deliberately NOT gaugeColor() -- that's a Red/Orange/Green danger
   // scale for conflict/disaster and would misleadingly imply "many
   // Dutch nationals here" is itself alarming. Fixed neutral accent color
@@ -329,7 +337,7 @@ function renderDutchPresence(dp) {
   return `
     <div class="gauge-card">
       <div class="radial-gauge" style="--value:${value};--gauge-color:var(--accent)">
-        <span class="radial-value">${value}</span>
+        <span class="radial-value">${value}<sup class="synth-asterisk" title="Includes a small synthetic adjustment from the passport-application trend below">*</sup></span>
       </div>
       <div class="gauge-info">
         <div class="gauge-title">${PRESENCE_ICON}Presence signal</div>
@@ -338,6 +346,14 @@ function renderDutchPresence(dp) {
           (peildatum ${rni.source_date}) &mdash; geboren in NL: ${rni.born_in_nl.toLocaleString()},
           geboren in het land zelf: ${rni.born_in_country.toLocaleString()}.
         </p>
+        ${
+          bd
+            ? `<p class="synthetic-note">* Real RNI count contributes <strong>${bd.rni_component}</strong> of the ${value} shown, plus a
+                <strong>${bd.trend_component > 0 ? "+" : ""}${bd.trend_component}</strong>-point
+                <span class="synthetic-tag">SYNTHETIC</span> nudge (${PRESENCE_TREND_ARROW[bd.trend_label] || ""} ${bd.trend_label},
+                from the recent vs. prior passport-application trend below).</p>`
+            : ""
+        }
       </div>
     </div>
     <p class="synthetic-note">${rni.note}</p>
