@@ -180,13 +180,14 @@ function renderDetail(country) {
     </div>
     <p class="gauge-disclaimer">
       Illustrative 0&ndash;100 heuristic, scored one day at a time &mdash; <strong>not</strong> a statistical
-      forecast or probability of war/disaster. Conflict signal is driven primarily by real ACLED severity
-      and escalation (see below), corroborated by GDELT media coverage; disaster signal works the same way
-      with GDACS. Bars above show each recent day, oldest to newest.
+      forecast or probability of war/disaster. Conflict signal is driven primarily by real ACLED unrest
+      (event count and its own escalation, see below), with fatalities as a secondary accelerant and
+      GDELT media coverage as corroboration; disaster signal works the same way with GDACS. Bars above
+      show each recent day, oldest to newest.
     </p>
 
     <div class="side-section acled-box">
-      <strong>Baseline &amp; escalation (ACLED) <span class="acled-tag">GROUND TRUTH</span></strong>
+      <strong>Unrest &amp; escalation (ACLED) <span class="acled-tag">GROUND TRUTH</span></strong>
       ${renderAcledSummary(country.acled)}
       <p class="attribution">Source: <a href="https://acleddata.com" target="_blank" rel="noopener">ACLED</a> (Armed Conflict Location &amp; Event Data Project), via HDX aggregated country files.</p>
     </div>
@@ -242,13 +243,18 @@ function renderAcledSummary(acled) {
   const trendBadge = TREND_BADGE[sev.trend] || "unknown";
   const civ = sev.civilian_targeting || { events: 0, fatalities: 0 };
   const demo = sev.demonstrations || { events: 0 };
+  const urgentFatalities = sev.fatality_boost >= 15;
 
   return `
     <p class="acled-summary">
-      <strong>${sev.scoring_period}</strong> (last complete month): <strong>${sev.scoring_fatalities} fatalities</strong>
-      from ${sev.scoring_events} political-violence events. This country's own 12-month average is
-      ~${sev.baseline_fatalities}/month &mdash; this month runs at <strong>${sev.escalation_ratio}&times;</strong>
-      that baseline. <span class="badge ${trendBadge}" title="Trend vs. this country's own baseline, not an absolute severity rating">${TREND_ARROW[sev.trend] || ""} ${sev.trend}</span>
+      <strong>${sev.scoring_period}</strong> (last complete month): <strong>${sev.scoring_events} political-violence events</strong>
+      &mdash; the primary signal here. This country's own 12-month average is
+      ~${sev.baseline_events}/month &mdash; this month runs at <strong>${sev.events_ratio}&times;</strong>
+      that baseline. <span class="badge ${trendBadge}" title="Trend vs. this country's own event-count baseline, not an absolute severity rating">${TREND_ARROW[sev.trend] || ""} ${sev.trend}</span>
+    </p>
+    <p class="acled-summary">
+      <strong>${sev.scoring_fatalities} fatalities</strong> from those events &mdash; a secondary signal that
+      accelerates the score once people are actually dying${urgentFatalities ? ", <strong>which this month's toll does</strong>: high enough to warrant swifter action regardless of the raw event count." : ", but this month's toll isn't yet at that level on its own."}
     </p>
     <p class="acled-summary">
       Also that month: ${civ.events} civilian-targeting events (${civ.fatalities ?? 0} fatalities),

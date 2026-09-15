@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-15T08:08:04.898100+00:00",
+  "generated_at": "2026-09-15T08:23:11.898625+00:00",
   "note": "One-time static snapshot, not a live-refreshing feed. conflict_signal/disaster_signal are an illustrative 0-100 heuristic, not a statistical forecast or probability -- see Documentation/ and Scripts/merge_data.py.",
   "data_sources": {
     "gdelt": {
@@ -26,65 +26,65 @@
         39.0,
         35.0
       ],
-      "conflict_signal": 11,
+      "conflict_signal": 35,
       "disaster_signal": 5,
-      "alert_level": "Green",
+      "alert_level": "Orange",
       "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 12,
+          "conflict_signal": 37,
           "disaster_signal": 12,
-          "alert_level": "Green",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 13,
+          "conflict_signal": 38,
           "disaster_signal": 3,
-          "alert_level": "Green",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-09",
-          "conflict_signal": 11,
+          "conflict_signal": 36,
           "disaster_signal": 3,
-          "alert_level": "Green",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-10",
-          "conflict_signal": 11,
+          "conflict_signal": 36,
           "disaster_signal": 3,
-          "alert_level": "Green",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-11",
-          "conflict_signal": 13,
+          "conflict_signal": 38,
           "disaster_signal": 2,
-          "alert_level": "Green",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-12",
-          "conflict_signal": 13,
+          "conflict_signal": 38,
           "disaster_signal": 2,
-          "alert_level": "Green",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-13",
-          "conflict_signal": 14,
+          "conflict_signal": 39,
           "disaster_signal": 1,
-          "alert_level": "Green",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-14",
-          "conflict_signal": 11,
+          "conflict_signal": 35,
           "disaster_signal": 5,
-          "alert_level": "Green",
+          "alert_level": "Orange",
           "driver": "conflict"
         }
       ],
@@ -1354,15 +1354,17 @@
       ],
       "acled": {
         "severity": {
-          "acled_component": 6.1035151830775,
-          "severity": 6.1,
-          "escalation_bonus": 0,
-          "escalation_ratio": 0.33,
-          "trend": "Below baseline",
+          "acled_component": 30.979836565652313,
+          "unrest_severity": 13.7,
+          "unrest_escalation_bonus": 15,
+          "fatality_boost": 2.2,
+          "events_ratio": 3.0,
+          "trend": "Escalating",
+          "baseline_events": 3.0,
           "baseline_fatalities": 1.4,
           "scoring_period": "2026-August",
-          "scoring_fatalities": 1,
           "scoring_events": 9,
+          "scoring_fatalities": 1,
           "latest_period": "2026-September",
           "latest_is_provisional": true,
           "civilian_targeting": {
@@ -1986,63 +1988,63 @@
         49.0,
         31.5
       ],
-      "conflict_signal": 83,
+      "conflict_signal": 86,
       "disaster_signal": 4,
       "alert_level": "Red",
       "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 83,
+          "conflict_signal": 86,
           "disaster_signal": 58,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 82,
+          "conflict_signal": 84,
           "disaster_signal": 53,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-09",
-          "conflict_signal": 82,
+          "conflict_signal": 85,
           "disaster_signal": 53,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-10",
-          "conflict_signal": 83,
+          "conflict_signal": 86,
           "disaster_signal": 56,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-11",
-          "conflict_signal": 83,
+          "conflict_signal": 86,
           "disaster_signal": 53,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-12",
-          "conflict_signal": 83,
+          "conflict_signal": 86,
           "disaster_signal": 52,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-13",
-          "conflict_signal": 84,
+          "conflict_signal": 86,
           "disaster_signal": 1,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-14",
-          "conflict_signal": 83,
+          "conflict_signal": 86,
           "disaster_signal": 4,
           "alert_level": "Red",
           "driver": "conflict"
@@ -3314,15 +3316,17 @@
       ],
       "acled": {
         "severity": {
-          "acled_component": 73.05313620323723,
-          "severity": 73.1,
-          "escalation_bonus": 0,
-          "escalation_ratio": 0.75,
+          "acled_component": 75.6230890243759,
+          "unrest_severity": 53.8,
+          "unrest_escalation_bonus": 1.8,
+          "fatality_boost": 20,
+          "events_ratio": 1.18,
           "trend": "Stable",
+          "baseline_events": 6943.2,
           "baseline_fatalities": 5357.3,
           "scoring_period": "2026-August",
-          "scoring_fatalities": 4008,
           "scoring_events": 8199,
+          "scoring_fatalities": 4008,
           "latest_period": "2026-September",
           "latest_is_provisional": true,
           "civilian_targeting": {
@@ -3946,63 +3950,63 @@
         33.85,
         35.85
       ],
-      "conflict_signal": 38,
+      "conflict_signal": 58,
       "disaster_signal": 5,
       "alert_level": "Orange",
       "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 42,
+          "conflict_signal": 62,
           "disaster_signal": 0,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 42,
+          "conflict_signal": 61,
           "disaster_signal": 4,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-09",
-          "conflict_signal": 40,
+          "conflict_signal": 60,
           "disaster_signal": 6,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-10",
-          "conflict_signal": 39,
+          "conflict_signal": 59,
           "disaster_signal": 10,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-11",
-          "conflict_signal": 40,
+          "conflict_signal": 60,
           "disaster_signal": 6,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-12",
-          "conflict_signal": 41,
+          "conflict_signal": 61,
           "disaster_signal": 3,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-13",
-          "conflict_signal": 35,
+          "conflict_signal": 55,
           "disaster_signal": 5,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-14",
-          "conflict_signal": 38,
+          "conflict_signal": 58,
           "disaster_signal": 5,
           "alert_level": "Orange",
           "driver": "conflict"
@@ -5263,15 +5267,17 @@
       "events": [],
       "acled": {
         "severity": {
-          "acled_component": 28.689205186814682,
-          "severity": 28.7,
-          "escalation_bonus": 0,
-          "escalation_ratio": 0.1,
-          "trend": "Below baseline",
+          "acled_component": 48.66114081299869,
+          "unrest_severity": 38.2,
+          "unrest_escalation_bonus": 0,
+          "fatality_boost": 10.5,
+          "events_ratio": 0.77,
+          "trend": "Stable",
+          "baseline_events": 777.4,
           "baseline_fatalities": 261.6,
           "scoring_period": "2026-August",
-          "scoring_fatalities": 25,
           "scoring_events": 597,
+          "scoring_fatalities": 25,
           "latest_period": "2026-September",
           "latest_is_provisional": true,
           "civilian_targeting": {
@@ -5895,63 +5901,63 @@
         31.5,
         34.8
       ],
-      "conflict_signal": 11,
+      "conflict_signal": 21,
       "disaster_signal": 5,
       "alert_level": "Green",
       "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 10,
+          "conflict_signal": 19,
           "disaster_signal": 5,
           "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 12,
+          "conflict_signal": 22,
           "disaster_signal": 3,
           "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-09",
-          "conflict_signal": 11,
+          "conflict_signal": 21,
           "disaster_signal": 3,
           "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-10",
-          "conflict_signal": 11,
+          "conflict_signal": 20,
           "disaster_signal": 2,
           "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-11",
-          "conflict_signal": 11,
+          "conflict_signal": 20,
           "disaster_signal": 3,
           "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-12",
-          "conflict_signal": 10,
+          "conflict_signal": 19,
           "disaster_signal": 4,
           "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-13",
-          "conflict_signal": 9,
+          "conflict_signal": 19,
           "disaster_signal": 2,
           "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-14",
-          "conflict_signal": 11,
+          "conflict_signal": 21,
           "disaster_signal": 5,
           "alert_level": "Green",
           "driver": "conflict"
@@ -7212,15 +7218,17 @@
       "events": [],
       "acled": {
         "severity": {
-          "acled_component": 0,
-          "severity": 0,
-          "escalation_bonus": 0,
-          "escalation_ratio": 0.0,
+          "acled_component": 9.610733217627185,
+          "unrest_severity": 9.6,
+          "unrest_escalation_bonus": 0,
+          "fatality_boost": 0,
+          "events_ratio": 0.04,
           "trend": "Below baseline",
+          "baseline_events": 104.5,
           "baseline_fatalities": 3.3,
           "scoring_period": "2026-August",
-          "scoring_fatalities": 0,
           "scoring_events": 4,
+          "scoring_fatalities": 0,
           "latest_period": "2026-September",
           "latest_is_provisional": true,
           "civilian_targeting": {
@@ -7844,65 +7852,65 @@
         26.8,
         30.8
       ],
-      "conflict_signal": 43,
+      "conflict_signal": 28,
       "disaster_signal": 5,
-      "alert_level": "Orange",
+      "alert_level": "Green",
       "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 40,
+          "conflict_signal": 25,
           "disaster_signal": 3,
-          "alert_level": "Orange",
+          "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 45,
+          "conflict_signal": 30,
           "disaster_signal": 10,
-          "alert_level": "Orange",
+          "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-09",
-          "conflict_signal": 42,
+          "conflict_signal": 27,
           "disaster_signal": 4,
-          "alert_level": "Orange",
+          "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-10",
-          "conflict_signal": 40,
+          "conflict_signal": 25,
           "disaster_signal": 4,
-          "alert_level": "Orange",
+          "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-11",
-          "conflict_signal": 42,
+          "conflict_signal": 27,
           "disaster_signal": 5,
-          "alert_level": "Orange",
+          "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-12",
-          "conflict_signal": 41,
+          "conflict_signal": 27,
           "disaster_signal": 4,
-          "alert_level": "Orange",
+          "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-13",
-          "conflict_signal": 42,
+          "conflict_signal": 27,
           "disaster_signal": 1,
-          "alert_level": "Orange",
+          "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-14",
-          "conflict_signal": 43,
+          "conflict_signal": 28,
           "disaster_signal": 5,
-          "alert_level": "Orange",
+          "alert_level": "Green",
           "driver": "conflict"
         }
       ],
@@ -9161,15 +9169,17 @@
       "events": [],
       "acled": {
         "severity": {
-          "acled_component": 36.11469340917112,
-          "severity": 21.1,
-          "escalation_bonus": 15,
-          "escalation_ratio": 3.33,
-          "trend": "Escalating",
+          "acled_component": 21.457425333833402,
+          "unrest_severity": 10.7,
+          "unrest_escalation_bonus": 3.0,
+          "fatality_boost": 7.7,
+          "events_ratio": 1.3,
+          "trend": "Stable",
+          "baseline_events": 3.8,
           "baseline_fatalities": 3.0,
           "scoring_period": "2026-August",
-          "scoring_fatalities": 10,
           "scoring_events": 5,
+          "scoring_fatalities": 10,
           "latest_period": "2026-September",
           "latest_is_provisional": true,
           "civilian_targeting": {
@@ -9793,65 +9803,65 @@
         15.5,
         30.5
       ],
-      "conflict_signal": 69,
+      "conflict_signal": 63,
       "disaster_signal": 8,
-      "alert_level": "Red",
+      "alert_level": "Orange",
       "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 71,
+          "conflict_signal": 64,
           "disaster_signal": 6,
-          "alert_level": "Red",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 72,
+          "conflict_signal": 66,
           "disaster_signal": 13,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-09",
-          "conflict_signal": 70,
+          "conflict_signal": 64,
           "disaster_signal": 16,
-          "alert_level": "Red",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-10",
-          "conflict_signal": 67,
+          "conflict_signal": 61,
           "disaster_signal": 20,
-          "alert_level": "Red",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-11",
-          "conflict_signal": 71,
+          "conflict_signal": 65,
           "disaster_signal": 7,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-12",
-          "conflict_signal": 69,
+          "conflict_signal": 63,
           "disaster_signal": 6,
-          "alert_level": "Red",
+          "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-13",
-          "conflict_signal": 71,
+          "conflict_signal": 65,
           "disaster_signal": 2,
           "alert_level": "Red",
           "driver": "conflict"
         },
         {
           "date": "2026-09-14",
-          "conflict_signal": 69,
+          "conflict_signal": 63,
           "disaster_signal": 8,
-          "alert_level": "Red",
+          "alert_level": "Orange",
           "driver": "conflict"
         }
       ],
@@ -11110,15 +11120,17 @@
       "events": [],
       "acled": {
         "severity": {
-          "acled_component": 59.670607449866836,
-          "severity": 59.7,
-          "escalation_bonus": 0,
-          "escalation_ratio": 0.77,
+          "acled_component": 53.517400931357045,
+          "unrest_severity": 33.2,
+          "unrest_escalation_bonus": 0.3,
+          "fatality_boost": 20,
+          "events_ratio": 1.03,
           "trend": "Stable",
+          "baseline_events": 251.2,
           "baseline_fatalities": 1143.4,
           "scoring_period": "2026-August",
-          "scoring_fatalities": 876,
           "scoring_events": 259,
+          "scoring_fatalities": 876,
           "latest_period": "2026-September",
           "latest_is_provisional": true,
           "civilian_targeting": {
@@ -11742,63 +11754,63 @@
         18.95,
         -72.3
       ],
-      "conflict_signal": 43,
+      "conflict_signal": 42,
       "disaster_signal": 11,
       "alert_level": "Orange",
       "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 47,
+          "conflict_signal": 45,
           "disaster_signal": 11,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 45,
+          "conflict_signal": 44,
           "disaster_signal": 6,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-09",
-          "conflict_signal": 53,
+          "conflict_signal": 52,
           "disaster_signal": 7,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-10",
-          "conflict_signal": 49,
+          "conflict_signal": 48,
           "disaster_signal": 28,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-11",
-          "conflict_signal": 50,
+          "conflict_signal": 49,
           "disaster_signal": 17,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-12",
-          "conflict_signal": 47,
+          "conflict_signal": 46,
           "disaster_signal": 4,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-13",
-          "conflict_signal": 44,
+          "conflict_signal": 43,
           "disaster_signal": 3,
           "alert_level": "Orange",
           "driver": "conflict"
         },
         {
           "date": "2026-09-14",
-          "conflict_signal": 43,
+          "conflict_signal": 42,
           "disaster_signal": 11,
           "alert_level": "Orange",
           "driver": "conflict"
@@ -13070,15 +13082,17 @@
       ],
       "acled": {
         "severity": {
-          "acled_component": 40.89623555296968,
-          "severity": 40.9,
-          "escalation_bonus": 0,
-          "escalation_ratio": 0.36,
+          "acled_component": 39.68254967878354,
+          "unrest_severity": 24.7,
+          "unrest_escalation_bonus": 0,
+          "fatality_boost": 14.9,
+          "events_ratio": 0.54,
           "trend": "Below baseline",
+          "baseline_events": 114.8,
           "baseline_fatalities": 285.0,
           "scoring_period": "2026-August",
-          "scoring_fatalities": 103,
           "scoring_events": 62,
+          "scoring_fatalities": 103,
           "latest_period": "2026-September",
           "latest_is_provisional": true,
           "civilian_targeting": {
@@ -13702,63 +13716,63 @@
         15.0,
         101.0
       ],
-      "conflict_signal": 17,
+      "conflict_signal": 26,
       "disaster_signal": 1,
       "alert_level": "Green",
       "driver": "conflict",
       "daily_scores": [
         {
           "date": "2026-09-07",
-          "conflict_signal": 19,
+          "conflict_signal": 27,
           "disaster_signal": 3,
           "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-08",
-          "conflict_signal": 19,
+          "conflict_signal": 27,
           "disaster_signal": 6,
           "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-09",
-          "conflict_signal": 18,
+          "conflict_signal": 26,
           "disaster_signal": 3,
           "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-10",
-          "conflict_signal": 19,
+          "conflict_signal": 28,
           "disaster_signal": 1,
           "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-11",
-          "conflict_signal": 19,
+          "conflict_signal": 28,
           "disaster_signal": 2,
           "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-12",
-          "conflict_signal": 19,
+          "conflict_signal": 27,
           "disaster_signal": 4,
           "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-13",
-          "conflict_signal": 18,
+          "conflict_signal": 27,
           "disaster_signal": 2,
           "alert_level": "Green",
           "driver": "conflict"
         },
         {
           "date": "2026-09-14",
-          "conflict_signal": 17,
+          "conflict_signal": 26,
           "disaster_signal": 1,
           "alert_level": "Green",
           "driver": "conflict"
@@ -15060,15 +15074,17 @@
       ],
       "acled": {
         "severity": {
-          "acled_component": 15.77735787083756,
-          "severity": 15.8,
-          "escalation_bonus": 0,
-          "escalation_ratio": 0.85,
+          "acled_component": 24.48798425422465,
+          "unrest_severity": 18.7,
+          "unrest_escalation_bonus": 0,
+          "fatality_boost": 5.8,
+          "events_ratio": 0.95,
           "trend": "Stable",
+          "baseline_events": 23.2,
           "baseline_fatalities": 5.9,
           "scoring_period": "2026-August",
-          "scoring_fatalities": 5,
           "scoring_events": 22,
+          "scoring_fatalities": 5,
           "latest_period": "2026-September",
           "latest_is_provisional": true,
           "civilian_targeting": {

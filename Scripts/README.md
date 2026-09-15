@@ -252,23 +252,33 @@ assumed:**
   Ukraine). `fetch_acled_hdx.py` always aggregates to one national
   total per (country, year, month, category) regardless of layout.
 
-**Scoring is baseline-vs-escalation, not a flat fatality band.** A first
-version banded that month's fatalities directly (0/1-24/25-99/100+ ->
-0/1/2/3, *25 each). Checked against live data before shipping the
-replacement: Ukraine (4008), Sudan (876), and Haiti (103) all landed in
-the same top tier and clipped conflict_signal at 100 -- indistinguishable,
-despite differing by 40x, and despite Sudan/Ukraine actually running
-*below* their own 12-month average that month (chronic, not a fresh
-spike), while Egypt's real 3.3x jump above its own tiny baseline was
-invisible next to them. Replaced with two explicit numbers: a
-log-scaled severity score (0-75, against a fixed 5000-fatalities/month
-reference -- not derived from our own 8-country sample, so it doesn't
-shift if countries are added) plus an escalation bonus (0-15) that only
-activates when the current month exceeds the country's own trailing
-12-month average. Both are exposed in the output and shown in the UI
-(baseline fatalities/month, ratio, trend label), not just the combined
-score. See `merge_data.py`'s "Baseline vs. escalation" docstring section
-for the exact formula and the full before/after numbers.
+**Scoring leads with unrest (event count), not fatalities -- fatalities
+are a secondary accelerant.** Two earlier versions both scored primarily
+off fatalities: first a flat band (0/1-24/25-99/100+ -> 0/1/2/3, *25
+each), then a log-scaled fatality severity + fatality-baseline escalation
+bonus. Changed again per an explicit steering decision: this app exists
+to spot rising unrest early, so *how much political violence is
+happening* (event count) should drive the score, with fatalities kept as
+a secondary signal that accelerates the score once people are actually
+dying rather than the thing driving it in the first place. Now three
+explicit numbers: a log-scaled unrest-severity score (0-55, against a
+fixed 10,000-events/month reference -- not derived from our own
+8-country sample, so it doesn't shift if countries are added), an
+unrest-escalation bonus (0-15) that only activates when the current
+month's event count exceeds the country's own trailing 12-month average,
+and a fatality accelerant (0-20, log-scaled against a much lower
+500-fatalities/month reference so it climbs fast at low death tolls --
+e.g. Sudan's real 876 fatalities that month already maxes this term out).
+All three are exposed in the output and shown in the UI (baseline
+events/month, event ratio, trend label, plus the raw fatality count), not
+just the combined score. See `merge_data.py`'s "Unrest-primary,
+fatalities as an urgency accelerant" docstring section for the exact
+formula and the full before/after numbers, verified against live data
+(Ukraine unrest ~54, Sudan ~33, Lebanon ~38, Haiti ~25, ordered by real
+event-count scale; Turkey's small absolute count but 3x-baseline surge
+still earns the full +15 escalation bonus; Sudan's and Haiti's high
+fatality counts each max the +20 accelerant even though their event
+counts alone wouldn't justify that).
 
 **The most recent available month is always excluded from scoring** --
 checked across all 8 countries before deciding this, not assumed from

@@ -81,20 +81,21 @@
       rather than as one flat weekly number, built from:
     </p>
     <ul>
-      <li><strong>Conflict signal:</strong> a <em>baseline severity</em> score (real ACLED fatalities that month, log-scaled against a fixed reference of 5,000 fatalities/month &mdash; roughly the world's most severe active conflicts) <strong>plus</strong> an <em>escalation bonus</em> only when that month runs above the country's own trailing 12-month average &mdash; a below-baseline month gets zero bonus, never a penalty. GDELT's conflict-theme share and tone add a small corroborating nudge on top. Without any confirmed ACLED fatalities, GDELT alone cannot push this above ~10.</li>
+      <li><strong>Conflict signal:</strong> primarily <em>unrest</em>, not deaths &mdash; a <em>severity</em> score from real ACLED political-violence <strong>event counts</strong> that month, log-scaled against a fixed reference of 10,000 events/month (roughly the world's most intense active unrest), <strong>plus</strong> an <em>escalation bonus</em> only when that month's event count runs above the country's own trailing 12-month average. On top of that, a <em>fatality accelerant</em> (log-scaled against a much lower reference of 500 fatalities/month, so it climbs fast) pushes the score up quickly once people are actually dying &mdash; the point is swifter action when unrest turns lethal, not a slow fatality-count climb. GDELT's conflict-theme share and tone add a small corroborating nudge on top of all of that. Without any confirmed ACLED activity, GDELT alone cannot push this above ~10.</li>
       <li><strong>Disaster signal:</strong> any GDACS alert level for an event actually active <em>on that day</em> (by the event's own date range, weighted highest), plus that day's (damped) share of articles carrying a natural-disaster theme tag.</li>
     </ul>
     <p>
-      This replaced an earlier version that banded conflict_signal directly
-      off that month's fatality count: Ukraine (4008 fatalities), Sudan
-      (876), and Haiti (103) all landed in the same top tier and clipped at
-      100 &mdash; indistinguishable, even though two of them were actually
-      running <em>below</em> their own recent average that month (a stable,
-      chronic war, not a fresh spike), while Egypt's real 3.3x jump above
-      its own (much smaller) baseline was invisible next to them. Baseline
-      and escalation are now shown as separate numbers (see each country's
-      "Baseline &amp; escalation" box) rather than collapsed into one score
-      that loses which country is actually changing right now.
+      Conflict signal used to be scored primarily off fatalities. Changed to
+      lead with event count instead, per an explicit steering decision: for
+      spotting rising unrest early, <em>how much political violence is
+      happening</em> is the primary question, with fatalities kept as a
+      secondary signal that accelerates the score rather than driving it
+      &mdash; a large death toll should escalate the response fast, but a
+      country shouldn't need people to already be dying to register as
+      unrest is spreading. Unrest severity, its own escalation bonus, and
+      the fatality accelerant are shown as separate numbers (see each
+      country's "Unrest &amp; escalation" box) rather than collapsed into
+      one score that loses which part is actually driving it.
     </p>
     <p>
       Scoring day-by-day (rather than "is there any matching event at all")

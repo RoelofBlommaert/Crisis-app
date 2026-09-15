@@ -56,54 +56,59 @@ Without real confirmed political violence, GDELT alone caps conflict_signal
 at ~10, same principle as disaster_signal: pure media-mention noise
 shouldn't be able to call something "High" on its own.
 
-**Baseline vs. escalation (why this isn't just "this month's fatality
-count").** An earlier version banded conflict_signal directly off that
-month's ACLED fatalities (0 / 1-24 / 25-99 / 100+ -> 0/1/2/3, *25 each).
-Checked against live data before shipping this replacement: Ukraine
-(4008 fatalities that month), Sudan (876), and Haiti (103) all landed in
-the same top tier and clipped conflict_signal at 100 -- indistinguishable,
-despite being different by an order of magnitude, and despite two of
-them (Sudan, Ukraine) actually running *below* their own recent average
-that month (ratio 0.75-0.77 vs. their own trailing-12-month baseline) --
-a stable, chronic war, not a fresh spike. Meanwhile Egypt, at only 10
-fatalities, was invisible next to them despite being 3.3x its own
-(near-zero) baseline -- a real, if small-scale, emerging signal that a
-flat absolute count buried completely. For a "risk of imminent crisis"
-lens this is backwards: absolute severity alone conflates "this has
-always been terrible here" with "something new is happening here," and
-loses the country that's actually changing.
+**Unrest-primary, fatalities as an urgency accelerant (why this isn't
+scored off fatalities).** An earlier version scored conflict_signal
+primarily off ACLED fatalities (a log-scaled severity term plus a
+fatality-baseline escalation bonus). Changed per an explicit steering
+decision: for this app's purpose (spotting rising unrest early, so NWW
+can react before it becomes a casualty event), **event count -- how much
+political violence is actually happening -- is the primary signal**,
+not how many people have died so far. Fatalities still matter, but as a
+secondary accelerant: once people are dying, the same level of unrest
+should score meaningfully higher, so the response is swifter, not so
+that a chronic-but-currently-quiet-on-events conflict outranks a country
+where unrest is visibly spreading.
 
-Fixed by splitting into two explicit components, both derived from the
-same monthly ACLED fatality series:
-  baseline_fatalities = average fatalities/month over the 12 months
-    before the scoring month (the country's own recent normal)
-  escalation_ratio = scoring_fatalities / max(baseline_fatalities, 3)
-    (floor of 3 avoids ratio blowups when a country's baseline is
-    near zero)
-  severity = clamp(75 * log10(scoring_fatalities + 1) / log10(5001), 0, 75)
-    -- log-scaled against a fixed reference of 5000 fatalities/month
-    (roughly the scale of the world's most severe active conflicts in
+Three explicit components, still all derived from the same monthly ACLED
+political-violence series:
+  baseline_events = average events/month over the 12 months before the
+    scoring month (the country's own recent normal)
+  events_ratio = scoring_events / max(baseline_events, 3)
+    (floor of 3 avoids ratio blowups when a country's baseline is near
+    zero)
+  unrest_severity = clamp(55 * log10(scoring_events + 1) / log10(10001), 0, 55)
+    -- log-scaled against a fixed reference of 10,000 events/month
+    (roughly the scale of the world's most intense active unrest in
     recent years -- a fixed external anchor, deliberately NOT derived
     from our own 8-country sample, so it doesn't shift if countries are
     added/removed)
-  escalation_bonus = clamp((escalation_ratio - 1) * 10, 0, 15)
-    -- only rewards being ABOVE one's own baseline; below-baseline
-    countries get zero bonus, not a penalty
-  acled_component = severity + escalation_bonus   (0-90)
-`severity` differentiates chronic-severity countries properly instead of
-saturating (verified: Ukraine ~73, Sudan ~60, Haiti ~41, Lebanon ~29,
-Egypt ~21 -- ordered by real scale, not clipped together). The
-`escalation_bonus` is what actually flags "something newly happening" --
-it's what pushes Egypt (severity 21 + bonus 15 = 36) into the same
-territory as far-larger-but-stable conflicts, which is the "imminent"
-signal this app is meant to surface, per the user's explicit ask that
-scores reflect risk of imminent crisis rather than pure violence scale.
-`baseline_fatalities`, `escalation_ratio`, and a qualitative trend label
-("Escalating" / "Stable" / "Below baseline") are exposed in the output
+  unrest_escalation_bonus = clamp((events_ratio - 1) * 10, 0, 15)
+    -- only rewards event *counts* running ABOVE the country's own
+    baseline; below-baseline countries get zero bonus, not a penalty
+  fatality_boost = clamp(20 * log10(scoring_fatalities + 1) / log10(501), 0, 20)
+    -- log-scaled against a much lower fixed anchor (500 fatalities/month,
+    not 10,000) so this term rises fast at low death tolls: swift
+    escalation is the point, not a slow-building severity curve. A month
+    with "only" 50 deaths already reaches ~63% of this term's max.
+  acled_component = unrest_severity + unrest_escalation_bonus + fatality_boost   (0-90)
+`unrest_severity` differentiates by real event-count scale instead of
+saturating (verified against live data: Ukraine ~54, Sudan ~33, Lebanon
+~38, Haiti ~25 -- ordered by how much unrest is actually happening, not
+by death toll). `unrest_escalation_bonus` is what flags "unrest is
+spreading here right now" -- e.g. Turkey, with a small absolute event
+count but running 3x its own baseline that month, gets the full +15 and
+lands ahead of higher-volume-but-stable conflicts. `fatality_boost` is
+what makes the score jump fast once people are actually dying --
+Sudan's 876 fatalities that month max out the term at 20/20 even though
+its event count alone would only justify a mid-range score.
+`baseline_events`, `events_ratio`, and a qualitative trend label
+("Escalating" / "Stable" / "Below baseline", now based on the *events*
+ratio -- unrest trend, not fatality trend) are exposed in the output
 alongside the score, not hidden inside it -- the point is to show the
-data, not just compress it away (per STRATEGY.md).
+data, not just compress it away (per STRATEGY.md). `baseline_fatalities`
+and `scoring_fatalities` are still exposed too, as the secondary figure.
 
-Both components come from `Scripts/fetch_acled_hdx.py`'s monthly
+All three components come from `Scripts/fetch_acled_hdx.py`'s monthly
 political-violence series, using the most recent *complete* month (see
 `acled_severity()` for why the latest available month is skipped --
 ACLED/HDX's newest month is consistently far below trend across nearly
@@ -308,7 +313,8 @@ def load_acled_monthly() -> dict:
     return records
 
 
-REFERENCE_MAX_FATALITIES = 5000  # fixed external anchor (severe active-conflict scale), not derived from our 8-country sample
+REFERENCE_MAX_EVENTS = 10000  # fixed external anchor (scale of the world's most intense active unrest), not derived from our 8-country sample
+REFERENCE_URGENT_FATALITIES = 500  # fixed anchor for the fatality accelerant -- deliberately much lower than REFERENCE_MAX_EVENTS so this term rises fast at low death tolls
 BASELINE_MONTHS = 12
 
 
@@ -328,23 +334,25 @@ def _category_scoring_month(records: list, category: str, scoring_period: str) -
 
 
 def acled_severity(records: list) -> dict:
-    """Baseline-vs-escalation conflict severity from real ACLED
-    political-violence fatalities -- see module docstring "Baseline vs.
-    escalation" for why this replaced a flat fatality-count band, and
-    why the latest available month is excluded (reporting lag, not real
-    de-escalation)."""
+    """Unrest-primary, fatality-secondary conflict severity from real
+    ACLED political-violence events -- see module docstring "Unrest-
+    primary, fatalities as an urgency accelerant" for why event count
+    (not fatalities) drives this, and why the latest available month is
+    excluded (reporting lag, not real de-escalation)."""
     pv = [r for r in records if r["category"] == "political_violence"]
     if not pv:
         return {
             "acled_component": 0.0,
-            "severity": 0.0,
-            "escalation_bonus": 0.0,
-            "escalation_ratio": 0.0,
+            "unrest_severity": 0.0,
+            "unrest_escalation_bonus": 0.0,
+            "fatality_boost": 0.0,
+            "events_ratio": 0.0,
             "trend": "Unknown",
+            "baseline_events": 0.0,
             "baseline_fatalities": 0.0,
             "scoring_period": None,
-            "scoring_fatalities": 0,
             "scoring_events": 0,
+            "scoring_fatalities": 0,
             "latest_period": None,
             "latest_is_provisional": False,
             "civilian_targeting": {"events": 0, "fatalities": 0},
@@ -353,29 +361,38 @@ def acled_severity(records: list) -> dict:
 
     scoring = pv[-2] if len(pv) >= 2 else pv[-1]
     latest = pv[-1]
+    scoring_events = scoring["events"]
     scoring_fatalities = scoring["fatalities"] or 0
 
     scoring_index = pv.index(scoring)
     baseline_window = pv[max(0, scoring_index - BASELINE_MONTHS):scoring_index]
+    baseline_events = (
+        sum(r["events"] for r in baseline_window) / len(baseline_window) if baseline_window else 0.0
+    )
     baseline_fatalities = (
         sum((r["fatalities"] or 0) for r in baseline_window) / len(baseline_window) if baseline_window else 0.0
     )
 
-    escalation_ratio = scoring_fatalities / max(baseline_fatalities, 3)
-    severity = _clamp(75 * math.log10(scoring_fatalities + 1) / math.log10(REFERENCE_MAX_FATALITIES + 1), 0, 75)
-    escalation_bonus = _clamp((escalation_ratio - 1) * 10, 0, 15)
+    events_ratio = scoring_events / max(baseline_events, 3)
+    unrest_severity = _clamp(55 * math.log10(scoring_events + 1) / math.log10(REFERENCE_MAX_EVENTS + 1), 0, 55)
+    unrest_escalation_bonus = _clamp((events_ratio - 1) * 10, 0, 15)
+    fatality_boost = _clamp(
+        20 * math.log10(scoring_fatalities + 1) / math.log10(REFERENCE_URGENT_FATALITIES + 1), 0, 20
+    )
 
     scoring_period = f"{scoring['year']}-{scoring['month']}"
     return {
-        "acled_component": severity + escalation_bonus,
-        "severity": round(severity, 1),
-        "escalation_bonus": round(escalation_bonus, 1),
-        "escalation_ratio": round(escalation_ratio, 2),
-        "trend": _trend_label(escalation_ratio),
+        "acled_component": unrest_severity + unrest_escalation_bonus + fatality_boost,
+        "unrest_severity": round(unrest_severity, 1),
+        "unrest_escalation_bonus": round(unrest_escalation_bonus, 1),
+        "fatality_boost": round(fatality_boost, 1),
+        "events_ratio": round(events_ratio, 2),
+        "trend": _trend_label(events_ratio),
+        "baseline_events": round(baseline_events, 1),
         "baseline_fatalities": round(baseline_fatalities, 1),
         "scoring_period": scoring_period,
+        "scoring_events": scoring_events,
         "scoring_fatalities": scoring_fatalities,
-        "scoring_events": scoring["events"],
         "latest_period": f"{latest['year']}-{latest['month']}",
         "latest_is_provisional": latest is not scoring,
         "civilian_targeting": _category_scoring_month(records, "civilian_targeting", scoring_period),

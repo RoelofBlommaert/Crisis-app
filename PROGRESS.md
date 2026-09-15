@@ -437,3 +437,48 @@ to what serves "is tension in a country rising toward a crisis":
 - Regenerated `App/data/dataset.json` after the change; verified the
   removed fields (`travel_baseline`, `comms_volume`) are gone from its
   output and the app still renders with the trimmed dataset.
+
+## 2026-09-15: ACLED scoring switched to unrest-primary, fatalities as an accelerant
+
+Explicit steering ask: score mostly on unrest (ACLED event count), with
+fatalities as a secondary signal that pushes the score up faster once
+people are dying, "because we have to act even more swiftly" once deaths
+are involved -- not the reverse (score primarily on deaths).
+
+`acled_severity()` in `merge_data.py` reworked from severity+escalation
+on **fatalities** to three explicit components, all still derived from
+the same monthly ACLED political-violence series:
+- `unrest_severity` (0-55): log-scaled off that month's real ACLED
+  **event count**, against a fixed 10,000-events/month reference (the
+  world's most intense active unrest, not derived from our 8-country
+  sample) — was fatality-based (0-75, 5,000-fatalities/month reference).
+- `unrest_escalation_bonus` (0-15): only activates when this month's
+  **event count** exceeds the country's own trailing-12-month average —
+  was fatality-ratio-based.
+- `fatality_boost` (0-20, new): log-scaled off fatalities against a much
+  lower 500-fatalities/month reference, deliberately chosen so it climbs
+  fast at low death tolls (50 deaths already ~63% of max) rather than a
+  slow-building curve — the "act more swiftly" requirement.
+
+`acled_component` stays 0-90 (unchanged ceiling, still conflict_signal's
+dominant term). Verified against live data before shipping: Ukraine
+unrest ~54 (highest event count, 8199/month), Sudan ~33, Lebanon ~38,
+Haiti ~25 — ordered by real event-count scale, not death toll. Turkey
+(9 events, but 3x its own tiny baseline) earns the full +15 escalation
+bonus and outranks higher-volume-but-stable countries. Sudan (876
+fatalities) and Haiti (103 fatalities) both max the +20 fatality
+accelerant even though their event counts alone wouldn't justify that —
+this is the intended "swift action once people are dying" effect.
+
+Renamed fields throughout (`merge_data.py` output, `App/app.js`,
+`App/index.html`'s About panel): `severity`→`unrest_severity`,
+`escalation_bonus`→`unrest_escalation_bonus`, `escalation_ratio`→
+`events_ratio`, new `baseline_events` alongside the still-present
+`baseline_fatalities`/`scoring_fatalities` (now secondary). The
+"Baseline & escalation" detail box is now "Unrest & escalation" and
+leads with the event count/trend, with fatalities shown as a second
+line that explicitly flags when the toll is high enough to be driving
+urgency on its own (`fatality_boost >= 15`). Regenerated
+`App/data/dataset.json` and re-tested in-browser: no console errors,
+new distribution renders correctly (Ukraine 86, Sudan 63, Lebanon 58 —
+still Red/Orange as expected, just for the right reasons now).
