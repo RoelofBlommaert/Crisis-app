@@ -39,6 +39,98 @@
 
 * { box-sizing: border-box; }
 
+.auth-screen {
+  min-height: 100vh;
+  margin: 0 -16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: linear-gradient(135deg, var(--header-grad-a), var(--header-grad-b));
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 380px;
+  background: var(--panel-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 28px 26px;
+  text-align: center;
+}
+
+.auth-card h1 {
+  font-size: 1.3rem;
+  margin: 0 0 6px;
+  color: var(--text);
+}
+
+.auth-subtitle {
+  margin: 0 0 20px;
+  font-size: 0.86rem;
+  color: var(--muted);
+}
+
+#login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+
+#login-form label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+#login-form input {
+  padding: 9px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel-bg-soft);
+  color: var(--text);
+  font-size: 0.92rem;
+}
+
+#login-form input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+#login-submit {
+  margin-top: 16px;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.92rem;
+  cursor: pointer;
+}
+
+#login-submit:disabled { opacity: 0.6; cursor: default; }
+#login-submit:not(:disabled):hover { filter: brightness(1.08); }
+
+.auth-message {
+  font-size: 0.84rem;
+  margin: 16px 0 0;
+}
+
+.auth-error {
+  color: var(--red);
+}
+
+#access-denied .auth-card button {
+  margin-top: 14px;
+  padding: 8px 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel-bg-soft);
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+}
+
 body {
   margin: 0;
   font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -82,6 +174,36 @@ a:hover { text-decoration: underline; }
 }
 
 .subtitle a { color: #c7d2fe; font-weight: 600; }
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.account-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.82rem;
+  color: rgba(238, 242, 255, 0.78);
+  white-space: nowrap;
+}
+
+.account-bar button {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.account-bar button:hover { background: rgba(255, 255, 255, 0.2); }
 
 .snapshot-note {
   margin: 14px 0 10px;

@@ -482,3 +482,99 @@ urgency on its own (`fatality_boost >= 15`). Regenerated
 `App/data/dataset.json` and re-tested in-browser: no console errors,
 new distribution renders correctly (Ukraine 86, Sudan 63, Lebanon 58 —
 still Red/Orange as expected, just for the right reasons now).
+
+## 2026-09-15: Supabase Auth + RLS access control
+
+Explicit ask: only pre-approved users may see the app's data. Scoped
+first (see the "Explicit permission" writeup earlier this session, not
+duplicated here): the static UI shell (HTML/CSS/JS) stays public --
+GitHub Pages on a public repo has no mechanism to gate file serving --
+but the actual dataset moves behind Supabase Auth + Postgres RLS.
+
+**Connected via the Supabase MCP server**, added through the `claude`
+CLI (`claude mcp add --transport http supabase
+"https://mcp.supabase.com/mcp?project_ref=<ref>&features=database"`,
+then `claude mcp login supabase` in an interactive terminal for the
+OAuth flow -- deliberately scoped to this one project and to database
+tools only, not full account access). This replaced the original plan
+of having the user copy-paste SQL into Supabase Studio's SQL Editor by
+hand (which had already failed twice on truncated pastes) -- MCP let
+the schema and data go in directly and verifiably.
+
+**Schema** (`Scripts/supabase/001_schema.sql`, idempotent, safe to
+re-run, committed since it's structure-only, no data):
+- `allowed_users(email, note, created_at)` -- RLS enabled, **zero**
+  policies (intentional deny-by-default; not even readable by
+  authenticated users via the API, only via SQL/MCP as project owner).
+- `dataset_snapshot(id, generated_at, payload jsonb)` -- singleton row
+  (`id=1`), RLS enabled, one explicit SELECT policy: `to authenticated
+  using (exists (select 1 from allowed_users where lower(email) =
+  lower(auth.jwt()->>'email')))`. No insert/update/delete policies at
+  all -- writes only via MCP/SQL as project owner.
+
+**Auth configuration** (done by the user in Supabase Studio, browser
+only): public sign-ups disabled (`Authentication -> Providers -> Email
+-> Allow new users to sign up` off -- confirmed via
+`GET /auth/v1/settings` returning `disable_signup: true`); two test
+accounts created with "Auto Confirm User" so no confirmation-email
+dependency (`allowed.tester@example.com`, `blocked.tester@example.com`)
+without touching the project's real email-confirmation setting. Only
+`allowed.tester@example.com` was inserted into `allowed_users` --
+`blocked.tester@example.com` exists as a valid login but is deliberately
+not on the allowlist, to exercise the "authenticated but not authorized"
+path.
+
+**Frontend** (`App/index.html`, `App/app.js`, `App/auth.js`,
+`App/supabase-config.js`, `App/styles.css`):
+- Three screens (`#login-gate`, `#access-denied`, `#app-shell`), driven
+  entirely by `sb.auth.onAuthStateChange` in `auth.js` -- no session ->
+  login form; session but the `dataset_snapshot` query comes back empty
+  (RLS silently filters rows for non-allowlisted users, surfaced via
+  `.maybeSingle()` returning `null` rather than an error) -> access-denied
+  screen showing which account is signed in; session + row returned ->
+  `startApp(payload)` (renamed from the old `init()`) renders the map/list/
+  charts from the fetched `payload`, no more `fetch("data/dataset.json")`.
+- Sign-out (both the header button and the access-denied screen's button)
+  calls `resetApp()` (new in `app.js`) before showing the login screen
+  again -- tears down the Leaflet map instance and Chart.js instances so
+  a second login within the same page load doesn't hit "Map container is
+  already initialized."
+- `App/supabase-config.js` holds only the Project URL and the `anon`
+  public key (role confirmed by decoding the JWT: `"role":"anon"`) --
+  intentionally public, safe to commit; the real boundary is the RLS
+  policy above, not keeping this file secret. No service-role key or DB
+  password anywhere in the repo, frontend, or this conversation.
+
+**Data migration**: `App/data/dataset.json` removed from git entirely
+(`git rm -f`) -- the merged dataset is no longer a public static file.
+`Scripts/merge_data.py`'s `OUT_PATH` now points at
+`Data/dataset_snapshot.local.json` (gitignored, local preview only,
+never published). The actual seeding into `dataset_snapshot` was done
+directly via the MCP `execute_sql` tool: one small `insert` for the
+top-level metadata (`generated_at`/`note`/`data_sources`, empty
+`countries` array) followed by 8 small `update ... jsonb_set(...)`
+statements, one per country (~38KB each), appending that country's
+object into the `countries` array -- chosen over one giant ~480KB
+`insert` specifically to stay well under any single-tool-call output
+size risk. Verified after: `jsonb_array_length(payload->'countries') =
+8`, all 8 country names present, matching the original `dataset.json`.
+
+**Verified end-to-end (real backend, not mocked)**:
+- Logged out: `index.html` shows only the login form; no app UI, no
+  data fetch of any kind.
+- Wrong credentials: Supabase Auth rejects, "Invalid login credentials"
+  shown inline -- confirmed against the real Auth API, not simulated.
+- Direct API request, no session: `curl` against
+  `.../rest/v1/dataset_snapshot?select=payload` with only the anon key
+  (no `Authorization` bearer token from a logged-in user) returns `[]`
+  -- RLS enforcement confirmed independent of any frontend code running.
+- No console errors on the login screen against the live Supabase
+  project.
+
+**Not yet tested (needs the user, who holds the test-account
+passwords)**: successful login as `allowed.tester@example.com` and
+confirming the full app renders; login as `blocked.tester@example.com`
+and confirming the access-denied screen appears (not the app, not a
+silent failure); direct URL access while logged out; re-attempting
+access after signing out and logging back in as a different account
+within the same page load (tests `resetApp()`'s map/chart teardown).

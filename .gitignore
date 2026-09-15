@@ -1,3 +1,7 @@
 __pycache__/
 *.pyc
 .env
+
+# Local preview output of merge_data.py -- the real dataset lives in
+# Supabase (access-controlled), never as a public static file.
+Data/dataset_snapshot.local.json

@@ -59,9 +59,8 @@ function fmtDateTime(iso) {
   return new Date(iso).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
-async function init() {
-  const resp = await fetch("data/dataset.json");
-  dataset = await resp.json();
+function startApp(payload) {
+  dataset = payload;
 
   document.getElementById("snapshot-note").textContent =
     `Snapshot generated ${new Date(dataset.generated_at).toLocaleString()} — not a live feed. Conflict/disaster signals are scored per day, not a forecast probability.`;
@@ -485,6 +484,31 @@ function renderAcledChart(country) {
   });
 }
 
+function resetApp() {
+  if (map) {
+    map.remove();
+    map = undefined;
+  }
+  if (tensionChart) {
+    tensionChart.destroy();
+    tensionChart = undefined;
+  }
+  if (themeChart) {
+    themeChart.destroy();
+    themeChart = undefined;
+  }
+  if (acledChart) {
+    acledChart.destroy();
+    acledChart = undefined;
+  }
+  markers = {};
+  dataset = undefined;
+  const listEl = document.getElementById("country-list-items");
+  if (listEl) listEl.innerHTML = "";
+  const detailEl = document.getElementById("detail-panel");
+  if (detailEl) detailEl.innerHTML = '<p class="detail-placeholder">Select a country marker or list item to see its trend.</p>';
+}
+
 function setupAboutPanel() {
   const about = document.getElementById("about");
   document.getElementById("about-link").addEventListener("click", (e) => {
@@ -495,5 +519,3 @@ function setupAboutPanel() {
     about.hidden = true;
   });
 }
-
-init();

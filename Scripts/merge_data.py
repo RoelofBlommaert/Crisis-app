@@ -1,6 +1,13 @@
 """
-Merge the three data sources into one static JSON file the frontend reads
-directly, with no backend: App/data/dataset.json.
+Merge the three data sources into one JSON blob matching the shape stored
+in Supabase's `dataset_snapshot` table (see Scripts/supabase/001_schema.sql).
+
+This data is access-controlled (Supabase Auth + RLS -- only allowlisted,
+logged-in users can read it), so it is NOT written into App/ -- nothing
+under App/ is protected, since GitHub Pages serves that folder to anyone
+with the URL. This script writes a local-only preview file instead
+(Data/dataset_snapshot.local.json, gitignored); pushing a fresh snapshot
+into Supabase itself is a separate, manual step (see PROGRESS.md).
 
 Reads (latest file per pattern, by filename date):
   Data/GDELT/gdelt_tension_history_*.csv   (falls back to gdelt_tension_*.csv)
@@ -16,7 +23,8 @@ Per tracked country (Scripts/countries.py), produces one record with:
     scoring section below) and an overall alert_level derived from them
 
 This is a one-time snapshot generator, not a live pipeline: run it once
-after refreshing the source CSVs, then commit App/data/dataset.json.
+after refreshing the source CSVs, then push the result into Supabase's
+dataset_snapshot table (id=1) -- see PROGRESS.md for how this round did it.
 
 ## Scoring: conflict_signal / disaster_signal (illustrative, not a forecast)
 
@@ -189,7 +197,7 @@ def theme_label(code: str) -> str:
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = REPO_ROOT / "Data"
-OUT_PATH = REPO_ROOT / "App" / "data" / "dataset.json"
+OUT_PATH = REPO_ROOT / "Data" / "dataset_snapshot.local.json"
 
 # Approximate marker coordinates for the map view (capital or centroid).
 # GDELT/GDACS/CBS carry no coordinates of their own.

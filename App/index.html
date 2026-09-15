@@ -11,36 +11,69 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="header-band">
-    <header class="app-header">
-      <div class="header-top">
-        <div>
-          <h1>Crisis &amp; Connectivity Monitor</h1>
-          <p class="subtitle">
-            A proof of concept for classifying what's happening in a country right now, from data
-            that already exists &mdash; ACLED, GDELT, GDACS &mdash; built for a crisis coordinator,
-            not a finished operational tool.
-            <a href="#about" id="about-link">About &amp; method</a>
-          </p>
+  <section id="login-gate" class="auth-screen" aria-label="Sign in">
+    <div class="auth-card">
+      <h1>Crisis &amp; Connectivity Monitor</h1>
+      <p class="auth-subtitle">Internal proof of concept &mdash; sign in with an approved account.</p>
+      <form id="login-form">
+        <label for="login-email">E-mail</label>
+        <input type="email" id="login-email" autocomplete="username" required />
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" autocomplete="current-password" required />
+        <button type="submit" id="login-submit">Sign in</button>
+      </form>
+      <p class="auth-message auth-error" id="login-error" hidden></p>
+    </div>
+  </section>
+
+  <section id="access-denied" class="auth-screen" aria-label="Access denied" hidden>
+    <div class="auth-card">
+      <h1>Crisis &amp; Connectivity Monitor</h1>
+      <p class="auth-message auth-error">
+        You're signed in as <strong id="denied-email"></strong>, but this account isn't on the
+        approved list for this app. Ask the project owner to add your e-mail, or sign in with a
+        different account.
+      </p>
+      <button type="button" id="denied-signout">Sign out</button>
+    </div>
+  </section>
+
+  <div id="app-shell" hidden>
+    <div class="header-band">
+      <header class="app-header">
+        <div class="header-top">
+          <div>
+            <h1>Crisis &amp; Connectivity Monitor</h1>
+            <p class="subtitle">
+              A proof of concept for classifying what's happening in a country right now, from data
+              that already exists &mdash; ACLED, GDELT, GDACS &mdash; built for a crisis coordinator,
+              not a finished operational tool.
+              <a href="#about" id="about-link">About &amp; method</a>
+            </p>
+          </div>
+          <div class="account-bar">
+            <span id="account-email"></span>
+            <button type="button" id="signout-button">Sign out</button>
+          </div>
         </div>
-      </div>
-      <p class="snapshot-note" id="snapshot-note">Loading dataset&hellip;</p>
-      <div class="stat-strip" id="stat-strip"></div>
-    </header>
+        <p class="snapshot-note" id="snapshot-note">Loading dataset&hellip;</p>
+        <div class="stat-strip" id="stat-strip"></div>
+      </header>
+    </div>
+
+    <main>
+      <section id="map" aria-label="Country map"></section>
+
+      <section class="country-list" aria-label="Tracked countries">
+        <h2>Tracked countries</h2>
+        <ul id="country-list-items"></ul>
+      </section>
+
+      <section class="detail-panel" id="detail-panel" aria-label="Country detail">
+        <p class="detail-placeholder">Select a country marker or list item to see its trend.</p>
+      </section>
+    </main>
   </div>
-
-  <main>
-    <section id="map" aria-label="Country map"></section>
-
-    <section class="country-list" aria-label="Tracked countries">
-      <h2>Tracked countries</h2>
-      <ul id="country-list-items"></ul>
-    </section>
-
-    <section class="detail-panel" id="detail-panel" aria-label="Country detail">
-      <p class="detail-placeholder">Select a country marker or list item to see its trend.</p>
-    </section>
-  </main>
 
   <section id="about" class="about-panel" hidden>
     <h2>About this app</h2>
@@ -125,6 +158,9 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="supabase-config.js"></script>
   <script src="app.js"></script>
+  <script src="auth.js"></script>
 </body>
 </html>
