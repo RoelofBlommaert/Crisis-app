@@ -550,8 +550,24 @@ main {
   margin: 4px 0 10px;
 }
 
+.synthetic-tag {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #fff;
+  background: #6b7280;
+  padding: 2px 7px;
+  border-radius: 5px;
+  vertical-align: middle;
+}
+
 .acled-box {
   border: 1px solid var(--accent);
+}
+
+.presence-box {
+  border: 1px solid var(--green);
 }
 
 .acled-tag {

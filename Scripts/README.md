@@ -20,22 +20,36 @@ Python 3.9+.
 | `fetch_acled_hdx.py` | ACLED, via HDX aggregated country files | No | `Data/ACLED/acled_monthly_<date>.csv` |
 | `fetch_gdelt_tension.py` | GDELT 2.0 GKG bulk files | No | `Data/GDELT/gdelt_tension_<date>.csv` (or `gdelt_tension_history_<date>.csv` with `--backfill`) |
 | `fetch_gdacs_events.py` | GDACS event list | No | `Data/GDACS/gdacs_events_<date>.{json,csv}` |
-| `merge_data.py` | combines all of the above | No | `App/data/dataset.json` (what the frontend reads) |
+| `fetch_rni_nederlanders.py` | CBS "Nederlanders in het buitenland" maatwerktabel (RNI-derived) | No | `Data/RNI/rni_nederlanders_<date>.csv` |
+| `generate_synthetic_passport_applications.py` | **fictional**, not a real source (reads the RNI CSV above to scale its numbers) | No | `Data/Synthetic/passport_applications_<date>.csv` |
+| `merge_data.py` | combines all of the above | No | `Data/dataset_snapshot.local.json` (gitignored, local preview only -- the real dataset lives in Supabase, see below) |
 
 Run everything: `python run_all.py`, then `python merge_data.py` to
-produce the merged JSON the app reads. `run_all.py` does not pass
-`--backfill` to `fetch_gdelt_tension.py` (a normal run only takes a few
-seconds; the backfill takes several minutes) — run that one separately
-when you want to (re)seed the trend history:
+produce the merged JSON. `run_all.py` does not pass `--backfill` to
+`fetch_gdelt_tension.py` (a normal run only takes a few seconds; the
+backfill takes several minutes) — run that one separately when you want
+to (re)seed the trend history:
 
 ```
 python fetch_gdelt_tension.py --backfill
 python fetch_acled_hdx.py
+python fetch_rni_nederlanders.py
+python generate_synthetic_passport_applications.py
 python merge_data.py
 ```
 
 `fetch_acled_hdx.py` has no dependency on the other scripts and can run
-any time before `merge_data.py`.
+any time before `merge_data.py`. `generate_synthetic_passport_
+applications.py` must run *after* `fetch_rni_nederlanders.py` (it reads
+the RNI CSV to scale its fictional numbers) and before `merge_data.py`.
+
+**The merged JSON is not the frontend's real data source.** This app's
+dataset lives behind Supabase Auth + RLS (see "Supabase Auth + RLS
+access control" and "Dutch presence" in PROGRESS.md) --
+`merge_data.py`'s output is a local-only preview (gitignored, never
+published), and pushing a fresh snapshot into Supabase's
+`dataset_snapshot` table is a separate, manual step done via the
+Supabase MCP tools (or the SQL Editor), not part of this script.
 
 ## Sources dropped after review (2026-09-15)
 
@@ -301,3 +315,59 @@ under every ACLED chart and in the About panel.
 
 Needs `openpyxl` (added to `requirements.txt`) to read the `.xlsx` files
 HDX serves.
+
+## Dutch presence: real RNI count + synthetic passport-applications trend
+
+A third, fully independent illustrative signal (`presence_signal`,
+`Scripts/merge_data.py`) answering "roughly how many Dutch nationals are
+relevant here" -- has no effect on `conflict_signal`/`disaster_signal`/
+`alert_level` whatsoever. Explicit steering ask, researched (both real
+and synthetic candidates) before building, not assumed:
+`Documentation/Relevance and function.txt`'s "Why NO internal MFA data
+was used" section rules out raw internal BZ/RNI data, even aggregated --
+so this is built on a **real, public** source instead of guessing that
+none existed.
+
+**Real: `fetch_rni_nederlanders.py`.** CBS itself publishes a
+maatwerktabel ("Nederlanders in het buitenland", roughly twice a year --
+confirmed editions exist for July 2022, January 2025, July 2025),
+derived from the RNI (Register Niet-Ingezetenen) via the BRP, but
+already aggregated and de-identified by CBS before release -- not raw
+RNI/BRP data, no login required, downloadable as `.xlsx`. Verified by
+downloading and inspecting the actual file before writing this script,
+not assumed: it individually names 167 countries (not bucketed into
+regions the way the old, now-removed CBS tourism table was), and all 8
+tracked countries appear individually (Turkey 26,364; Thailand 6,055;
+Israel 4,527; Egypt 2,936; Sudan 1,460; Lebanon 551; Ukraine 378; Haiti
+69 -- 1 July 2025 edition). CBS's own caveat is carried through
+unchanged into every row (`cbs_note`): these counts are "vrijwel altijd
+een onderschatting" (almost always an underestimate), since RNI
+registration isn't mandatory for non-residents -- CBS's own example puts
+Canada's RNI count at ~19k vs. Statistics Canada's own ~89k
+Netherlands-born-resident census figure. CBS does not publish a stable
+"latest" URL for this table -- `CBS_XLSX_URL` in the script is a pinned
+constant that needs updating by hand when a newer edition ships.
+
+**Other real candidates checked and not used**, for reference: UN DESA
+"International Migrant Stock" and the World Bank Bilateral Migration
+Matrix both exist and are public, but update only every ~5-10 years and
+measure "born in NL" rather than Dutch nationality -- weaker proxies,
+lower priority than the CBS table above. Kiesraad publishes total
+overseas-registered-voter counts per election (133,589 for 2025) but a
+public per-country breakdown wasn't confirmed in this round, and it only
+captures registered voters, a civically-engaged subset of the real
+population -- not used.
+
+**Synthetic: `generate_synthetic_passport_applications.py`.** Real
+per-post passport-application data is internal BZ/RvIG data -- checked
+for a public equivalent (none found, not assumed) before deciding this
+had to stay synthetic. Ten years, annual resolution (matches a Dutch
+passport's 10-year validity), deterministically seeded per country+year
+(not random-per-run -- same principle as the removed synthetic
+comms-volume layer), loosely scaled off that country's real RNI count
+(~10%/year renewal-rate assumption, purely illustrative) plus a small
+year-to-year variation. **Deliberately does not feed `presence_signal`**
+-- shown alongside the real RNI number as separate, clearly labelled
+context only, so a fictional figure can never quietly move something
+presented as a score. Requires the RNI CSV to already exist (reads it to
+pick its scale) -- run `fetch_rni_nederlanders.py` first.

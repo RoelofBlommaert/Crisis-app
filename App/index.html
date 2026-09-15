@@ -47,8 +47,8 @@
             <h1>Crisis &amp; Connectivity Monitor</h1>
             <p class="subtitle">
               A proof of concept for classifying what's happening in a country right now, from data
-              that already exists &mdash; ACLED, GDELT, GDACS &mdash; built for a crisis coordinator,
-              not a finished operational tool.
+              that already exists &mdash; ACLED, GDELT, GDACS, CBS/RNI &mdash; built for a crisis
+              coordinator, not a finished operational tool.
               <a href="#about" id="about-link">About &amp; method</a>
             </p>
           </div>
@@ -80,8 +80,8 @@
     <h2>About this app</h2>
     <p>
       This is a proof of concept, not a finished tool: it shows what public
-      data (ACLED, GDELT, GDACS) is available and how it could combine
-      into a per-country risk indication for a crisis coordinator &mdash;
+      data (ACLED, GDELT, GDACS, CBS/RNI) is available and how it could
+      combine into a per-country risk indication for a crisis coordinator &mdash;
       it is <strong>not</strong> an automatic, validated classifier, and it
       does <strong>not</strong> forecast or predict crises. See
       <code>Documentation/Relevance and function.txt</code> for the full
@@ -145,6 +145,35 @@
       not something fixable without deeper text analysis.
     </p>
 
+    <h3>Dutch presence: a third, independent signal</h3>
+    <p>
+      Each country also gets a <strong>presence signal</strong> (0&ndash;100),
+      shown separately from the conflict/disaster gauges and with
+      <strong>no effect whatsoever</strong> on either of them or on the
+      alert level &mdash; it answers a different question ("how many
+      Dutch nationals are relevant here"), not "how bad is it right now."
+      It's a log-scaled read of the real, publicly-published RNI
+      (Register Niet-Ingezetenen) count for that country &mdash; not raw
+      internal BZ/RNI data, but CBS's own already-aggregated,
+      de-identified "Nederlanders in het buitenland" release (updated
+      roughly twice a year, no login required). CBS's own caveat is
+      carried through unchanged: these counts are <em>"vrijwel altijd
+      een onderschatting"</em> (almost always an underestimate), since
+      RNI registration isn't mandatory for non-residents &mdash; treat
+      this as a floor, not a full population count.
+    </p>
+    <p>
+      Alongside it, each country shows a <strong>fictional</strong>
+      10-year passport-applications trend &mdash; real per-post
+      passport-application data is internal BZ/RvIG data with no public
+      equivalent (checked before building this, not assumed to not
+      exist). This synthetic series is illustrative context only and
+      deliberately does <strong>not</strong> feed the presence signal, so
+      a fictional number can never quietly move something shown as a
+      score &mdash; the same real-vs-synthetic separation this app
+      applies everywhere else.
+    </p>
+
     <h3>What's deliberately not here yet</h3>
     <p>
       Per this PoC's scope: no manual override control for the coordinator
@@ -152,7 +181,9 @@
       detection + manual override" track) &mdash; a known, deliberately
       deferred gap, not an oversight. No live/scheduled refresh (this is a
       one-time static snapshot; see the timestamp above). No real
-      consular-call integration and no RNI linkage.
+      consular-call integration, and no direct internal RNI/BRP access
+      (the presence signal above uses CBS's public, already-aggregated
+      release of that data instead &mdash; see "Dutch presence" above).
     </p>
     <button type="button" id="about-close">Close</button>
   </section>

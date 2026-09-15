@@ -13,6 +13,8 @@ Reads (latest file per pattern, by filename date):
   Data/GDELT/gdelt_tension_history_*.csv   (falls back to gdelt_tension_*.csv)
   Data/GDACS/gdacs_events_matched_*.csv
   Data/ACLED/acled_monthly_*.csv
+  Data/RNI/rni_nederlanders_*.csv               (real, see fetch_rni_nederlanders.py)
+  Data/Synthetic/passport_applications_*.csv    (fictional, see generate_synthetic_passport_applications.py)
 
 Per tracked country (Scripts/countries.py), produces one record with:
   - tension_series: the GDELT hourly volume/tone/conflict/disaster timeline
@@ -21,6 +23,13 @@ Per tracked country (Scripts/countries.py), produces one record with:
     see Documentation/Relevance and function.txt for why)
   - conflict_signal / disaster_signal: two illustrative 0-100 gauges (see
     scoring section below) and an overall alert_level derived from them
+  - dutch_presence: a THIRD, independent illustrative gauge
+    (presence_signal) based purely on the real CBS/RNI-registered count
+    of Dutch nationals in that country, plus a separate fictional
+    passport-applications trend series shown alongside for context only
+    (it does not feed presence_signal -- see "Dutch presence" section
+    below). Does not affect conflict_signal/disaster_signal/alert_level
+    in any way.
 
 This is a one-time snapshot generator, not a live pipeline: run it once
 after refreshing the source CSVs, then push the result into Supabase's
@@ -154,6 +163,40 @@ inflating today's score.
 the top-level conflict_signal/disaster_signal/alert_level/driver fields
 are simply the most recent day's entry, so "today's" gauge and the
 history strip are always the same underlying numbers.
+
+## Dutch presence: presence_signal (illustrative, real RNI + synthetic context)
+
+A third, fully independent illustrative gauge answering "roughly how
+many Dutch nationals are relevant here" -- explicit steering ask,
+researched before building: internal BZ/RNI data must never be used
+directly (see Documentation/Relevance and function.txt, "Why NO
+internal MFA data was used"), but CBS itself publishes an already-
+aggregated, de-identified maatwerktabel derived from the RNI
+("Nederlanders in het buitenland", twice a year, per-country, no login)
+-- that public CBS release is the real data this signal is built on,
+not raw RNI/BRP records.
+
+  presence_signal = clamp(100 * log10(rni_registered + 1) / log10(100001), 0, 100)
+    -- log-scaled against a fixed external reference of 100,000
+    RNI-registered Dutch nationals (roughly the scale of much larger
+    Dutch communities abroad than our 8 tracked countries, e.g.
+    Germany/Belgium/Spain/US -- a fixed anchor, deliberately NOT
+    derived from our own 8-country sample, so it doesn't shift if
+    countries are added, same pattern as REFERENCE_MAX_EVENTS above)
+
+Paired with a separate, clearly-labelled FICTIONAL 10-year
+passport-applications trend per country (generate_synthetic_
+passport_applications.py) -- real per-post passport-application data
+is internal BZ/RvIG data with no public equivalent (checked, not
+assumed). This synthetic series is shown purely as illustrative
+context alongside the real RNI number and its trend; it deliberately
+does NOT feed presence_signal, so a fictional figure can never quietly
+move something presented as a score -- the same real-vs-synthetic
+separation the rest of this app enforces everywhere else.
+
+`presence_signal` has no effect whatsoever on conflict_signal,
+disaster_signal, or alert_level -- it is shown as its own, separate
+number.
 """
 
 from __future__ import annotations
@@ -321,9 +364,64 @@ def load_acled_monthly() -> dict:
     return records
 
 
+def load_rni_nederlanders() -> dict:
+    d = DATA_DIR / "RNI"
+    path = latest_file(d, "rni_nederlanders_*.csv")
+    records = {}
+    if not path:
+        print("  ! no RNI file found (run fetch_rni_nederlanders.py)")
+        return records
+    with path.open(encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            records[row["country"]] = {
+                "registered": int(row["rni_registered"]),
+                "born_in_nl": int(row["born_in_nl"]),
+                "born_in_country": int(row["born_in_country"]),
+                "born_elsewhere": int(row["born_elsewhere"]),
+                "source_date": row["source_date"],
+                "note": row["cbs_note"],
+            }
+    print(f"  loaded RNI/CBS data from {path.name} ({len(records)} countries)")
+    return records
+
+
+def load_synthetic_passport_applications() -> dict:
+    d = DATA_DIR / "Synthetic"
+    path = latest_file(d, "passport_applications_*.csv")
+    series = defaultdict(list)
+    if not path:
+        print("  ! no synthetic passport-applications file found (run generate_synthetic_passport_applications.py)")
+        return series
+    with path.open(encoding="utf-8") as f:
+        for row in csv.DictReader(f):
+            series[row["country"]].append(
+                {"year": int(row["year"]), "applications": int(row["synthetic_passport_applications"])}
+            )
+    for name in series:
+        series[name].sort(key=lambda r: r["year"])
+    print(f"  loaded FICTIONAL passport-applications data from {path.name} ({sum(len(v) for v in series.values())} rows)")
+    return series
+
+
 REFERENCE_MAX_EVENTS = 10000  # fixed external anchor (scale of the world's most intense active unrest), not derived from our 8-country sample
 REFERENCE_URGENT_FATALITIES = 500  # fixed anchor for the fatality accelerant -- deliberately much lower than REFERENCE_MAX_EVENTS so this term rises fast at low death tolls
+REFERENCE_MAX_RNI = 100_000  # fixed external anchor (scale of RNI-registered Dutch nationals in much larger destinations than our 8 tracked countries, e.g. Germany/Belgium/Spain/US), not derived from our own sample
 BASELINE_MONTHS = 12
+
+
+def presence_signal(rni_registered: int) -> float:
+    """Illustrative 0-100 scale for 'how many Dutch nationals are
+    registered here', log-scaled against REFERENCE_MAX_RNI -- same
+    log-scale-against-a-fixed-external-anchor pattern used for
+    unrest_severity above, so a country doesn't need to crack our own
+    8-country sample's ceiling to register meaningfully. Independent of
+    conflict_signal/disaster_signal: this is a separate, third number,
+    not a factor in either of those. Based purely on the real RNI count
+    -- the synthetic passport-applications series is shown alongside as
+    illustrative context only and does NOT feed this number, so a
+    fictional figure never quietly influences something presented as a
+    score."""
+    return round(_clamp(100 * math.log10(rni_registered + 1) / math.log10(REFERENCE_MAX_RNI + 1), 0, 100), 1)
 
 
 def _trend_label(ratio: float) -> str:
@@ -540,6 +638,8 @@ def main() -> None:
     gdacs = load_gdacs_events()
     theme_breakdown = load_theme_breakdown()
     acled = load_acled_monthly()
+    rni = load_rni_nederlanders()
+    passport_series = load_synthetic_passport_applications()
 
     countries_out = []
     for c in COUNTRIES:
@@ -559,6 +659,8 @@ def main() -> None:
         country_themes = theme_breakdown.get(name, [])
         week_total_volume = sum(p["volume_article_count"] for p in tension_series)
 
+        rni_record = rni.get(name)
+
         countries_out.append(
             {
                 "name": name,
@@ -574,6 +676,18 @@ def main() -> None:
                     "severity": severity,
                     # last 24 months per category, for the real multi-year chart
                     "monthly": [r for r in acled_records if (r["year"], r["month_num"]) >= _months_ago(24)],
+                },
+                "dutch_presence": {
+                    "rni": rni_record,
+                    "presence_signal": presence_signal(rni_record["registered"]) if rni_record else None,
+                    "passport_applications": {
+                        "synthetic": True,
+                        "note": (
+                            "Fictieve, illustratieve data -- niet gebaseerd op echte BZ-cijfers. "
+                            "Voedt presence_signal niet, dat komt uitsluitend uit het echte RNI-cijfer hiernaast."
+                        ),
+                        "series": passport_series.get(name, []),
+                    },
                 },
             }
         )
@@ -599,6 +713,18 @@ def main() -> None:
             "ACLED must be clearly credited wherever this data or a derivative is shown.",
             "note": "Monthly resolution only; the single most recent available month is excluded from scoring "
             "as provisional (reporting/verification lag consistently understates it) -- see Scripts/README.md.",
+        },
+        "rni": {
+            "kind": "real",
+            "attribution": "CBS (Centraal Bureau voor de Statistiek), maatwerktabel 'Nederlanders in het "
+            "buitenland', gebaseerd op het RNI (Register Niet-Ingezetenen) via de BRP.",
+            "note": "CBS: cijfers zijn vrijwel altijd een onderschatting van het werkelijke aantal Nederlanders "
+            "in het buitenland, omdat RNI-registratie voor niet-ingezetenen niet verplicht is.",
+        },
+        "passport_applications": {
+            "kind": "synthetic",
+            "note": "Fictieve, illustratieve data gegenereerd voor deze demo -- niet gebaseerd op echte "
+            "BZ/consulaire cijfers, en voedt geen enkel score-getal.",
         },
     }
 

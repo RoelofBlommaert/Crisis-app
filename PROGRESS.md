@@ -647,3 +647,96 @@ unauthenticated curl test.
 **Still needs the user to confirm in-browser** (with the CSS fix
 deployed): logging in as their own account now actually shows the app,
 not just a login form that silently never goes away.
+
+## 2026-09-15: Dutch presence signal -- real RNI + synthetic passport trend
+
+Explicit ask: add a third, independent signal per country showing
+roughly how many Dutch nationals are relevant there -- conflict_signal
+and disaster_signal stay exactly as-is, this is additive, not a change
+to either. Researched first (see the plan-mode research pass earlier
+this session) rather than assumed: `Documentation/Relevance and
+function.txt`'s "Why NO internal MFA data was used" section rules out
+raw internal BZ/RNI data even aggregated, so the real half of this had
+to be built on something genuinely public.
+
+**Found and verified (not assumed) a real public source for the RNI
+half.** CBS itself publishes "Nederlanders in het buitenland", a
+maatwerktabel derived from the RNI via the BRP, already aggregated and
+de-identified before release, roughly twice a year, no login. Confirmed
+by downloading the actual `.xlsx` and reading it (not trusting the
+landing page's prose): 167 individually-named countries (not
+region-bucketed like the old, already-removed CBS tourism table), and
+all 8 tracked countries present: Turkey 26,364; Thailand 6,055; Israel
+4,527; Egypt 2,936; Sudan 1,460; Lebanon 551; Ukraine 378; Haiti 69 (1
+July 2025 edition). CBS's own caveat -- these are "vrijwel altijd een
+onderschatting" since RNI registration isn't mandatory for
+non-residents (their own example: Canada ~19k RNI-registered vs. ~89k
+in Statistics Canada's own census) -- is carried through unchanged into
+the output and shown in the UI, not smoothed over.
+
+**Checked and not used**: UN DESA International Migrant Stock and the
+World Bank Bilateral Migration Matrix (both real, public, but update
+only every 5-10 years and measure birthplace not nationality) and
+Kiesraad's overseas-voter counts (public total, 133,589 for 2025, but no
+confirmed public per-country breakdown, and only captures a
+civically-engaged subset of the population). None beat the CBS table on
+resolution/freshness, so none were built into the pipeline this round.
+
+**No public source exists for passport-applications-per-post** (checked,
+not assumed) -- that stays internal BZ/RvIG data. Built as an explicitly
+labelled **synthetic** layer instead
+(`generate_synthetic_passport_applications.py`): 10 years, annual
+(matches a Dutch passport's 10-year validity), deterministically seeded
+per country+year, loosely scaled off that country's real RNI count.
+**Deliberately does not feed `presence_signal`** -- shown as separate
+context only, so a fictional number can never quietly move something
+presented as a score. Same real-vs-synthetic separation this app
+enforces everywhere else (see the earlier data-minimization pass's
+reasoning for why a synthetic-only signal was previously removed).
+
+**New scripts**: `Scripts/fetch_rni_nederlanders.py` (real),
+`Scripts/generate_synthetic_passport_applications.py` (synthetic, reads
+the RNI output to scale itself). `Scripts/countries.py` gained a
+`cbs_rni_name` field (CBS uses Dutch country names) and had its unused
+`cbs_key`/`cbs_label`/`cbs_granularity` fields removed -- leftovers from
+the already-deleted `fetch_cbs_travel.py`, dead weight, not repurposed.
+
+**`Scripts/merge_data.py`**: new `presence_signal` -- `clamp(100 *
+log10(rni_registered + 1) / log10(100001), 0, 100)`, log-scaled against
+a fixed external anchor (100,000 -- roughly the scale of much larger
+Dutch communities abroad than our 8 tracked countries, e.g.
+Germany/Belgium/Spain/US), same "fixed anchor, not derived from our own
+sample" pattern as `REFERENCE_MAX_EVENTS`. Each country gets a new
+`dutch_presence` block (`rni`, `presence_signal`,
+`passport_applications`); added to the top-level `data_sources`
+freshness dict too.
+
+**Pushed to Supabase without re-fetching anything else** (explicit
+ask): ran `merge_data.py` locally -- which only reads already-local
+GDELT/GDACS/ACLED CSVs plus the two new ones, no network re-fetch of the
+existing sources -- then patched only the new `dutch_presence` key into
+each of the 8 existing `dataset_snapshot.countries[]` elements via one
+surgical `jsonb_agg`/`case`-based `UPDATE` through the Supabase MCP
+tools. Verified after: all 8 countries still have their original
+`tension_series`/`acled`/`events` untouched, `conflict_signal`/
+`disaster_signal`/`alert_level` bit-for-bit identical to before
+(Ukraine 86, Sudan 63, Lebanon 58, Haiti 42, Turkey 35, Egypt 28,
+Thailand 26, Israel 21), and the new `dutch_presence` block present and
+correct on every country.
+
+**Frontend** (`App/app.js`, `App/index.html`, `App/styles.css`): new
+"Dutch presence" side-section per country (its own radial gauge --
+deliberately *not* the Red/Orange/Green danger-scale `gaugeColor()`
+conflict/disaster use, since "many Dutch nationals here" isn't itself
+alarming; a fixed neutral accent color instead), the real RNI count +
+CBS's own caveat text + attribution link, and a `SYNTHETIC`-tagged
+10-year passport-applications bar chart alongside. Explicitly labelled
+in its own box as having no effect on the signals above it. Re-added
+the `.synthetic-tag` CSS class (removed in the earlier data-minimization
+pass, needed again now for this new synthetic layer) and the stale "no
+RNI linkage" line in the About panel's "not here yet" list, which this
+round's real RNI linkage now made incorrect.
+
+**Not yet done**: re-deploying/testing this in-browser (next step).
+Local `merge_data.py` output and the Supabase row were both verified via
+script/SQL, not yet visually confirmed in the running app.

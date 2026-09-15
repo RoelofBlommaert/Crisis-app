@@ -32,11 +32,13 @@ const GDACS_EVENTTYPE_LABEL = {
 
 const CONFLICT_ICON = `<svg class="gauge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.5 6.5 17.5 17.5M17.5 6.5 6.5 17.5" stroke-linecap="round"/></svg>`;
 const DISASTER_ICON = `<svg class="gauge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15a4 4 0 0 1 1-7.87A5 5 0 0 1 15 6a4.5 4.5 0 0 1 1 8.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 19l1.5-3M13 19l1.5-3M11 21l1-2" stroke-linecap="round"/></svg>`;
+const PRESENCE_ICON = `<svg class="gauge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" stroke-linecap="round"/><circle cx="17" cy="9" r="2.3"/><path d="M15.5 14.2c2.6.4 4.5 2.6 4.5 5.3" stroke-linecap="round"/></svg>`;
 
 let map;
 let tensionChart;
 let themeChart;
 let acledChart;
+let passportChart;
 let markers = {};
 let dataset;
 
@@ -75,6 +77,10 @@ function teardownMapAndCharts() {
   if (acledChart) {
     acledChart.destroy();
     acledChart = undefined;
+  }
+  if (passportChart) {
+    passportChart.destroy();
+    passportChart = undefined;
   }
   markers = {};
 }
@@ -167,6 +173,8 @@ function renderDataSources() {
     <li><strong>ACLED</strong> (real) — <span class="acled-tag">GROUND TRUTH</span> ${ds.acled.note}</li>
     <li><strong>GDELT</strong> (real) — ${fmtDateTime(ds.gdelt.earliest_timestamp_utc)} to ${fmtDateTime(ds.gdelt.latest_timestamp_utc)}</li>
     <li><strong>GDACS</strong> (real) — fetched ${ds.gdacs.fetched_on || "unknown"}</li>
+    <li><strong>RNI/CBS</strong> (real) — <span class="acled-tag">GROUND TRUTH</span> ${ds.rni.note}</li>
+    <li><strong>Passport applications</strong> — <span class="synthetic-tag">SYNTHETIC</span> ${ds.passport_applications.note}</li>
   `;
 }
 
@@ -217,6 +225,12 @@ function renderDetail(country) {
       <p class="attribution">Source: <a href="https://acleddata.com" target="_blank" rel="noopener">ACLED</a> (Armed Conflict Location &amp; Event Data Project), via HDX aggregated country files.</p>
     </div>
 
+    <div class="side-section presence-box">
+      <strong>Dutch presence <span class="acled-tag">GROUND TRUTH</span></strong>
+      <p class="synthetic-note">Independent of the signals above &mdash; has no effect on conflict/disaster signal or the alert level.</p>
+      ${renderDutchPresence(country.dutch_presence)}
+    </div>
+
     <h4>Media attention this week (corroborating, not the driver)</h4>
     <div class="explain-grid">
       ${renderThemeExplain("Conflict themes", country.top_conflict_themes)}
@@ -231,6 +245,8 @@ function renderDetail(country) {
         <div class="chart-box"><canvas id="tension-chart"></canvas></div>
         <h4>Conflict vs. disaster theme share</h4>
         <div class="chart-box chart-box-small"><canvas id="theme-chart"></canvas></div>
+        <h4>Passport applications, 10 years <span class="synthetic-tag">SYNTHETIC</span></h4>
+        <div class="chart-box chart-box-small"><canvas id="passport-chart"></canvas></div>
       </div>
       <div>
         <div class="side-section events-list">
@@ -244,6 +260,7 @@ function renderDetail(country) {
   renderAcledChart(country);
   renderTensionChart(country);
   renderThemeChart(country);
+  renderPassportChart(country);
 }
 
 const TREND_BADGE = {
@@ -289,6 +306,35 @@ function renderAcledSummary(acled) {
       most recent month is consistently far below trend across almost every country here, a reporting/
       verification lag rather than real de-escalation &mdash; see the sudden drop at the right edge of
       the chart below.</p>
+  `;
+}
+
+function renderDutchPresence(dp) {
+  if (!dp || !dp.rni) {
+    return '<p class="no-events">No RNI data available for this country.</p>';
+  }
+  const rni = dp.rni;
+  const value = Math.round(dp.presence_signal);
+  // Deliberately NOT gaugeColor() -- that's a Red/Orange/Green danger
+  // scale for conflict/disaster and would misleadingly imply "many
+  // Dutch nationals here" is itself alarming. Fixed neutral accent color
+  // instead, since this gauge means "how many," not "how bad."
+  return `
+    <div class="gauge-card">
+      <div class="radial-gauge" style="--value:${value};--gauge-color:var(--accent)">
+        <span class="radial-value">${value}</span>
+      </div>
+      <div class="gauge-info">
+        <div class="gauge-title">${PRESENCE_ICON}Presence signal</div>
+        <p class="acled-summary" style="margin-top:6px;">
+          <strong>${rni.registered.toLocaleString()}</strong> Nederlanders geregistreerd in het RNI
+          (peildatum ${rni.source_date}) &mdash; geboren in NL: ${rni.born_in_nl.toLocaleString()},
+          geboren in het land zelf: ${rni.born_in_country.toLocaleString()}.
+        </p>
+      </div>
+    </div>
+    <p class="synthetic-note">${rni.note}</p>
+    <p class="attribution">Source: <a href="https://www.cbs.nl/nl-nl/maatwerk/2025/40/nederlanders-in-het-buitenland-1-juli-2025" target="_blank" rel="noopener">CBS</a>, maatwerktabel "Nederlanders in het buitenland" (RNI-afgeleid).</p>
   `;
 }
 
@@ -505,6 +551,40 @@ function renderAcledChart(country) {
         y: { type: "linear", position: "left", title: { display: true, text: "Fatalities", color: textColor }, ticks: { color: textColor } },
         y1: { type: "linear", position: "right", title: { display: true, text: "Events", color: textColor }, ticks: { color: textColor }, grid: { drawOnChartArea: false } },
         x: { ticks: { color: textColor, maxRotation: 60, minRotation: 60, autoSkip: true, maxTicksLimit: 12 }, grid: { display: false } },
+      },
+    },
+  });
+}
+
+function renderPassportChart(country) {
+  const ctx = document.getElementById("passport-chart");
+  if (!ctx) return;
+  if (passportChart) passportChart.destroy();
+
+  const series = (country.dutch_presence && country.dutch_presence.passport_applications && country.dutch_presence.passport_applications.series) || [];
+  const labels = series.map((p) => String(p.year));
+  const textColor = chartTextColor();
+
+  passportChart = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [
+        {
+          label: "Synthetic passport applications",
+          data: series.map((p) => p.applications),
+          backgroundColor: "rgba(148,163,184,0.6)",
+          borderRadius: 4,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { ticks: { color: textColor }, title: { display: true, text: "Applications (fictional)", color: textColor } },
+        x: { ticks: { color: textColor } },
       },
     },
   });
