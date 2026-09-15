@@ -93,11 +93,11 @@ a:hover { color: var(--accent); }
   text-align: center;
 }
 
-.brand-mark { flex-shrink: 0; }
-.brand-mark .brand-mark-shield { fill: var(--accent); }
-.brand-mark .brand-mark-band { fill: var(--accent-strong); }
-.brand-mark--on-dark .brand-mark-shield { fill: rgba(255, 255, 255, 0.95); }
-.brand-mark--on-dark .brand-mark-band { fill: rgba(255, 255, 255, 0.55); }
+.brand-mark {
+  flex-shrink: 0;
+  display: inline-block;
+  border-radius: 2px;
+}
 
 .brand-kicker {
   margin: 0 0 4px;
