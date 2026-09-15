@@ -1,6 +1,0 @@
-ReliefWeb pull skipped: no RELIEFWEB_APPNAME environment variable set.
-ReliefWeb now requires a pre-approved appname (since 1 Nov 2025).
-Request one at https://apidoc.reliefweb.int/parameters#appname, then set:
-  $env:RELIEFWEB_APPNAME = "your-approved-appname"   (PowerShell)
-and re-run this script. GDACS already covers natural-disaster events
-without needing a key -- see fetch_gdacs_events.py.

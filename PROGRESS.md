@@ -400,3 +400,40 @@ Frontend changes to match:
       beyond GDACS is worth adding later (ACLED now covers the
       conflict-confirmed-event gap that ReliefWeb would have)
 - [ ] Commit and push this round's changes, confirm the Pages deploy
+
+## 2026-09-15: Data minimization pass
+
+Trimmed the pipeline to the three sources that actually drive the
+conflict/disaster signals, per an explicit ask to minimize the dataset
+to what serves "is tension in a country rising toward a crisis":
+
+- **Removed OpenSky** (`fetch_opensky_snapshot.py` + its Data files) —
+  it was never wired into `merge_data.py` or rendered anywhere in the
+  app; pure dead data collection since the "optional right-now layer"
+  mentioned earlier in this log was never actually built.
+- **Removed CBS travel** (`fetch_cbs_travel.py`, `travel_baseline`,
+  the "Dutch citizen exposure" panel) — annual, lagging traveler/spend
+  counts are exposure context, not a tension signal, and several
+  tracked countries were region- not country-level anyway. Cut from
+  the app entirely rather than just hidden.
+- **Removed ReliefWeb** (`fetch_reliefweb_events.py`, the status-file
+  workaround) — never produced data in the first place (appname
+  requirement since 1 Nov 2025, never actually merged), and GDACS +
+  ACLED already cover the disaster/conflict ground it would add.
+- **Removed the synthetic comms-volume layer**
+  (`generate_synthetic_comms.py`, `comms_volume`, the "Incoming
+  communication volume" chart) — fictional demo data, never connected
+  to a real NWW/consular system; removed rather than kept as a
+  placeholder.
+- **Renamed** `Data/Reliefweb and GDACS/` to `Data/GDACS/` now that
+  ReliefWeb is gone; `merge_data.py` and `fetch_gdacs_events.py`
+  updated to match.
+- **Kept GDELT, GDACS, ACLED** — see `Scripts/README.md`'s new
+  "Sources dropped after review" section for why each of these three
+  earns its place (ACLED = ground-truth conflict severity, GDACS =
+  ground-truth disaster events, GDELT = the only sub-monthly signal,
+  showing day-to-day movement and *which* themes are driving attention
+  between ACLED's monthly updates).
+- Regenerated `App/data/dataset.json` after the change; verified the
+  removed fields (`travel_baseline`, `comms_volume`) are gone from its
+  output and the app still renders with the trimmed dataset.

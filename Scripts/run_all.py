@@ -11,9 +11,6 @@ from pathlib import Path
 SCRIPTS = [
     "fetch_gdelt_tension.py",
     "fetch_gdacs_events.py",
-    "fetch_reliefweb_events.py",
-    "fetch_cbs_travel.py",
-    "fetch_opensky_snapshot.py",
 ]
 
 SCRIPTS_DIR = Path(__file__).resolve().parent

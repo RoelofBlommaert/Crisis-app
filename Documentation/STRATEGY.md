@@ -11,7 +11,7 @@ NWW heeft tijdens crises wél inzicht, maar dat inzicht is versnipperd en emotie
 
 ## Onze aanpak
 
-We winnen door incrementeel te automatiseren: losse, bestaande informatiestukjes eerst (zoals de huidige classificatie), gekoppeld en betrouwbaar gepresenteerd via bronnen als GDACS en GDELT, zodat er snel zichtbare, vertrouwde winst is in plaats van een groot ontwerp vooraf — nodig omdat mensen onder stress snel sceptisch worden en dan verkeerde keuzes maken. Voor bronnen waarvan toegang tot echte data nog niet bevestigd is (calls, RNI, CBS-vluchten), werkt de PoC voorlopig met gesynthetiseerde of fictieve data.
+We winnen door incrementeel te automatiseren: losse, bestaande informatiestukjes eerst (zoals de huidige classificatie), gekoppeld en betrouwbaar gepresenteerd via bronnen als GDACS en GDELT, zodat er snel zichtbare, vertrouwde winst is in plaats van een groot ontwerp vooraf — nodig omdat mensen onder stress snel sceptisch worden en dan verkeerde keuzes maken. De PoC houdt zich daarom aan alleen echte, geverifieerde bronnen (GDACS, GDELT, ACLED); een eerdere gefingeerde comms-volume laag is bewust weer verwijderd om het vertrouwen niet te ondermijnen (zie PROGRESS.md, 2026-09-15). Bronnen zonder bevestigde toegang (calls, RNI) staan nog niet in de PoC.
 
 ## Voor wie
 
@@ -21,13 +21,13 @@ We winnen door incrementeel te automatiseren: losse, bestaande informatiestukjes
 
 ### Near-real-time engineering
 
-Infrastructuur die zorgt dat bronnen (GDACS, GDELT, OpenSky, e.d.) tijdig en actueel binnenkomen.
+Infrastructuur die zorgt dat bronnen (GDACS, GDELT, ACLED) tijdig en actueel binnenkomen.
 
 _Waarom het de aanpak dient:_ zonder actuele data is automatisering tijdens een crisis niet geloofwaardig.
 
 ### Data-integratie
 
-Bronnen (GDACS, GDELT, CBS, Eurostat, OpenSky) aan elkaar koppelen tot één samenhangend beeld per gebied.
+Bronnen (GDACS, GDELT, ACLED) aan elkaar koppelen tot één samenhangend beeld per gebied.
 
 _Waarom het de aanpak dient:_ vervangt het versnipperde, per-rol beeld door een centraal beeld.
 
@@ -54,4 +54,4 @@ _Waarom het de aanpak dient:_ behoudt vertrouwen — mensen worden onder stress 
 
 **One-liner:** Van reactief naar proactief: bestaande data inzetten om crises sneller en objectiever te classificeren, zodat NWW met vertrouwen kan handelen vóór de telefoon gaat.
 
-**Kernboodschap:** We hebben de data al — GDACS, GDELT, CBS, Eurostat, OpenSky — maar die is versnipperd en het beeld is nu mensgestuurd. Deze PoC laat zien wat er beschikbaar is en hoe het gecombineerd kan worden tot één betrouwbaar risicobeeld per gebied, als eerste stap naar geautomatiseerde classificatie en op termijn crisisparaatheid.
+**Kernboodschap:** We hebben de data al — GDACS, GDELT, ACLED — maar die is versnipperd en het beeld is nu mensgestuurd. Deze PoC laat zien wat er beschikbaar is en hoe het gecombineerd kan worden tot één betrouwbaar risicobeeld per gebied, als eerste stap naar geautomatiseerde classificatie en op termijn crisisparaatheid.

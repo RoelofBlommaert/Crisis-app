@@ -18,8 +18,8 @@
           <h1>Crisis &amp; Connectivity Monitor</h1>
           <p class="subtitle">
             A proof of concept for classifying what's happening in a country right now, from data
-            that already exists &mdash; ACLED, GDELT, GDACS, CBS &mdash; plus an illustrative
-            comms-volume layer, built for a crisis coordinator, not a finished operational tool.
+            that already exists &mdash; ACLED, GDELT, GDACS &mdash; built for a crisis coordinator,
+            not a finished operational tool.
             <a href="#about" id="about-link">About &amp; method</a>
           </p>
         </div>
@@ -46,7 +46,7 @@
     <h2>About this app</h2>
     <p>
       This is a proof of concept, not a finished tool: it shows what public
-      data (ACLED, GDELT, GDACS, CBS) is available and how it could combine
+      data (ACLED, GDELT, GDACS) is available and how it could combine
       into a per-country risk indication for a crisis coordinator &mdash;
       it is <strong>not</strong> an automatic, validated classifier, and it
       does <strong>not</strong> forecast or predict crises. See
@@ -117,18 +117,7 @@
       detection + manual override" track) &mdash; a known, deliberately
       deferred gap, not an oversight. No live/scheduled refresh (this is a
       one-time static snapshot; see the timestamp above). No real
-      consular-call integration (see the fictional comms-volume layer
-      below) and no RNI linkage.
-    </p>
-
-    <h3>Fictional data: comms volume</h3>
-    <p>
-      The "incoming communication volume" chart on each country is
-      <strong>entirely synthetic</strong> &mdash; generated locally to
-      illustrate what combining a comms-volume signal with the real data
-      could look like, since real access to that kind of source isn't
-      confirmed yet. It is not connected to any real system and should
-      never be read as real call/message data.
+      consular-call integration and no RNI linkage.
     </p>
     <button type="button" id="about-close">Close</button>
   </section>

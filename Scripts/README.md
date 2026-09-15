@@ -19,11 +19,7 @@ Python 3.9+.
 |---|---|---|---|
 | `fetch_acled_hdx.py` | ACLED, via HDX aggregated country files | No | `Data/ACLED/acled_monthly_<date>.csv` |
 | `fetch_gdelt_tension.py` | GDELT 2.0 GKG bulk files | No | `Data/GDELT/gdelt_tension_<date>.csv` (or `gdelt_tension_history_<date>.csv` with `--backfill`) |
-| `fetch_gdacs_events.py` | GDACS event list | No | `Data/Reliefweb and GDACS/gdacs_events_<date>.{json,csv}` |
-| `fetch_reliefweb_events.py` | ReliefWeb API v2 | **Yes, see below** | `Data/Reliefweb and GDACS/reliefweb_disasters_<date>.csv` |
-| `fetch_cbs_travel.py` | CBS StatLine table 84365NED | No | `Data/Travel and flights/cbs_travel_<date>.csv` |
-| `fetch_opensky_snapshot.py` | OpenSky Network (live only) | No | `Data/Travel and flights/opensky_snapshot_<timestamp>.csv` |
-| `generate_synthetic_comms.py` | **fictional**, not a real source | No | `Data/Synthetic/comms_volume_<date>.csv` |
+| `fetch_gdacs_events.py` | GDACS event list | No | `Data/GDACS/gdacs_events_<date>.{json,csv}` |
 | `merge_data.py` | combines all of the above | No | `App/data/dataset.json` (what the frontend reads) |
 
 Run everything: `python run_all.py`, then `python merge_data.py` to
@@ -34,15 +30,56 @@ when you want to (re)seed the trend history:
 
 ```
 python fetch_gdelt_tension.py --backfill
-python generate_synthetic_comms.py
 python fetch_acled_hdx.py
 python merge_data.py
 ```
 
-`generate_synthetic_comms.py` must run after the GDELT backfill (it reads
-`gdelt_tension_history_*.csv` to loosely scale its fictional numbers) and
-before `merge_data.py`. `fetch_acled_hdx.py` has no such dependency and
-can run any time before `merge_data.py`.
+`fetch_acled_hdx.py` has no dependency on the other scripts and can run
+any time before `merge_data.py`.
+
+## Sources dropped after review (2026-09-15)
+
+Trimmed to the three sources that actually drive the conflict/disaster
+signals, after checking what each one contributed to the merged dataset:
+
+- **ReliefWeb** (`fetch_reliefweb_events.py`) — never actually produced
+  data: ReliefWeb has required a pre-approved `appname` since 1 Nov 2025,
+  the fetch was never wired into `merge_data.py` in the first place, and
+  it would only have added displacement/humanitarian-response reporting
+  that GDACS (disasters) and ACLED (conflict) already cover for this PoC's
+  purpose (spotting rising tension, not humanitarian-response detail).
+  Removed as dead weight; worth reconsidering only if a registered
+  appname becomes available AND humanitarian-response detail becomes a
+  stated requirement.
+- **CBS travel** (`fetch_cbs_travel.py`) — Dutch traveler/spend counts per
+  country. Context ("how many Dutch citizens are plausibly there"), not a
+  tension/escalation signal, and stale by nature (annual, published with
+  a lag; several tracked countries were region- not country-level to
+  begin with). Removed to keep the dataset focused on signals that move
+  when a situation is actually escalating.
+- **OpenSky** (`fetch_opensky_snapshot.py`) — live flight snapshot only
+  (no history under anonymous access, see former "Known limitations"
+  notes) and was never actually merged into `App/data/dataset.json` or
+  rendered anywhere in the app — pure dead data collection. Removed.
+- **Synthetic comms volume** (`generate_synthetic_comms.py`) — entirely
+  fictional demo data (see former "Synthetic data" section below),
+  never connected to a real NWW/consular system. Removed rather than kept
+  as a placeholder, per the decision to minimize the dataset to real
+  signals only.
+
+What stays, and why each earns its place:
+- **ACLED** — the only ground-truth conflict-severity source (real
+  fatality/event counts); dominant driver of `conflict_signal`.
+- **GDACS** — the only ground-truth disaster-event source; dominant
+  driver of `disaster_signal`. Nothing else in this pipeline covers
+  natural disasters at all.
+- **GDELT** — the only source that updates faster than monthly. It can't
+  carry a score on its own (capped near ~10/100 without ACLED
+  corroboration — see `merge_data.py`), but it's what lets the app show
+  day-to-day movement and *which* themes (protests, armed conflict,
+  terrorism, ...) are driving attention between ACLED's monthly updates —
+  directly serving the "is this rising toward a crisis" question, not
+  just "how bad is it right now."
 
 ## Country list
 
@@ -52,37 +89,6 @@ which countries are tracked.
 
 ## Known limitations (read before treating outputs as ground truth)
 
-- **ReliefWeb now requires a pre-approved appname** (changed 1 Nov 2025,
-  after the original Documentation was written). Free registration, but
-  it's a review process, not instant -- see
-  `apidoc.reliefweb.int/parameters#appname`. Until you have one, set
-  `RELIEFWEB_APPNAME` as an env var; without it, the script writes a
-  status note instead of failing the rest of the pipeline. Since GDACS
-  already covers natural disasters with no key needed and ACLED (see
-  below) now covers confirmed conflict events with no key needed either,
-  ReliefWeb mainly adds displacement/humanitarian-response reporting
-  that neither of those two provides.
-- **CBS travel data is only country-specific for ~15 "most visited"
-  destinations** (mostly Western Europe, plus US/Turkey). For the other
-  crisis countries in our list, CBS only reports continent/region totals
-  (e.g. all of "Africa" lumped together), so `cbs_travel_*.csv` marks
-  each row's `cbs_granularity` as `country` or `region` -- treat `region`
-  rows as rough context, not a per-country baseline.
-- **Checked and dropped: Eurostat `tour_dem_ttw`** as a fix for the CBS
-  region-only gap. It does have a per-country `c_dest` dimension
-  (including individual codes for Turkey and Ukraine), which looked like
-  it could bump Ukraine from region- to country-level. In practice, the
-  Netherlands reports **zero data for Ukraine** in this dataset across
-  every purpose/duration/year combination (likely suppressed for being
-  too small a sample) -- confirmed by querying the API directly, not
-  assumed. Turkey does have real data there, but CBS already covers
-  Turkey at country level, so it adds nothing. The other 6 countries
-  aren't broken out individually in Eurostat's own codelist either (they
-  fall under "other Africa/Asia/Americas" buckets, same coarseness as
-  CBS's regions). Conclusion: no free/no-key source found that improves
-  on CBS's region-level granularity for Lebanon, Israel, Egypt, Sudan,
-  Haiti, Ukraine, or Thailand -- not worth re-investigating without a
-  different (likely paid or registration-gated) data source.
 - **GDELT** volume/tone is a media-attention proxy, not ground-truth
   instability. We pull it from the raw GKG bulk files (updated every 15
   min), not the DOC 2.0 query API — see "Avoiding the GDELT rate limit"
@@ -117,10 +123,6 @@ which countries are tracked.
   app explains *what* is driving a score, not just the compressed number.
   A manual-override control ("hybride sturing" in the strategy doc) is a
   known, deliberately deferred gap -- not built this round.
-- **OpenSky** is live-snapshot only under anonymous access; it cannot
-  answer "how has flight volume out of country X changed" (see
-  `Documentation/Data ideation.txt`). It's wired in only as an optional
-  "right now" layer.
 - **GDACS** covers natural disasters (earthquakes, floods, storms,
   droughts, volcanic activity) — it does not cover conflict, political
   unrest, or civil war, which matters for a couple of the countries on
@@ -227,20 +229,6 @@ the concrete "what is happening" answer (e.g. "Armed conflict: 312
 articles, Protests: 89, Terrorism-related coverage: 45") rather than
 just a compressed score, per STRATEGY.md's ask to show the underlying
 data, not only an automated verdict.
-
-## Synthetic data: incoming communication volume
-
-`generate_synthetic_comms.py` produces a **fictional** daily "incoming
-communication volume" (e.g. consular calls/signals) per country. This is
-not connected to any real NWW/consular system -- STRATEGY.md explicitly
-names combining the tension signal with incoming-communication volume as
-core to the primary user's (crisis coordinator) workflow, and explicitly
-allows synthetic data for sources without confirmed real access (calls,
-RNI, CBS-flights). The numbers are deterministic (seeded per
-country+date, not random per run) and loosely scaled off that day's real
-GDELT article volume plus a fixed per-country baseline, so the demo isn't
-arbitrary -- but they must never be mistaken for real data. The app
-labels this layer as fictional everywhere it appears.
 
 ## ACLED conflict data, without registering an account
 

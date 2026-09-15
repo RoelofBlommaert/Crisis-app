@@ -1,11 +1,10 @@
 """
-Merge the four data sources into one static JSON file the frontend reads
+Merge the three data sources into one static JSON file the frontend reads
 directly, with no backend: App/data/dataset.json.
 
 Reads (latest file per pattern, by filename date):
   Data/GDELT/gdelt_tension_history_*.csv   (falls back to gdelt_tension_*.csv)
-  Data/Reliefweb and GDACS/gdacs_events_matched_*.csv
-  Data/Travel and flights/cbs_travel_*.csv
+  Data/GDACS/gdacs_events_matched_*.csv
   Data/ACLED/acled_monthly_*.csv
 
 Per tracked country (Scripts/countries.py), produces one record with:
@@ -13,9 +12,6 @@ Per tracked country (Scripts/countries.py), produces one record with:
   - events: matched GDACS events (empty list where there's genuinely no
     confirmed-event coverage -- notably the conflict-driven countries;
     see Documentation/Relevance and function.txt for why)
-  - travel_baseline: CBS series + its granularity flag (country vs region),
-    preserved as-is so the frontend can show the right caveat rather than
-    presenting region data as if it were country-specific
   - conflict_signal / disaster_signal: two illustrative 0-100 gauges (see
     scoring section below) and an overall alert_level derived from them
 
@@ -234,7 +230,7 @@ def load_gdelt_history() -> dict:
 
 
 def load_gdacs_events() -> dict:
-    d = DATA_DIR / "Reliefweb and GDACS"
+    d = DATA_DIR / "GDACS"
     path = latest_file(d, "gdacs_events_matched_*.csv")
     events = defaultdict(list)
     if not path:
@@ -258,35 +254,6 @@ def load_gdacs_events() -> dict:
     return events
 
 
-def load_cbs_travel() -> dict:
-    d = DATA_DIR / "Travel and flights"
-    path = latest_file(d, "cbs_travel_*.csv")
-    baseline = {}
-    if not path:
-        print("  ! no CBS travel file found")
-        return baseline
-    with path.open(encoding="utf-8") as f:
-        for row in csv.DictReader(f):
-            name = row["crisis_country"]
-            baseline.setdefault(
-                name,
-                {"granularity": row["cbs_granularity"], "area_label": row["cbs_area_label"], "series": []},
-            )
-            baseline[name]["series"].append(
-                {
-                    "year": row["year"],
-                    "dutch_travellers_x1000": row["dutch_travellers_x1000"],
-                    "total_trips_x1000": row["total_trips_x1000"],
-                    "total_overnight_stays_x1000000": row["total_overnight_stays_x1000000"],
-                    "total_spend_eur_million": row["total_spend_eur_million"],
-                }
-            )
-    for name in baseline:
-        baseline[name]["series"].sort(key=lambda r: r["year"])
-    print(f"  loaded CBS travel from {path.name} ({len(baseline)} countries)")
-    return baseline
-
-
 def load_theme_breakdown() -> dict:
     d = DATA_DIR / "GDELT"
     path = latest_file(d, "gdelt_theme_breakdown_*.csv")
@@ -306,24 +273,6 @@ def load_theme_breakdown() -> dict:
             )
     print(f"  loaded theme breakdown from {path.name} ({sum(len(v) for v in breakdown.values())} rows)")
     return breakdown
-
-
-def load_synthetic_comms() -> dict:
-    d = DATA_DIR / "Synthetic"
-    path = latest_file(d, "comms_volume_*.csv")
-    comms = defaultdict(list)
-    if not path:
-        print("  ! no synthetic comms-volume file found (run generate_synthetic_comms.py)")
-        return comms
-    with path.open(encoding="utf-8") as f:
-        for row in csv.DictReader(f):
-            comms[row["country"]].append(
-                {"date": row["date"], "synthetic_incoming_signals": int(row["synthetic_incoming_signals"])}
-            )
-    for name in comms:
-        comms[name].sort(key=lambda r: r["date"])
-    print(f"  loaded FICTIONAL comms volume from {path.name} ({sum(len(v) for v in comms.values())} rows)")
-    return comms
 
 
 def _months_ago(n: int) -> tuple:
@@ -564,9 +513,7 @@ def main() -> None:
     print("Loading source data...")
     gdelt = load_gdelt_history()
     gdacs = load_gdacs_events()
-    cbs = load_cbs_travel()
     theme_breakdown = load_theme_breakdown()
-    synthetic_comms = load_synthetic_comms()
     acled = load_acled_monthly()
 
     countries_out = []
@@ -598,10 +545,6 @@ def main() -> None:
                 "top_conflict_themes": top_themes(country_themes, "conflict", week_total_volume),
                 "top_disaster_themes": top_themes(country_themes, "disaster", week_total_volume),
                 "events": events,
-                "travel_baseline": cbs.get(
-                    name, {"granularity": "none", "area_label": "", "series": []}
-                ),
-                "comms_volume": synthetic_comms.get(name, []),
                 "acled": {
                     "severity": severity,
                     # last 24 months per category, for the real multi-year chart
@@ -614,9 +557,7 @@ def main() -> None:
     # engineering" track's honesty requirement without building live
     # infrastructure: show exactly how current each source actually is.
     all_timestamps = [p["timestamp_utc"] for series in gdelt.values() for p in series]
-    gdacs_path = latest_file(DATA_DIR / "Reliefweb and GDACS", "gdacs_events_matched_*.csv")
-    cbs_path = latest_file(DATA_DIR / "Travel and flights", "cbs_travel_*.csv")
-    all_cbs_years = [row["year"] for rows in cbs.values() for row in rows["series"]]
+    gdacs_path = latest_file(DATA_DIR / "GDACS", "gdacs_events_matched_*.csv")
     data_sources = {
         "gdelt": {
             "kind": "real",
@@ -626,15 +567,6 @@ def main() -> None:
         "gdacs": {
             "kind": "real",
             "fetched_on": gdacs_path.stem.rsplit("_", 1)[-1] if gdacs_path else None,
-        },
-        "cbs_travel": {
-            "kind": "real",
-            "fetched_on": cbs_path.stem.rsplit("_", 1)[-1] if cbs_path else None,
-            "latest_year": max(all_cbs_years) if all_cbs_years else None,
-        },
-        "comms_volume": {
-            "kind": "synthetic",
-            "note": "Fictional data generated for this demo -- not connected to any real NWW/consular system.",
         },
         "acled": {
             "kind": "real",

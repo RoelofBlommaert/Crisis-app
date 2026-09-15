@@ -277,10 +277,6 @@ main {
 .badge.Red { background: var(--red); }
 .badge.unknown { background: var(--unknown); }
 
-.badge.granularity-region { background: var(--orange); color: #fff; }
-.badge.granularity-country { background: var(--green); color: #fff; }
-.badge.granularity-none { background: var(--unknown); }
-
 .driver-tag {
   margin-left: auto;
   font-size: 0.8rem;
@@ -418,18 +414,6 @@ main {
   font-size: 0.76rem;
 }
 
-.synthetic-tag {
-  display: inline-block;
-  font-size: 0.65rem;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  color: #fff;
-  background: #6b7280;
-  padding: 2px 7px;
-  border-radius: 5px;
-  vertical-align: middle;
-}
-
 .synthetic-note {
   font-size: 0.78rem;
   color: var(--muted);
@@ -461,12 +445,6 @@ main {
   font-size: 0.74rem;
   color: var(--muted);
   margin: 8px 0 0;
-}
-
-.travel-context {
-  font-size: 0.92rem;
-  font-weight: 600;
-  margin: 0;
 }
 
 details summary {
@@ -542,22 +520,6 @@ details[open] summary { margin-bottom: 8px; }
   font-size: 0.88rem;
   margin: 0;
 }
-
-.travel-box table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.85rem;
-  margin-top: 10px;
-}
-
-.travel-box th, .travel-box td {
-  text-align: right;
-  padding: 5px 6px;
-  border-bottom: 1px solid var(--border);
-}
-
-.travel-box th { color: var(--muted); font-weight: 600; font-size: 0.78rem; }
-.travel-box th:first-child, .travel-box td:first-child { text-align: left; }
 
 .about-panel {
   max-width: 660px;

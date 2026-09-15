@@ -12,9 +12,9 @@ that GDACS covers natural disasters only, not conflict/political crises
 -- that gap is discussed in Documentation/Relevance and function.txt.
 
 Output:
-  Data/Reliefweb and GDACS/gdacs_events_<date>.json   (raw API response)
-  Data/Reliefweb and GDACS/gdacs_events_<date>.csv     (all current events, flattened)
-  Data/Reliefweb and GDACS/gdacs_events_matched_<date>.csv (events matching our country list)
+  Data/GDACS/gdacs_events_<date>.json   (raw API response)
+  Data/GDACS/gdacs_events_<date>.csv     (all current events, flattened)
+  Data/GDACS/gdacs_events_matched_<date>.csv (events matching our country list)
 """
 
 import csv
@@ -30,7 +30,7 @@ from countries import COUNTRIES
 API_URL = "https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH"
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-OUT_DIR = REPO_ROOT / "Data" / "Reliefweb and GDACS"
+OUT_DIR = REPO_ROOT / "Data" / "GDACS"
 
 FIELDS = [
     "eventtype",

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-14T14:26:10.962540+00:00",
+  "generated_at": "2026-09-15T08:08:04.898100+00:00",
   "note": "One-time static snapshot, not a live-refreshing feed. conflict_signal/disaster_signal are an illustrative 0-100 heuristic, not a statistical forecast or probability -- see Documentation/ and Scripts/merge_data.py.",
   "data_sources": {
     "gdelt": {
@@ -10,15 +10,6 @@
     "gdacs": {
       "kind": "real",
       "fetched_on": "2026-09-14"
-    },
-    "cbs_travel": {
-      "kind": "real",
-      "fetched_on": "2026-09-14",
-      "latest_year": "2025"
-    },
-    "comms_volume": {
-      "kind": "synthetic",
-      "note": "Fictional data generated for this demo -- not connected to any real NWW/consular system."
     },
     "acled": {
       "kind": "real",
@@ -1359,81 +1350,6 @@
           "todate": "2025-10-27T19:48:29",
           "description": "Earthquake in T\u00fcrkiye",
           "is_current": false
-        }
-      ],
-      "travel_baseline": {
-        "granularity": "country",
-        "area_label": "Turkije (TR)",
-        "series": [
-          {
-            "year": "2021",
-            "dutch_travellers_x1000": "",
-            "total_trips_x1000": "",
-            "total_overnight_stays_x1000000": "",
-            "total_spend_eur_million": ""
-          },
-          {
-            "year": "2022",
-            "dutch_travellers_x1000": "287",
-            "total_trips_x1000": "350",
-            "total_overnight_stays_x1000000": "4.4",
-            "total_spend_eur_million": "387"
-          },
-          {
-            "year": "2023",
-            "dutch_travellers_x1000": "285",
-            "total_trips_x1000": "304",
-            "total_overnight_stays_x1000000": "3.7",
-            "total_spend_eur_million": "401"
-          },
-          {
-            "year": "2024",
-            "dutch_travellers_x1000": "298",
-            "total_trips_x1000": "308",
-            "total_overnight_stays_x1000000": "3.2",
-            "total_spend_eur_million": "342"
-          },
-          {
-            "year": "2025",
-            "dutch_travellers_x1000": "266",
-            "total_trips_x1000": "272",
-            "total_overnight_stays_x1000000": "2.7",
-            "total_spend_eur_million": "401"
-          }
-        ]
-      },
-      "comms_volume": [
-        {
-          "date": "2026-09-07",
-          "synthetic_incoming_signals": 38
-        },
-        {
-          "date": "2026-09-08",
-          "synthetic_incoming_signals": 73
-        },
-        {
-          "date": "2026-09-09",
-          "synthetic_incoming_signals": 62
-        },
-        {
-          "date": "2026-09-10",
-          "synthetic_incoming_signals": 81
-        },
-        {
-          "date": "2026-09-11",
-          "synthetic_incoming_signals": 85
-        },
-        {
-          "date": "2026-09-12",
-          "synthetic_incoming_signals": 39
-        },
-        {
-          "date": "2026-09-13",
-          "synthetic_incoming_signals": 37
-        },
-        {
-          "date": "2026-09-14",
-          "synthetic_incoming_signals": 43
         }
       ],
       "acled": {
@@ -3396,81 +3312,6 @@
           "is_current": false
         }
       ],
-      "travel_baseline": {
-        "granularity": "region",
-        "area_label": "Oost-Europa (region)",
-        "series": [
-          {
-            "year": "2021",
-            "dutch_travellers_x1000": "277",
-            "total_trips_x1000": "334",
-            "total_overnight_stays_x1000000": "4.3",
-            "total_spend_eur_million": "214"
-          },
-          {
-            "year": "2022",
-            "dutch_travellers_x1000": "421",
-            "total_trips_x1000": "473",
-            "total_overnight_stays_x1000000": "4.4",
-            "total_spend_eur_million": "266"
-          },
-          {
-            "year": "2023",
-            "dutch_travellers_x1000": "483",
-            "total_trips_x1000": "515",
-            "total_overnight_stays_x1000000": "4.2",
-            "total_spend_eur_million": "308"
-          },
-          {
-            "year": "2024",
-            "dutch_travellers_x1000": "501",
-            "total_trips_x1000": "537",
-            "total_overnight_stays_x1000000": "4.0",
-            "total_spend_eur_million": "296"
-          },
-          {
-            "year": "2025",
-            "dutch_travellers_x1000": "435",
-            "total_trips_x1000": "473",
-            "total_overnight_stays_x1000000": "4.0",
-            "total_spend_eur_million": "425"
-          }
-        ]
-      },
-      "comms_volume": [
-        {
-          "date": "2026-09-07",
-          "synthetic_incoming_signals": 57
-        },
-        {
-          "date": "2026-09-08",
-          "synthetic_incoming_signals": 208
-        },
-        {
-          "date": "2026-09-09",
-          "synthetic_incoming_signals": 130
-        },
-        {
-          "date": "2026-09-10",
-          "synthetic_incoming_signals": 142
-        },
-        {
-          "date": "2026-09-11",
-          "synthetic_incoming_signals": 135
-        },
-        {
-          "date": "2026-09-12",
-          "synthetic_incoming_signals": 115
-        },
-        {
-          "date": "2026-09-13",
-          "synthetic_incoming_signals": 123
-        },
-        {
-          "date": "2026-09-14",
-          "synthetic_incoming_signals": 101
-        }
-      ],
       "acled": {
         "severity": {
           "acled_component": 73.05313620323723,
@@ -5420,81 +5261,6 @@
         }
       ],
       "events": [],
-      "travel_baseline": {
-        "granularity": "region",
-        "area_label": "Azie (region)",
-        "series": [
-          {
-            "year": "2021",
-            "dutch_travellers_x1000": "153",
-            "total_trips_x1000": "169",
-            "total_overnight_stays_x1000000": "2.9",
-            "total_spend_eur_million": "241"
-          },
-          {
-            "year": "2022",
-            "dutch_travellers_x1000": "611",
-            "total_trips_x1000": "709",
-            "total_overnight_stays_x1000000": "10.8",
-            "total_spend_eur_million": "1111"
-          },
-          {
-            "year": "2023",
-            "dutch_travellers_x1000": "903",
-            "total_trips_x1000": "970",
-            "total_overnight_stays_x1000000": "16.0",
-            "total_spend_eur_million": "1922"
-          },
-          {
-            "year": "2024",
-            "dutch_travellers_x1000": "998",
-            "total_trips_x1000": "1073",
-            "total_overnight_stays_x1000000": "18.0",
-            "total_spend_eur_million": "2336"
-          },
-          {
-            "year": "2025",
-            "dutch_travellers_x1000": "1049",
-            "total_trips_x1000": "1105",
-            "total_overnight_stays_x1000000": "17.6",
-            "total_spend_eur_million": "3024"
-          }
-        ]
-      },
-      "comms_volume": [
-        {
-          "date": "2026-09-07",
-          "synthetic_incoming_signals": 34
-        },
-        {
-          "date": "2026-09-08",
-          "synthetic_incoming_signals": 41
-        },
-        {
-          "date": "2026-09-09",
-          "synthetic_incoming_signals": 39
-        },
-        {
-          "date": "2026-09-10",
-          "synthetic_incoming_signals": 51
-        },
-        {
-          "date": "2026-09-11",
-          "synthetic_incoming_signals": 73
-        },
-        {
-          "date": "2026-09-12",
-          "synthetic_incoming_signals": 35
-        },
-        {
-          "date": "2026-09-13",
-          "synthetic_incoming_signals": 23
-        },
-        {
-          "date": "2026-09-14",
-          "synthetic_incoming_signals": 20
-        }
-      ],
       "acled": {
         "severity": {
           "acled_component": 28.689205186814682,
@@ -7444,81 +7210,6 @@
         }
       ],
       "events": [],
-      "travel_baseline": {
-        "granularity": "region",
-        "area_label": "Azie (region)",
-        "series": [
-          {
-            "year": "2021",
-            "dutch_travellers_x1000": "153",
-            "total_trips_x1000": "169",
-            "total_overnight_stays_x1000000": "2.9",
-            "total_spend_eur_million": "241"
-          },
-          {
-            "year": "2022",
-            "dutch_travellers_x1000": "611",
-            "total_trips_x1000": "709",
-            "total_overnight_stays_x1000000": "10.8",
-            "total_spend_eur_million": "1111"
-          },
-          {
-            "year": "2023",
-            "dutch_travellers_x1000": "903",
-            "total_trips_x1000": "970",
-            "total_overnight_stays_x1000000": "16.0",
-            "total_spend_eur_million": "1922"
-          },
-          {
-            "year": "2024",
-            "dutch_travellers_x1000": "998",
-            "total_trips_x1000": "1073",
-            "total_overnight_stays_x1000000": "18.0",
-            "total_spend_eur_million": "2336"
-          },
-          {
-            "year": "2025",
-            "dutch_travellers_x1000": "1049",
-            "total_trips_x1000": "1105",
-            "total_overnight_stays_x1000000": "17.6",
-            "total_spend_eur_million": "3024"
-          }
-        ]
-      },
-      "comms_volume": [
-        {
-          "date": "2026-09-07",
-          "synthetic_incoming_signals": 81
-        },
-        {
-          "date": "2026-09-08",
-          "synthetic_incoming_signals": 297
-        },
-        {
-          "date": "2026-09-09",
-          "synthetic_incoming_signals": 219
-        },
-        {
-          "date": "2026-09-10",
-          "synthetic_incoming_signals": 200
-        },
-        {
-          "date": "2026-09-11",
-          "synthetic_incoming_signals": 264
-        },
-        {
-          "date": "2026-09-12",
-          "synthetic_incoming_signals": 227
-        },
-        {
-          "date": "2026-09-13",
-          "synthetic_incoming_signals": 128
-        },
-        {
-          "date": "2026-09-14",
-          "synthetic_incoming_signals": 78
-        }
-      ],
       "acled": {
         "severity": {
           "acled_component": 0,
@@ -9468,81 +9159,6 @@
         }
       ],
       "events": [],
-      "travel_baseline": {
-        "granularity": "region",
-        "area_label": "Afrika (region)",
-        "series": [
-          {
-            "year": "2021",
-            "dutch_travellers_x1000": "196",
-            "total_trips_x1000": "198",
-            "total_overnight_stays_x1000000": "2.8",
-            "total_spend_eur_million": "346"
-          },
-          {
-            "year": "2022",
-            "dutch_travellers_x1000": "494",
-            "total_trips_x1000": "540",
-            "total_overnight_stays_x1000000": "7.6",
-            "total_spend_eur_million": "856"
-          },
-          {
-            "year": "2023",
-            "dutch_travellers_x1000": "532",
-            "total_trips_x1000": "588",
-            "total_overnight_stays_x1000000": "7.7",
-            "total_spend_eur_million": "922"
-          },
-          {
-            "year": "2024",
-            "dutch_travellers_x1000": "712",
-            "total_trips_x1000": "769",
-            "total_overnight_stays_x1000000": "9.5",
-            "total_spend_eur_million": "1205"
-          },
-          {
-            "year": "2025",
-            "dutch_travellers_x1000": "784",
-            "total_trips_x1000": "871",
-            "total_overnight_stays_x1000000": "10.4",
-            "total_spend_eur_million": "1915"
-          }
-        ]
-      },
-      "comms_volume": [
-        {
-          "date": "2026-09-07",
-          "synthetic_incoming_signals": 33
-        },
-        {
-          "date": "2026-09-08",
-          "synthetic_incoming_signals": 91
-        },
-        {
-          "date": "2026-09-09",
-          "synthetic_incoming_signals": 64
-        },
-        {
-          "date": "2026-09-10",
-          "synthetic_incoming_signals": 72
-        },
-        {
-          "date": "2026-09-11",
-          "synthetic_incoming_signals": 142
-        },
-        {
-          "date": "2026-09-12",
-          "synthetic_incoming_signals": 123
-        },
-        {
-          "date": "2026-09-13",
-          "synthetic_incoming_signals": 60
-        },
-        {
-          "date": "2026-09-14",
-          "synthetic_incoming_signals": 51
-        }
-      ],
       "acled": {
         "severity": {
           "acled_component": 36.11469340917112,
@@ -11492,81 +11108,6 @@
         }
       ],
       "events": [],
-      "travel_baseline": {
-        "granularity": "region",
-        "area_label": "Afrika (region)",
-        "series": [
-          {
-            "year": "2021",
-            "dutch_travellers_x1000": "196",
-            "total_trips_x1000": "198",
-            "total_overnight_stays_x1000000": "2.8",
-            "total_spend_eur_million": "346"
-          },
-          {
-            "year": "2022",
-            "dutch_travellers_x1000": "494",
-            "total_trips_x1000": "540",
-            "total_overnight_stays_x1000000": "7.6",
-            "total_spend_eur_million": "856"
-          },
-          {
-            "year": "2023",
-            "dutch_travellers_x1000": "532",
-            "total_trips_x1000": "588",
-            "total_overnight_stays_x1000000": "7.7",
-            "total_spend_eur_million": "922"
-          },
-          {
-            "year": "2024",
-            "dutch_travellers_x1000": "712",
-            "total_trips_x1000": "769",
-            "total_overnight_stays_x1000000": "9.5",
-            "total_spend_eur_million": "1205"
-          },
-          {
-            "year": "2025",
-            "dutch_travellers_x1000": "784",
-            "total_trips_x1000": "871",
-            "total_overnight_stays_x1000000": "10.4",
-            "total_spend_eur_million": "1915"
-          }
-        ]
-      },
-      "comms_volume": [
-        {
-          "date": "2026-09-07",
-          "synthetic_incoming_signals": 15
-        },
-        {
-          "date": "2026-09-08",
-          "synthetic_incoming_signals": 25
-        },
-        {
-          "date": "2026-09-09",
-          "synthetic_incoming_signals": 19
-        },
-        {
-          "date": "2026-09-10",
-          "synthetic_incoming_signals": 18
-        },
-        {
-          "date": "2026-09-11",
-          "synthetic_incoming_signals": 31
-        },
-        {
-          "date": "2026-09-12",
-          "synthetic_incoming_signals": 26
-        },
-        {
-          "date": "2026-09-13",
-          "synthetic_incoming_signals": 19
-        },
-        {
-          "date": "2026-09-14",
-          "synthetic_incoming_signals": 14
-        }
-      ],
       "acled": {
         "severity": {
           "acled_component": 59.670607449866836,
@@ -13525,81 +13066,6 @@
           "todate": "2025-10-31T15:00:00",
           "description": "Tropical Cyclone MELISSA-25",
           "is_current": false
-        }
-      ],
-      "travel_baseline": {
-        "granularity": "region",
-        "area_label": "Midden- en Zuid-Amerika (region)",
-        "series": [
-          {
-            "year": "2021",
-            "dutch_travellers_x1000": "225",
-            "total_trips_x1000": "247",
-            "total_overnight_stays_x1000000": "4.4",
-            "total_spend_eur_million": "545"
-          },
-          {
-            "year": "2022",
-            "dutch_travellers_x1000": "457",
-            "total_trips_x1000": "509",
-            "total_overnight_stays_x1000000": "8.2",
-            "total_spend_eur_million": "1068"
-          },
-          {
-            "year": "2023",
-            "dutch_travellers_x1000": "322",
-            "total_trips_x1000": "361",
-            "total_overnight_stays_x1000000": "5.8",
-            "total_spend_eur_million": "897"
-          },
-          {
-            "year": "2024",
-            "dutch_travellers_x1000": "313",
-            "total_trips_x1000": "331",
-            "total_overnight_stays_x1000000": "4.5",
-            "total_spend_eur_million": "787"
-          },
-          {
-            "year": "2025",
-            "dutch_travellers_x1000": "361",
-            "total_trips_x1000": "409",
-            "total_overnight_stays_x1000000": "6.7",
-            "total_spend_eur_million": "1396"
-          }
-        ]
-      },
-      "comms_volume": [
-        {
-          "date": "2026-09-07",
-          "synthetic_incoming_signals": 9
-        },
-        {
-          "date": "2026-09-08",
-          "synthetic_incoming_signals": 17
-        },
-        {
-          "date": "2026-09-09",
-          "synthetic_incoming_signals": 22
-        },
-        {
-          "date": "2026-09-10",
-          "synthetic_incoming_signals": 27
-        },
-        {
-          "date": "2026-09-11",
-          "synthetic_incoming_signals": 17
-        },
-        {
-          "date": "2026-09-12",
-          "synthetic_incoming_signals": 13
-        },
-        {
-          "date": "2026-09-13",
-          "synthetic_incoming_signals": 9
-        },
-        {
-          "date": "2026-09-14",
-          "synthetic_incoming_signals": 8
         }
       ],
       "acled": {
@@ -15590,81 +15056,6 @@
           "todate": "2025-10-23T00:00:00",
           "description": "Tropical Cyclone FENGSHEN-25",
           "is_current": false
-        }
-      ],
-      "travel_baseline": {
-        "granularity": "region",
-        "area_label": "Azie (region)",
-        "series": [
-          {
-            "year": "2021",
-            "dutch_travellers_x1000": "153",
-            "total_trips_x1000": "169",
-            "total_overnight_stays_x1000000": "2.9",
-            "total_spend_eur_million": "241"
-          },
-          {
-            "year": "2022",
-            "dutch_travellers_x1000": "611",
-            "total_trips_x1000": "709",
-            "total_overnight_stays_x1000000": "10.8",
-            "total_spend_eur_million": "1111"
-          },
-          {
-            "year": "2023",
-            "dutch_travellers_x1000": "903",
-            "total_trips_x1000": "970",
-            "total_overnight_stays_x1000000": "16.0",
-            "total_spend_eur_million": "1922"
-          },
-          {
-            "year": "2024",
-            "dutch_travellers_x1000": "998",
-            "total_trips_x1000": "1073",
-            "total_overnight_stays_x1000000": "18.0",
-            "total_spend_eur_million": "2336"
-          },
-          {
-            "year": "2025",
-            "dutch_travellers_x1000": "1049",
-            "total_trips_x1000": "1105",
-            "total_overnight_stays_x1000000": "17.6",
-            "total_spend_eur_million": "3024"
-          }
-        ]
-      },
-      "comms_volume": [
-        {
-          "date": "2026-09-07",
-          "synthetic_incoming_signals": 17
-        },
-        {
-          "date": "2026-09-08",
-          "synthetic_incoming_signals": 67
-        },
-        {
-          "date": "2026-09-09",
-          "synthetic_incoming_signals": 62
-        },
-        {
-          "date": "2026-09-10",
-          "synthetic_incoming_signals": 73
-        },
-        {
-          "date": "2026-09-11",
-          "synthetic_incoming_signals": 63
-        },
-        {
-          "date": "2026-09-12",
-          "synthetic_incoming_signals": 54
-        },
-        {
-          "date": "2026-09-13",
-          "synthetic_incoming_signals": 45
-        },
-        {
-          "date": "2026-09-14",
-          "synthetic_incoming_signals": 45
         }
       ],
       "acled": {

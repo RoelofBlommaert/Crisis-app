@@ -36,7 +36,6 @@ const DISASTER_ICON = `<svg class="gauge-icon" viewBox="0 0 24 24" fill="none" s
 let map;
 let tensionChart;
 let themeChart;
-let commsChart;
 let acledChart;
 let markers = {};
 let dataset;
@@ -143,8 +142,6 @@ function renderDataSources() {
     <li><strong>ACLED</strong> (real) — <span class="acled-tag">GROUND TRUTH</span> ${ds.acled.note}</li>
     <li><strong>GDELT</strong> (real) — ${fmtDateTime(ds.gdelt.earliest_timestamp_utc)} to ${fmtDateTime(ds.gdelt.latest_timestamp_utc)}</li>
     <li><strong>GDACS</strong> (real) — fetched ${ds.gdacs.fetched_on || "unknown"}</li>
-    <li><strong>CBS travel</strong> (real) — fetched ${ds.cbs_travel.fetched_on || "unknown"}, latest year ${ds.cbs_travel.latest_year || "n/a"}</li>
-    <li><strong>Comms volume</strong> — <span class="synthetic-tag">SYNTHETIC</span> ${ds.comms_volume.note}</li>
   `;
 }
 
@@ -214,17 +211,6 @@ function renderDetail(country) {
           <strong>Confirmed disaster events (GDACS)</strong>
           ${renderEvents(country.events)}
         </div>
-        <div class="side-section comms-box">
-          <strong>Incoming communication volume <span class="synthetic-tag">SYNTHETIC</span></strong>
-          <p class="synthetic-note">Fictional, illustrative only &mdash; not connected to any real NWW/consular system. See About panel.</p>
-          <div class="chart-box chart-box-small"><canvas id="comms-chart"></canvas></div>
-        </div>
-        <div class="side-section travel-box">
-          <strong>Dutch citizen exposure (CBS)</strong>
-          ${renderTravel(country.travel_baseline)}
-          <p class="synthetic-note">Shown separately, not multiplied into the score above &mdash; a coordinator
-            combines "how bad/escalating" with "how many Dutch travelers are actually there" themselves.</p>
-        </div>
       </div>
     </div>
   `;
@@ -232,7 +218,6 @@ function renderDetail(country) {
   renderAcledChart(country);
   renderTensionChart(country);
   renderThemeChart(country);
-  renderCommsChart(country);
 }
 
 const TREND_BADGE = {
@@ -327,31 +312,6 @@ function renderEvents(events) {
     html += `<details class="history-toggle"><summary>${historical.length} historical event${historical.length > 1 ? "s" : ""} (most recent: ${historical[0].fromdate.slice(0, 10)})</summary><ul>${historical.map(renderOne).join("")}</ul></details>`;
   }
   return html;
-}
-
-function renderTravel(baseline) {
-  if (!baseline || !baseline.series || baseline.series.length === 0) {
-    return "<p class=\"no-events\">No travel context data available.</p>";
-  }
-  const granClass = `granularity-${baseline.granularity}`;
-  const latest = baseline.series[baseline.series.length - 1];
-  const rows = baseline.series
-    .map(
-      (r) =>
-        `<tr><td>${r.year}</td><td>${r.total_trips_x1000 || "–"}</td><td>${r.total_spend_eur_million || "–"}</td></tr>`
-    )
-    .join("");
-  const areaNote = baseline.granularity === "country" ? "Country-level" : `Region-level: ${baseline.area_label}`;
-  return `
-    <p class="travel-context">~${latest.dutch_travellers_x1000 || "?"} thousand Dutch travelers in ${latest.year}
-      <span class="badge ${granClass}" style="margin-left:6px;">${areaNote}</span></p>
-    <details><summary>5-year history</summary>
-      <table>
-        <thead><tr><th>Year</th><th>Trips (x1000)</th><th>Spend (€m)</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </details>
-  `;
 }
 
 function chartTextColor() {
@@ -514,40 +474,6 @@ function renderAcledChart(country) {
         y: { type: "linear", position: "left", title: { display: true, text: "Fatalities", color: textColor }, ticks: { color: textColor } },
         y1: { type: "linear", position: "right", title: { display: true, text: "Events", color: textColor }, ticks: { color: textColor }, grid: { drawOnChartArea: false } },
         x: { ticks: { color: textColor, maxRotation: 60, minRotation: 60, autoSkip: true, maxTicksLimit: 12 }, grid: { display: false } },
-      },
-    },
-  });
-}
-
-function renderCommsChart(country) {
-  const ctx = document.getElementById("comms-chart");
-  if (!ctx) return;
-  if (commsChart) commsChart.destroy();
-
-  const series = country.comms_volume || [];
-  const labels = series.map((p) => fmtDay(p.date));
-  const textColor = chartTextColor();
-
-  commsChart = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [
-        {
-          label: "Synthetic incoming signals",
-          data: series.map((p) => p.synthetic_incoming_signals),
-          backgroundColor: "rgba(148,163,184,0.6)",
-          borderRadius: 4,
-        },
-      ],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { ticks: { color: textColor }, title: { display: true, text: "Signals (fictional)", color: textColor } },
-        x: { ticks: { color: textColor } },
       },
     },
   });
