@@ -23,7 +23,22 @@ function showScreen(name) {
   });
 }
 
+// onAuthStateChange fires more than once for the same signed-in user
+// (e.g. an initial SIGNED_IN followed almost immediately by a
+// TOKEN_REFRESHED on page load). Re-running loadForSession() for each
+// firing tore the map down and rebuilt it while its own initial animated
+// selectCountry() was still mid zoom-transition, crashing Leaflet
+// ("Cannot read properties of undefined (reading '_leaflet_pos')") --
+// map.stop() before remove() did not fix it, since the root cause is
+// this redundant re-init, not the removal itself. Track the currently
+// loaded user and skip re-running for the same user entirely.
+let currentUserId = null;
+
 async function loadForSession(session) {
+  const userId = session.user.id;
+  if (userId === currentUserId) return; // already loaded for this user, nothing to do
+  currentUserId = userId;
+
   const email = session.user.email;
 
   const { data, error } = await sb
@@ -50,6 +65,7 @@ sb.auth.onAuthStateChange((_event, session) => {
   if (session) {
     loadForSession(session);
   } else {
+    currentUserId = null;
     resetApp();
     showScreen("login");
   }
