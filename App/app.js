@@ -59,7 +59,33 @@ function fmtDateTime(iso) {
   return new Date(iso).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
+function teardownMapAndCharts() {
+  if (map) {
+    map.remove();
+    map = undefined;
+  }
+  if (tensionChart) {
+    tensionChart.destroy();
+    tensionChart = undefined;
+  }
+  if (themeChart) {
+    themeChart.destroy();
+    themeChart = undefined;
+  }
+  if (acledChart) {
+    acledChart.destroy();
+    acledChart = undefined;
+  }
+  markers = {};
+}
+
 function startApp(payload) {
+  // onAuthStateChange can fire more than once with a valid session (e.g.
+  // a background token refresh on a long-open tab) -- guard against
+  // building a second Leaflet map/Chart.js instance on top of the first,
+  // which throws "Map container is already initialized."
+  teardownMapAndCharts();
+
   dataset = payload;
 
   document.getElementById("snapshot-note").textContent =
@@ -485,23 +511,7 @@ function renderAcledChart(country) {
 }
 
 function resetApp() {
-  if (map) {
-    map.remove();
-    map = undefined;
-  }
-  if (tensionChart) {
-    tensionChart.destroy();
-    tensionChart = undefined;
-  }
-  if (themeChart) {
-    themeChart.destroy();
-    themeChart = undefined;
-  }
-  if (acledChart) {
-    acledChart.destroy();
-    acledChart = undefined;
-  }
-  markers = {};
+  teardownMapAndCharts();
   dataset = undefined;
   const listEl = document.getElementById("country-list-items");
   if (listEl) listEl.innerHTML = "";
