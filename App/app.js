@@ -6,10 +6,10 @@ const LEVEL_LABEL = {
 };
 
 const LEVEL_COLOR = {
-  Green: "#16a34a",
-  Orange: "#f59e0b",
-  Red: "#dc2626",
-  unknown: "#9ca3af",
+  Green: "#007a3d",
+  Orange: "#e17000",
+  Red: "#d52b1e",
+  unknown: "#6b7280",
 };
 
 const DRIVER_LABEL = {
@@ -426,8 +426,8 @@ function renderTensionChart(country) {
         {
           label: "Article volume",
           data: series.map((p) => p.volume_article_count),
-          borderColor: "#4f46e5",
-          backgroundColor: "rgba(79,70,229,0.1)",
+          borderColor: "#154273",
+          backgroundColor: "rgba(21,66,115,0.1)",
           fill: true,
           yAxisID: "y",
           tension: 0.3,
@@ -437,7 +437,7 @@ function renderTensionChart(country) {
         {
           label: "Avg. tone",
           data: series.map((p) => p.avg_tone),
-          borderColor: "#dc2626",
+          borderColor: "#d52b1e",
           backgroundColor: "transparent",
           yAxisID: "y1",
           tension: 0.3,
@@ -481,8 +481,8 @@ function renderThemeChart(country) {
         {
           label: "Conflict-theme share (%)",
           data: conflictPct,
-          borderColor: "#dc2626",
-          backgroundColor: "rgba(220,38,38,0.15)",
+          borderColor: "#d52b1e",
+          backgroundColor: "rgba(213,43,30,0.15)",
           fill: true,
           tension: 0.3,
           pointRadius: 0,
@@ -491,8 +491,8 @@ function renderThemeChart(country) {
         {
           label: "Disaster-theme share (%)",
           data: disasterPct,
-          borderColor: "#f59e0b",
-          backgroundColor: "rgba(245,158,11,0.15)",
+          borderColor: "#e17000",
+          backgroundColor: "rgba(225,112,0,0.15)",
           fill: true,
           tension: 0.3,
           pointRadius: 0,
@@ -532,7 +532,7 @@ function renderAcledChart(country) {
           type: "bar",
           label: "Fatalities",
           data: pv.map((r) => r.fatalities),
-          backgroundColor: "rgba(220,38,38,0.55)",
+          backgroundColor: "rgba(213,43,30,0.55)",
           yAxisID: "y",
           borderRadius: 3,
         },
@@ -540,7 +540,7 @@ function renderAcledChart(country) {
           type: "line",
           label: "Events",
           data: pv.map((r) => r.events),
-          borderColor: "#4f46e5",
+          borderColor: "#154273",
           backgroundColor: "transparent",
           yAxisID: "y1",
           tension: 0.3,
@@ -580,7 +580,7 @@ function renderPassportChart(country) {
         {
           label: "Synthetic passport applications",
           data: series.map((p) => p.applications),
-          backgroundColor: "rgba(148,163,184,0.6)",
+          backgroundColor: "rgba(109,153,184,0.6)",
           borderRadius: 4,
         },
       ],
