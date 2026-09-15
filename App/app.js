@@ -63,6 +63,13 @@ function fmtDateTime(iso) {
 
 function teardownMapAndCharts() {
   if (map) {
+    // Cancel any in-flight animated setView/panTo first -- otherwise its
+    // transitionend handler can fire after remove() has already torn
+    // down the map's panes, throwing "Cannot read properties of
+    // undefined (reading '_leaflet_pos')" (seen when onAuthStateChange
+    // fires twice in quick succession and the first map's initial
+    // animated selectCountry() is still mid-transition when this runs).
+    map.stop();
     map.remove();
     map = undefined;
   }
