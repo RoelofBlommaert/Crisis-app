@@ -578,3 +578,72 @@ and confirming the access-denied screen appears (not the app, not a
 silent failure); direct URL access while logged out; re-attempting
 access after signing out and logging back in as a different account
 within the same page load (tests `resetApp()`'s map/chart teardown).
+
+## 2026-09-15: Two real bugs found via user testing -- both fixed
+
+User tested with their own account (added to `allowed_users`, password
+reset) and reported "nothing happens" after login, with a bare 404 in
+the console and an empty (but 200 OK) response from the dataset query.
+Debugged without ever touching a password (per the standing rule):
+inspected live DOM/CSS via `javascript_tool`, and re-created the exact
+failure via SQL role-simulation through MCP. Two independent, unrelated
+bugs, both now fixed and verified:
+
+**Bug 1 -- CSS: `hidden` attribute had no visual effect on the auth
+screens.** `.auth-screen` (used by both `#login-gate` and
+`#access-denied`) sets `display: flex`. That's an *author*-stylesheet
+rule, and author rules always beat the browser's built-in
+`[hidden] { display: none }` (a *user-agent* rule) regardless of
+selector specificity -- origin outranks specificity in the CSS cascade.
+So `auth.js` setting `.hidden = true/false` on these elements correctly
+updated the DOM attribute but had **zero visual effect**: the login form
+never actually disappeared, no matter what state the app was in. This
+alone fully explains "nothing happens" -- even a correct, successful
+login would have looked identical to a stuck one, since the login form
+stayed on screen either way. Confirmed live, without logging in, via
+`getComputedStyle()` on the deployed page before and after adding the
+fix. Fix (`App/styles.css`): added `.auth-screen[hidden] { display:
+none; }`, which has higher specificity *and* is still author-origin, so
+it correctly wins.
+
+**Bug 2 -- RLS: the allowlist check couldn't see its own allowlist.**
+Separately, and more seriously: even for a correctly-allowlisted,
+successfully-authenticated user, the `dataset_snapshot` query returned
+zero rows (confirmed live in-browser for the user's real session:
+`hasData: false, error: null`). Root cause: `allowed_users` has its own
+RLS (deny-by-default, zero policies, by design -- see the 2026-09-15
+Supabase Auth entry above). The `dataset_snapshot` SELECT policy checked
+allowlist membership via a plain `exists (select 1 from allowed_users
+...)` subquery -- but that subquery is **also** subject to
+`allowed_users`' own RLS, evaluated as the *calling* role. For a real
+`authenticated` session (not the superuser/bypassrls role that a SQL
+Editor or MCP connection uses), the subquery therefore always saw zero
+rows from `allowed_users`, regardless of whether the email actually
+matched -- so the policy denied *every* user, allowlisted or not. My
+own earlier "verification" of this policy (in the original Supabase
+Auth entry above) only ever ran through MCP, which connects as a role
+that bypasses RLS entirely -- so it never actually exercised the bug.
+Reproduced properly this time via `set role authenticated;` plus a
+simulated JWT claim before querying, which is what caught it.
+
+Fix (`Scripts/supabase/001_schema.sql`, applied via MCP
+`apply_migration`): moved the allowlist check into a `SECURITY DEFINER`
+SQL function (`public.is_allowed_user()`), which runs with its owner's
+privileges (the table owner, which bypasses RLS) regardless of the
+calling role's own RLS restrictions -- the standard Postgres/Supabase
+pattern for "this policy needs to check another RLS-protected table."
+`allowed_users` itself is unchanged and still fully locked down (still
+zero read/write policies for anyone but the project owner).
+
+**Re-verified with the same `set role authenticated` + simulated-JWT
+technique** (no real login needed): `roelof.blommaert@gmail.com`
+(allowlisted) now sees 1 row; `allowed.tester@example.com`
+(allowlisted) now sees 1 row; `blocked.tester@example.com` (not
+allowlisted) still sees 0 rows; `allowed_users` itself still returns 0
+rows to a direct `authenticated`-role query, even for an allowlisted
+user. Anon (no session) already confirmed 0 rows via the earlier
+unauthenticated curl test.
+
+**Still needs the user to confirm in-browser** (with the CSS fix
+deployed): logging in as their own account now actually shows the app,
+not just a login form that silently never goes away.

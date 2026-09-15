@@ -49,6 +49,14 @@
   background: linear-gradient(135deg, var(--header-grad-a), var(--header-grad-b));
 }
 
+/* A class-based `display` always beats the browser's built-in
+   `[hidden] { display: none }` (author origin beats user-agent origin,
+   regardless of specificity) -- without this, toggling .hidden in JS on
+   an .auth-screen element has no visual effect at all. */
+.auth-screen[hidden] {
+  display: none;
+}
+
 .auth-card {
   width: 100%;
   max-width: 380px;
