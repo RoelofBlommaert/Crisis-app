@@ -93,6 +93,23 @@ a:hover { color: var(--accent); }
   text-align: center;
 }
 
+.brand-mark { flex-shrink: 0; }
+.brand-mark .brand-mark-shield { fill: var(--accent); }
+.brand-mark .brand-mark-band { fill: var(--accent-strong); }
+.brand-mark--on-dark .brand-mark-shield { fill: rgba(255, 255, 255, 0.95); }
+.brand-mark--on-dark .brand-mark-band { fill: rgba(255, 255, 255, 0.55); }
+
+.brand-kicker {
+  margin: 0 0 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.brand-kicker--on-dark { color: rgba(255, 255, 255, 0.75); }
+
 .auth-card h1 {
   font-size: 1.32rem;
   font-weight: 700;
@@ -225,6 +242,14 @@ a:hover { color: var(--accent); }
   gap: 16px;
   flex-wrap: wrap;
 }
+
+.brand-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.brand-row .brand-mark { margin-top: 3px; }
 
 .account-bar {
   display: flex;
@@ -754,6 +779,18 @@ details[open] summary { margin-bottom: 8px; }
 }
 
 .about-panel button:hover { background: var(--accent-strong); }
+
+.app-footer {
+  max-width: 1140px;
+  margin: 32px auto 0;
+  padding: 14px 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.78rem;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+}
 
 @media (max-width: 820px) {
   main { grid-template-columns: 1fr; }
